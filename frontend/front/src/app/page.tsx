@@ -1,7 +1,7 @@
 import Homee from "./views/Home";
 export default function Home() {
   return (
-    <div>
+    <div className="bg-[#b9362d]">
       <Homee />
     </div>
   );

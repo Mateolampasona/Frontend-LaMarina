@@ -1,93 +1,18 @@
 import Image from "next/image";
-import {
-  ShoppingCart,
-  Search,
-  User,
-  Truck,
-  Shield,
-  Repeat,
-} from "lucide-react";
-import { CountdownTimer } from "../../Components/CountdownTimer";
+import NavBar from "@/Components/NavBar";
+import SectionOne from "@/Components/SectionOne";
+// import Cards from "@/Components/Cards";
+import { Truck, Shield, Repeat } from "lucide-react";
 
 export default function Homee() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/logo-la-marina.svg"
-              alt="La Marina Logo"
-              width={150}
-              height={50}
-            />
-          </div>
-          <div className="flex items-center space-x-4">
-            <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition"
-            >
-              Inicio
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition"
-            >
-              Productos
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition"
-            >
-              Ofertas
-            </a>
-            <a
-              href="#"
-              className="text-gray-700 hover:text-blue-600 transition"
-            >
-              Contacto
-            </a>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-700 hover:text-blue-600 transition">
-              <Search className="h-6 w-6" />
-            </button>
-            <button className="text-gray-700 hover:text-blue-600 transition">
-              <User className="h-6 w-6" />
-            </button>
-            <button className="text-gray-700 hover:text-blue-600 transition">
-              <ShoppingCart className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="relative bg-blue-600 h-96">
-        <Image
-          src="/hero-cleaning.jpg"
-          alt="Productos de limpieza"
-          layout="fill"
-          objectFit="cover"
-          className="mix-blend-overlay"
-        />
-        <div className="absolute inset-0 bg-blue-900 opacity-50"></div>
-        <div className="relative container mx-auto px-6 h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            Bienvenido a La Marina
-          </h1>
-          <p className="text-xl text-white mb-8">
-            Tu destino para productos de limpieza y bazar de calidad
-          </p>
-          <button className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full hover:bg-blue-100 transition">
-            Comprar Ahora
-          </button>
-        </div>
+    <div className="min-h-screen bgPrincipal">
+      <NavBar />
+      <section className="relative  h-96">
+        <SectionOne />
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Categorías Destacadas
@@ -116,10 +41,11 @@ export default function Homee() {
             )}
           </div>
         </div>
+        {/* <Cards /> */}
       </section>
 
       {/* Popular Products Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Productos Populares
@@ -149,7 +75,7 @@ export default function Homee() {
                     {product.name}
                   </h3>
                   <p className="text-blue-600 font-bold">{product.price}</p>
-                  <button className="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
+                  <button className="mt-4 w-full text-white font-semibold py-2 rounded hover:bg-blue-700 transition">
                     Agregar al Carrito
                   </button>
                 </div>
@@ -160,7 +86,7 @@ export default function Homee() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
             Por qué elegirnos
@@ -199,7 +125,7 @@ export default function Homee() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <footer className="text-white py-12">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
