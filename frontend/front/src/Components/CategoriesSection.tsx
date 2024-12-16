@@ -30,7 +30,7 @@ const CategoriesSection = () => {
           {categories.map((category, index) => (
             <Card
               key={index}
-              className="text-center hover:shadow-lg transition-shadow"
+              className="text-center font-mono hover:shadow-lg transition-shadow"
             >
               <CardContent className="p-6">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
