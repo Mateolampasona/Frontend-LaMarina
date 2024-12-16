@@ -2,7 +2,7 @@ import { ShoppingCart, Sparkles } from "lucide-react";
 
 export default function SectionOne() {
   return (
-    <section className="relative h-screen bgPrincipal overflow-hidden">
+    <section className="relative h-screen bg-[#edede9] overflow-hidden">
       <div className="absolute inset-0"></div>
       <div className="relative container mx-auto px-6 h-full flex flex-col justify-center items-center text-center z-10">
         <Sparkles className="text-[#ef233c] w-16 h-16 mb-8 animate-pulse" />
