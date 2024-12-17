@@ -15,9 +15,15 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div className="space-y-8">
-            
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-2xl font-bold text-[#ef233c] mb-2">La Marina</h2>
+            </motion.div>
             <motion.h1
-          className="text-5xl md:text-6xl font-extrabold text-gray-800 mb-6 tracking-tight"
+          className="text-5xl md:text-7xl font-extrabold text-gray-800 mb-6 tracking-tight"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -29,7 +35,7 @@ export default function HeroSection() {
           </span>
         </motion.h1>
         <motion.p
-          className="text-xl md:text-xl font-mono text-gray-600 mb-12 max-w-2xl"
+          className="text-xl md:text-2xl font-mono text-gray-600 mb-12 max-w-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -75,7 +81,16 @@ export default function HeroSection() {
               className="object-cover rounded-2xl shadow-lg"
               priority
             />
-            
+            <motion.div
+              className="absolute -bottom-4 -right-4 bg-[#ef233c] text-white p-4 rounded-full shadow-lg"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.6, type: "spring", stiffness: 500, damping: 15 }}
+            >
+              <span className="text-2xl font-bold">20%</span>
+              <br />
+              <span className="text-sm">OFF</span>
+            </motion.div>
           </motion.div>
         </div>
 
