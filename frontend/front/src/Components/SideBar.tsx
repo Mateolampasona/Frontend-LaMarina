@@ -99,7 +99,11 @@ const SideBar = () => {
             </div>
 
             {/* Menú en el sidebar */}
-            <Accordion type="single" collapsible className="space-y-2">
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full max-w-md mx-auto bg-gray-50 rounded-lg shadow-md overflow-hidden"
+            >
               {navItems.map((item, index) => (
                 <AccordionItem
                   value={`item-${index}`}
@@ -108,22 +112,33 @@ const SideBar = () => {
                 >
                   {item.submenu ? (
                     <>
-                      <AccordionTrigger className="flex justify-between items-center py-3 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        {item.name}
+                      <AccordionTrigger className="flex justify-between items-center w-full py-4 px-5 text-left text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200">
+                        <span className="flex items-center">
+                          {item.name === "Dashboard" && (
+                            <Menu className="mr-2 h-4 w-4 text-gray-500" />
+                          )}
+                          {item.name === "Settings" && (
+                            <Settings className="mr-2 h-4 w-4 text-gray-500" />
+                          )}
+                          {item.name === "Help" && (
+                            <HelpCircle className="mr-2 h-4 w-4 text-gray-500" />
+                          )}
+                          {item.name}
+                        </span>
                       </AccordionTrigger>
-                      <AccordionContent className="bg-gray-50">
-                        <div className="py-2 px-4 space-y-1">
+                      <AccordionContent className="bg-gray-50 px-5 py-3">
+                        <div className="space-y-2">
                           {item.submenu.map((subItem) => (
                             <Link
                               key={subItem.name}
                               href={subItem.href}
-                              className="flex items-center py-2 px-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                              onClick={handleSidebarClose} // Cerrar el sidebar al hacer clic
+                              className="flex items-center py-2 px-4 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all duration-200"
+                              onClick={handleSidebarClose}
                             >
                               {subItem.name === "Profile" ? (
-                                <User className="mr-2 h-4 w-4" />
+                                <User className="mr-2 h-4 w-4 text-gray-400" />
                               ) : (
-                                <Settings className="mr-2 h-4 w-4" />
+                                <Settings className="mr-2 h-4 w-4 text-gray-400" />
                               )}
                               {subItem.name}
                             </Link>
@@ -134,14 +149,14 @@ const SideBar = () => {
                   ) : (
                     <Link
                       href={item.href}
-                      className="flex items-center py-3 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                      onClick={handleSidebarClose} // Cerrar el sidebar al hacer clic
+                      className="flex items-center w-full py-4 px-5 text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
+                      onClick={handleSidebarClose}
                     >
                       {item.name === "Dashboard" && (
-                        <Menu className="mr-2 h-4 w-4" />
+                        <Menu className="mr-2 h-4 w-4 text-gray-500" />
                       )}
                       {item.name === "Help" && (
-                        <HelpCircle className="mr-2 h-4 w-4" />
+                        <HelpCircle className="mr-2 h-4 w-4 text-gray-500" />
                       )}
                       {item.name}
                     </Link>
