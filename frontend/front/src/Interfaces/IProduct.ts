@@ -1,19 +1,19 @@
-export interface ICategory_id {
-  categoryId: number;
-  name: string;
-  description: string;
-}
-
-export interface IProduct {
-  id: number;
+export interface ICreateProduct {
   name: string;
   description: string;
   price: number;
-  imageUrl: string;
   stock: number;
-  quantitySell: number;
+  category_id: number;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  category_id: ICategory_id;
+  imageUrl?: string;
+}
+
+export interface IUpdateproduct {
+  name?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  category_id?: number;
+  isActive?: boolean;
+  imageUrl?: string;
 }
