@@ -1,16 +1,19 @@
 import CategoriesSection from "@/Components/CategoriesSection";
 import SectionOne from "@/Components/SectionOne";
-import {ProductSection} from "@/Components/CardsSection"
-import { Footer } from "@/Components/Footer";
+import { ProductSection } from "@/Components/CardsSection";
+
 export default function Homee() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow bgPrincipal">
-        <section className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] xl:h-[90vh]">
+    <div className="flex flex-col min-h-screen ">
+      <div className=" bgPrincipal">
+        <section className="relative mt-12">
           <SectionOne />
+        </section>
+        <section className="mb-16">
           <CategoriesSection />
+        </section>
+        <section className="m-0">
           <ProductSection />
-          <Footer />
         </section>
       </div>
     </div>

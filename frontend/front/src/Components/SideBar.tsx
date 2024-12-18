@@ -59,7 +59,6 @@ const SideBar = () => {
 
   return (
     <div className="flex items-center gap-4 lg:gap-8 bg-[#edede9]">
-      {/* Botón de abrir el sidebar */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
         <SheetTrigger asChild>
           <Button
@@ -176,7 +175,6 @@ const SideBar = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Logo */}
       <Link href="/" className="flex-shrink-0">
         <Image
           src="/assets/logo.png"
@@ -187,7 +185,6 @@ const SideBar = () => {
         />
       </Link>
 
-      {/* Menú en escritorio */}
       <nav className="hidden lg:flex lg:space-x-4">
         {navItems.map((item) => (
           <div key={item.name} className="relative group">
