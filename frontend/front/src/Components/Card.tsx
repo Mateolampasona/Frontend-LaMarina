@@ -1,16 +1,39 @@
 "use client";
 import { useState } from "react";
-import { IProduct } from "@/interfaces/IProduct";
+import { IProduct } from "@/Interfaces/IProduct";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Badge } from "@/Components/ui/badge";
 import Image from "next/image";
 import { Eye, ShoppingCart, Heart } from "lucide-react";
-import Loading from "@/Components/Loading";
+import Cookies from "js-cookie";
+import swal from "sweetalert2";
 
 interface ProductCardProps {
   products: IProduct[];
 }
+
+const handleAddToCart = () => {
+  const accestoken = Cookies.get("accesToken");
+
+  if (!accestoken) {
+    swal
+      .fire({
+        title: "¡Inicia sesión!",
+        text: "Para añadir productos al carrito debes iniciar sesión.",
+        icon: "info",
+        confirmButtonText: "Iniciar sesión",
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        cancelButtonColor: "#d33",
+        confirmButtonColor: "#ef233c",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+  }
+};
 
 export function ProductCard({ products }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
@@ -61,7 +84,10 @@ export function ProductCard({ products }: ProductCardProps) {
             </p>
           </CardContent>
           <CardFooter className="p-4 pt-0">
-            <Button className="w-full bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors duration-200 group relative overflow-hidden">
+            <Button
+              className="w-full bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors duration-200 group relative overflow-hidden"
+              onClick={handleAddToCart}
+            >
               <span className="relative z-10">Añadir al carrito</span>
               <span className="absolute inset-0 bg-[#d90429] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
             </Button>
