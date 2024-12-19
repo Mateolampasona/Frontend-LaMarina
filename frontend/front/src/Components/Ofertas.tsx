@@ -1,10 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Tag, Zap } from "lucide-react";
+import { getAllProducts } from "@/helpers/products.helpers";
+import { IProduct } from "@/Interfaces/IProduct";
 
 const PromocionesYOfertas = () => {
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [discountProducts, setDiscountProducts] = useState<IProduct[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await getAllProducts();
+        const discountedProducts: IProduct[] = products.filter(
+          (product: IProduct) => product.discount !== null
+        );
+        setDiscountProducts(discountedProducts);
+        setProducts(products);
+        console.log(products);
+        console.log(discountedProducts);
+      } catch (error) {
+        console.error("Error al obtener los productos", error);
+      }
+    };
+    fetchProducts();
+  }, []);
   return (
     <section className="bg-gradient-to-r bg-[#edede9] py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -13,7 +35,7 @@ const PromocionesYOfertas = () => {
         </h2>
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           <CuponesYDescuentos />
-          <ProductosEnOferta />
+          <ProductosEnOferta productos={discountProducts} />
         </div>
       </div>
     </section>
@@ -23,19 +45,19 @@ const PromocionesYOfertas = () => {
 const CuponesYDescuentos = () => {
   const [cupones] = useState([
     {
-      codigo: "VERANO2023",
+      codigo: "Inauguracion tienda virtual",
       descuento: "20%",
-      descripcion: "en toda la tienda",
+      descripcion: "En toda la tienda",
     },
     {
-      codigo: "COMBO2X1",
+      codigo: "COMBOS 2X1",
       descuento: "2x1",
-      descripcion: "en productos seleccionados",
+      descripcion: "En productos seleccionados",
     },
     {
-      codigo: "ENVIOGRATIS",
+      codigo: "ENVIO GRATIS",
       descuento: "Envío",
-      descripcion: "gratis en compras +$50",
+      descripcion: "Gratis en compras +$25.0000",
     },
   ]);
 
@@ -77,28 +99,7 @@ const CuponesYDescuentos = () => {
   );
 };
 
-const ProductosEnOferta = () => {
-  const [productos] = useState([
-    {
-      nombre: "Lavandina",
-      precioOriginal: 599,
-      precioOferta: 499,
-      descuento: 17,
-    },
-    {
-      nombre: "Sartenes",
-      precioOriginal: 1299,
-      precioOferta: 999,
-      descuento: 23,
-    },
-    {
-      nombre: "Papel Higienico",
-      precioOriginal: 199,
-      precioOferta: 149,
-      descuento: 25,
-    },
-  ]);
-
+const ProductosEnOferta = ({ productos }: { productos: IProduct[] }) => {
   return (
     <div className="bg-white rounded-lg shadow-xl p-6 sm:p-8 border-2 hover:shadow-2xl transform transition-all duration-300">
       <h3 className="text-2xl sm:text-3xl font-bold text-[#ef233c] mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between">
@@ -117,7 +118,7 @@ const ProductosEnOferta = () => {
       <div className="grid gap-4 sm:gap-8">
         {productos.map((producto, index) => (
           <motion.div
-            key={producto.nombre}
+            key={producto.name}
             className="bg-[#edede9] rounded-md p-4 sm:p-6 text-gray-800 shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center border hover:bg-[#f8c6c6] transform transition-all duration-200"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -125,17 +126,17 @@ const ProductosEnOferta = () => {
           >
             <div>
               <div className="font-bold text-base sm:text-lg">
-                {producto.nombre}
+                {producto.name}
               </div>
               <div className="text-xs sm:text-sm line-through text-gray-500">
-                ${producto.precioOriginal}
+                ${producto.originalPrice}
               </div>
               <div className="text-xl sm:text-2xl font-extrabold text-[#ef233c]">
-                ${producto.precioOferta}
+                ${producto.price}
               </div>
             </div>
             <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
-              {producto.descuento}% OFF
+              {producto.discount}% OFF
             </div>
           </motion.div>
         ))}
