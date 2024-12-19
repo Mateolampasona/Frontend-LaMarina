@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ProductCard } from "./Card";
 import { getAllProducts } from "@/helpers/products.helpers";
-import { IProduct } from "@/Interfaces/IProduct";
+import { IProduct } from "@/interfaces/IProduct";
 
 export function ProductSection() {
   const [products, setProducts] = useState<IProduct[]>([]);
