@@ -1,10 +1,9 @@
 "use client";
-import { useState } from "react";
-import { IProduct } from "@/Interfaces/IProduct";
+import { IProduct } from "@/interfaces/IProduct";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Image from "next/image";
-import { Eye, ShoppingCart, Heart } from "lucide-react";
+import { Eye, ShoppingCart } from "lucide-react";
 import Cookies from "js-cookie";
 import swal from "sweetalert2";
 
@@ -36,7 +35,7 @@ const handleAddToCart = () => {
 };
 
 export function ProductCard({ products }: ProductCardProps) {
-  const [isLiked, setIsLiked] = useState(false);
+  // const [isLiked, setIsLiked] = useState(false);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

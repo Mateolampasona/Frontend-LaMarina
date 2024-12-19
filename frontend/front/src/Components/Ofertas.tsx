@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Tag, Zap } from "lucide-react";
 import { getAllProducts } from "@/helpers/products.helpers";
-import { IProduct } from "@/Interfaces/IProduct";
+import { IProduct } from "@/interfaces/IProduct";
 
 const PromocionesYOfertas = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [discountProducts, setDiscountProducts] = useState<IProduct[]>([]);
+  console.log(products);
+  
 
   useEffect(() => {
     const fetchProducts = async () => {
