@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Tag, Zap } from "lucide-react";
 import { getAllProducts } from "@/helpers/products.helpers";
-import { IProduct } from "@/interfaces/IProduct";
+import { IProduct } from "@/interfaces/IProducts";
 
 const PromocionesYOfertas = () => {
   const [products, setProducts] = useState<IProduct[]>([]);

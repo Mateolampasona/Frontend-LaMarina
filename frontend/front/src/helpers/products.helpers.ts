@@ -1,4 +1,4 @@
-import { ICreateProduct, IUpdateproduct } from "@/interfaces/IProduct";
+import { ICreateProduct, IUpdateproduct } from "@/interfaces/IProducts";
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getAllProducts = async () => {
