@@ -1,12 +1,7 @@
-// validateRegisterForm.ts
 import { IRegisterProps, IRegisterErrors } from "@/interfaces/IRegisterProps";
 
 const validateRegisterForm = (values: IRegisterProps): IRegisterErrors => {
-  const errors: IRegisterErrors = {
-    name: "",
-    email: "",
-    password: "",
-  };
+  const errors: IRegisterErrors = {};
 
   // Validación para el nombre (no vacío)
   if (!values.name.trim()) {
@@ -18,7 +13,7 @@ const validateRegisterForm = (values: IRegisterProps): IRegisterErrors => {
   // Validación para el email
   if (!values.email.trim()) {
     errors.email = "El correo electrónico es requerido.";
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+  } else if (!/\S+@\S+\.\S+/.test(values.email)) {
     errors.email = "El correo electrónico no es válido.";
   }
 
@@ -37,6 +32,9 @@ const validateRegisterForm = (values: IRegisterProps): IRegisterErrors => {
   }
 
   // Validación para confirmar que las contraseñas coinciden
+  if (values.password !== values.confirmPassword) {
+    errors.confirmPassword = "Las contraseñas no coinciden.";
+  }
 
   return errors;
 };

@@ -5,9 +5,13 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
-import { login } from "@/Helpers/authHelper";
+import { login } from "@/helpers/authHelper";
 import Cookies from "js-cookie";
-import validateLoginForm from "@/Helpers/validateLoginForm";
+import validateLoginForm from "@/helpers/validateLoginForm";
+import { Eye, EyeClosed } from "lucide-react";
+
+const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+console.log(APIURL);
 
 export default function Login() {
   const [userData, setUserData] = useState({
@@ -22,6 +26,7 @@ export default function Login() {
     email: false,
     password: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
@@ -37,6 +42,10 @@ export default function Login() {
       ...touched,
       [name]: true,
     });
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -86,12 +95,12 @@ export default function Login() {
       }).then(() => {
         window.location.href = "/";
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErrors({ email: "Email o contraseña incorrectos.", password: "" });
       // Pop-up de error
       Swal.fire({
         title: "Error",
-        text: `No se pudo iniciar sesión. ${error.message}`,
+        text: `No se pudo iniciar sesión. ${(error as Error).message}`,
         icon: "error",
         customClass: {
           popup: "bg-white shadow-lg rounded-lg p-6",
@@ -151,16 +160,29 @@ export default function Login() {
             <Label htmlFor="password" className="text-gray-700">
               Contraseña
             </Label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={userData.password}
-              onChange={handleOnChange}
-              onBlur={handleOnBlur}
-              required
-              className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
-            />
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={userData.password}
+                onChange={handleOnChange}
+                onBlur={handleOnBlur}
+                required
+                className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <EyeClosed className="w-6 h-6 text-gray-500" />
+                ) : (
+                  <Eye className="w-6 h-6 text-gray-500" />
+                )}
+              </button>
+            </div>
             {touched.password && error.password && (
               <span className="text-red-500 text-sm block">
                 {error.password}

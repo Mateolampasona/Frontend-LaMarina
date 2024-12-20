@@ -2,12 +2,13 @@ import Swal from "sweetalert2";
 import { ILoginProps } from "@/interfaces/ILoginProps";
 import { IRegisterProps } from "@/interfaces/IRegisterProps";
 
-const APIURL = process.env.NEXT_PUBLIC_API_URL;
+const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
 export const login = async (userData: ILoginProps) => {
   try {
     console.log("Datos enviados:", userData); // Verifica los datos que estás enviando
-    const response = await fetch(`${APIURL}/Auth/signIn`, {
+    const response = await fetch(`${APIURL}/auth/signin`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -56,7 +57,7 @@ export const login = async (userData: ILoginProps) => {
 export const register = async (userData: IRegisterProps) => {
   console.log(userData);
   try {
-    const response = await fetch(`${APIURL}/Auth/signUp`, {
+    const response = await fetch(`${APIURL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -69,7 +70,7 @@ export const register = async (userData: IRegisterProps) => {
     } else {
       return res;
     }
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: unknown) {
+    throw new Error(String(error));
   }
 };

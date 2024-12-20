@@ -5,8 +5,8 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
-import validateRegisterForm from "@/Helpers/ValidateRegisterForm";
-import { register } from "@/Helpers/authHelper";
+import validateRegisterForm from "@/helpers/ValidateRegisterForm";
+import { register } from "@/helpers/authHelper";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -19,7 +19,12 @@ export default function Register() {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState({
+  const [error, setError] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({
     name: "",
     email: "",
     password: "",
@@ -34,17 +39,22 @@ export default function Register() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleOnChange = (e: any) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleOnBlur = (e: any) => {
-    setTouched({ ...touched, [e.target.name]: true });
+  const handleOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setTouched({ ...touched, [e.target.name]: true });
   };
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   useEffect(() => {
@@ -52,7 +62,7 @@ export default function Register() {
     setError(errors);
   }, [userData]);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errors = validateRegisterForm(userData);
     if (Object.values(errors).some((error) => error)) {
@@ -80,13 +90,13 @@ export default function Register() {
       if (redirect) {
         router.push(`/login?redirect=${redirect}`);
       } else {
-        router.push("/login");
+        router.push("/");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("Error en el catch:", error);
       Swal.fire({
         title: "Error en el registro",
-        text: error.message,
+        text: (error as { message: string }).message,
         icon: "error",
         customClass: {
           popup: "bg-white shadow-lg rounded-lg p-6",
@@ -194,16 +204,29 @@ export default function Register() {
               <Label htmlFor="confirmPassword" className="text-gray-700">
                 Confirmar Contraseña
               </Label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={userData.confirmPassword}
-                onChange={handleOnChange}
-                onBlur={handleOnBlur}
-                required
-                className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={userData.confirmPassword}
+                  onChange={handleOnChange}
+                  onBlur={handleOnBlur}
+                  required
+                  className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
+                />
+                <button
+                  type="button"
+                  onClick={toggleShowConfirmPassword}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  {showConfirmPassword ? (
+                    <EyeClosed className="w-6 h-6 text-gray-500" />
+                  ) : (
+                    <Eye className="w-6 h-6 text-gray-500" />
+                  )}
+                </button>
+              </div>
               {error.confirmPassword && touched.confirmPassword && (
                 <p className="text-red-500">{error.confirmPassword}</p>
               )}
