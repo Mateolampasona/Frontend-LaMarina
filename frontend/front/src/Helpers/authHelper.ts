@@ -4,7 +4,6 @@ import { IRegisterProps } from "@/interfaces/IRegisterProps";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-
 export const login = async (userData: ILoginProps) => {
   try {
     console.log("Datos enviados:", userData); // Verifica los datos que estás enviando
