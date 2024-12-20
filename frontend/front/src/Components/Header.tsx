@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { ShoppingCart, Search, HelpCircle } from "lucide-react";
-
+import Link from "next/link";
 import { Input } from "@/Components/ui/input";
 
 import { Button } from "@/Components/ui/button";
@@ -46,9 +46,14 @@ export default function Navbar() {
             <HelpCircle className="h-5 w-5" />
             <span className="sr-only">Ayuda</span>
           </Button>
-          <Button variant="default" className="bg-red-500 hover:bg-red-600">
-            Sign up
-          </Button>
+          <Link href={"/Login"}>
+            <Button
+              variant="default"
+              className="bg-red-500 hover:bg-red-600 w-auto p-3 font-semibold"
+            >
+              Iniciar Sesion
+            </Button>
+          </Link>
         </div>
       </div>
 
