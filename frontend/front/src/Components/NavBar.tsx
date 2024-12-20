@@ -157,7 +157,7 @@ export default function Navbar() {
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="px-2">
               <Link
-                href="/signup"
+                href="/Login"
                 className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Sign up
