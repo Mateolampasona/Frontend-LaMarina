@@ -10,7 +10,7 @@ export default function Homee() {
       <div className=" bgPrincipal">
         <section className="relative mt-12">
           <SectionOne />
-          <section className="m-0 mb-32">
+          <section className="m-0 mb-16">
             <RobertaSection />
           </section>
         </section>
