@@ -15,7 +15,7 @@ const categories = [
 
 export default function HeroSection() {
   return (
-    <section className="bgPrincipal min-h-screen overflow-hidden">
+    <section className="bgPrincipal overflow-hidden">
       <div className="container mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
