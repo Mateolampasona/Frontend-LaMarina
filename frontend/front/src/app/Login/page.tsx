@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
+import Image from "next/image";
 import { login } from "@/helpers/authHelper";
 import Cookies from "js-cookie";
 import validateLoginForm from "@/helpers/validateLoginForm";
@@ -14,14 +15,29 @@ const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 console.log(APIURL);
 
 export default function Login() {
+  const handleGoogleLogin = () => {
+    window.location.href = `${APIURL}/auth/google/login`;
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+
+    if (token) {
+      console.log(`Token: ${token}`);
+      Cookies.set("accessToken", token, { expires: 1 / 24 }); // Expiración de 1 hora
+      window.location.href = "http://localhost:3001";
+    }
+    else {
+      console.log("No token found");
+    }
+  }, []);
+
   const [userData, setUserData] = useState({
     email: "",
     password: "",
   });
-  const [error, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const [touched, setTouched] = useState({
     email: false,
     password: false,
@@ -152,8 +168,8 @@ export default function Login() {
               required
               className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
             />
-            {touched.email && error.email && (
-              <span className="text-red-500 text-sm block">{error.email}</span>
+            {touched.email && errors.email && (
+              <span className="text-red-500 text-sm block">{errors.email}</span>
             )}
           </div>
           <div>
@@ -183,10 +199,10 @@ export default function Login() {
                 )}
               </button>
             </div>
-            {touched.password && error.password && (
-              <span className="text-red-500 text-sm block">
-                {error.password}
-              </span>
+            {touched.password && errors.password && (
+                <span className="text-red-500 text-sm block">
+                  {errors.password}
+                </span>
             )}
           </div>
           <Button
@@ -196,6 +212,15 @@ export default function Login() {
             Iniciar Sesión
           </Button>
         </form>
+        <div className="flex items-end justify-end mt-4 text-gray-900">
+          <button
+            onClick={handleGoogleLogin}
+            className="mx-auto w-full rounded-lg bg-slate-200 flex flex-row items-center justify-center gap-x-2 px-4 py-3 text-sm duration-200 hover:bg-slate-300"
+          >
+            Inicia Sesion con Google{" "}
+            <Image src="google.svg" alt="google" width={20} height={20} />
+          </button>
+        </div>
         <p className="mt-6 text-center text-sm text-gray-600">
           ¿No tienes una cuenta?{" "}
           <Link
