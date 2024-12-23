@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/Components/Header";
 import { Footer } from "@/Components/Footer";
 import "./globals.css";
+import Link from "next/link";
+import WhatsAppBubble from "@/Components/WhatsappBubble";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +37,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <WhatsAppBubble/>
       </body>
     </html>
   );
