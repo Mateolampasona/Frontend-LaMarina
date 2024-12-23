@@ -42,10 +42,16 @@ export default function Navbar() {
             <ShoppingCart className="h-5 w-5" />
             <span className="sr-only">Carrito</span>
           </Button>
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <HelpCircle className="h-5 w-5" />
-            <span className="sr-only">Ayuda</span>
-          </Button>
+          <Link href={"/Help"}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:inline-flex"
+            >
+              <HelpCircle className="h-5 w-5" />
+              <span className="sr-only">Ayuda</span>
+            </Button>
+          </Link>
           <Link href={"/Login"}>
             <Button
               variant="default"
