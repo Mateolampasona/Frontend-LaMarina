@@ -10,7 +10,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#ef233c]">Nuestra Tienda</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Sobre Nosotros</a></li>
+              <li><a href="/SobreNosotros" className="hover:text-[#ef233c] transition-colors">Sobre Nosotros</a></li>
               <li><a href="#" className="hover:text-[#ef233c] transition-colors">Nuestras Tiendas</a></li>
               <li><a href="#" className="hover:text-[#ef233c] transition-colors">Términos y Condiciones</a></li>
               <li><a href="#" className="hover:text-[#ef233c] transition-colors">Política de Privacidad</a></li>
