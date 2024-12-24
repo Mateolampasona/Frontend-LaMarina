@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/Components/Header";
 import { Footer } from "@/Components/Footer";
 import "./globals.css";
-import Link from "next/link";
 import WhatsAppBubble from "@/Components/WhatsappBubble";
+import { AuthProvider } from "@/Context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,14 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#edede9]`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#edede9]`}
       >
-        <Header />
-        {children}
-        <Footer />
-        <WhatsAppBubble/>
+        <AuthProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <WhatsAppBubble />
+        </AuthProvider>
       </body>
     </html>
   );

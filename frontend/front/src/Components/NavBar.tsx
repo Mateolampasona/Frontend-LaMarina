@@ -13,7 +13,7 @@ const navItems = [
     submenu: [
       { name: "Nuevos Productos", href: "/productos/nuevos" },
       { name: "Ofertas", href: "/productos/ofertas" },
-      { name: "Todos los Productos", href: "/productos/todos" },
+      { name: "Todos los Productos", href: "./Categories" },
     ],
   },
   {
@@ -24,6 +24,7 @@ const navItems = [
       { name: "Utencilios", href: "/categorias/electronica" },
       { name: "Hogar", href: "/categorias/hogar" },
       { name: "Quimicos", href: "/categorias/deportes" },
+      { name: "Todas Las categorias", href: "/Categories" },
     ],
   },
   { name: "Carrito", href: "/carrito", icon: ShoppingCart },
