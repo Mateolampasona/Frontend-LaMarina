@@ -6,7 +6,7 @@ import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import validateRegisterForm from "@/helpers/ValidateRegisterForm";
-import { register } from "@/helpers/authHelper";
+import { register } from "@/helpers/auth.helper";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 

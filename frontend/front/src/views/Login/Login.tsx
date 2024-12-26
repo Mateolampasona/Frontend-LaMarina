@@ -6,7 +6,7 @@ import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import Image from "next/image";
-import { login } from "@/helpers/authHelper";
+import { login } from "@/helpers/auth.helper";
 import Cookies from "js-cookie";
 import validateLoginForm from "@/helpers/validateLoginForm";
 import { Eye, EyeClosed } from "lucide-react";
