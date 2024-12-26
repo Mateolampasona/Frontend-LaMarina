@@ -18,7 +18,7 @@ export default function HelpSection() {
       </div>
       <div className="m-auto">
         <Tabs defaultValue="faq" className="w-full ">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4  gap-2 mb-8 border-b border-gray-200">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-2  gap-2 mb-8 border-b border-gray-200">
             <TabsTrigger
               value="faq"
               className="relative group font-mono text-gray-600 hover:text-[#ef233c] transition-colors duration-200 py-2 px-4 text-center text-sm sm:text-base"
@@ -33,7 +33,7 @@ export default function HelpSection() {
               Contáctanos
               <span className="absolute bottom-0 left-0 right-0 h-1 bg-[#ef233c] scale-x-0 group-hover:scale-x-100 group-data-[state=active]:scale-x-100 transition-transform duration-300 origin-left" />
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="track"
               className="relative group text-gray-600 font-mono hover:text-[#ef233c] transition-colors duration-200 py-2 px-4 text-center text-sm sm:text-base"
             >
@@ -46,7 +46,7 @@ export default function HelpSection() {
             >
               Devoluciones
               <span className="absolute bottom-0 left-0 right-0 h-1 bg-[#ef233c] scale-x-0 group-hover:scale-x-100 group-data-[state=active]:scale-x-100 transition-transform duration-300 origin-left" />
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
           <TabsContent value="faq">
             <FAQSection />
@@ -90,7 +90,7 @@ export default function HelpSection() {
 
         <div className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center">
           <a
-            href="https://www.google.com/maps?q=General+M.+Acha+Sur+395,+San+Juan,+Argentina"
+            href="https://maps.app.goo.gl/4wGtPJ5udeep8qCt6"
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col items-center text-center"
