@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 import Image from "next/image";
 import { login } from "@/helpers/auth.helper";
 import Cookies from "js-cookie";
-import validateLoginForm from "@/helpers/validateLoginForm";
+import validateLoginForm from "@/helpers/validateLoginForm.helper";
 import { Eye, EyeClosed } from "lucide-react";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
