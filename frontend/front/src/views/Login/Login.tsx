@@ -130,107 +130,107 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#edede9] relative">
-      <div className="absolute inset-0 z-0 bg-[#edede9] bg-opacity-65 backdrop-blur-sm filter" />
+<div className="min-h-screen flex items-center justify-center bg-[#edede9] relative">
+  <div className="absolute inset-0 z-0 bg-[#edede9] bg-opacity-65 backdrop-blur-sm filter" />
 
-      <div className="bg-white p-8 rounded-lg shadow-2xl w-96 z-10 relative backdrop-blur-sm bg-opacity-80">
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#ef233c] rounded-full p-3 shadow-lg">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            className="w-8 h-8 text-white"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-        </div>
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 mt-4">
-          Iniciar Sesión
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="email" className="text-gray-700">
-              Correo Electrónico
-            </Label>
-            <Input
-              type="email"
-              id="email"
-              name="email"
-              value={userData.email}
-              onChange={handleOnChange}
-              onBlur={handleOnBlur}
-              required
-              className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
-            />
-            {touched.email && errors.email && (
-              <span className="text-red-500 text-sm block">{errors.email}</span>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="password" className="text-gray-700">
-              Contraseña
-            </Label>
-            <div className="relative">
-              <Input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={userData.password}
-                onChange={handleOnChange}
-                onBlur={handleOnBlur}
-                required
-                className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c]"
-              />
-              <button
-                type="button"
-                onClick={toggleShowPassword}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
-                {showPassword ? (
-                  <EyeClosed className="w-6 h-6 text-gray-500" />
-                ) : (
-                  <Eye className="w-6 h-6 text-gray-500" />
-                )}
-              </button>
-            </div>
-            {touched.password && errors.password && (
-                <span className="text-red-500 text-sm block">
-                  {errors.password}
-                </span>
-            )}
-          </div>
-          <Button
-            type="submit"
-            className="w-full bg-[#ef233c] hover:bg-[#d90429] transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg"
-          >
-            Iniciar Sesión
-          </Button>
-        </form>
-        <div className="flex items-end justify-end mt-4 text-gray-900">
+  <div className="bg-white px-6 py-8 rounded-lg shadow-2xl max-w-md w-full z-10 relative backdrop-blur-sm bg-opacity-80">
+    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#ef233c] rounded-full p-3 shadow-lg">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        className="w-8 h-8 text-white"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+        />
+      </svg>
+    </div>
+    <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 mt-4">
+      Iniciar Sesión
+    </h2>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mb-4">
+        <Label htmlFor="email" className="text-gray-700">
+          Correo Electrónico
+        </Label>
+        <Input
+          type="email"
+          id="email"
+          name="email"
+          value={userData.email}
+          onChange={handleOnChange}
+          onBlur={handleOnBlur}
+          required
+          className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2"
+        />
+        {touched.email && errors.email && (
+          <span className="text-red-500 text-sm block">{errors.email}</span>
+        )}
+      </div>
+      <div className="mb-4">
+        <Label htmlFor="password" className="text-gray-700">
+          Contraseña
+        </Label>
+        <div className="relative">
+          <Input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            value={userData.password}
+            onChange={handleOnChange}
+            onBlur={handleOnBlur}
+            required
+            className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2 pr-10"
+          />
           <button
-            onClick={handleGoogleLogin}
-            className="mx-auto w-full rounded-lg bg-slate-200 flex flex-row items-center justify-center gap-x-2 px-4 py-3 text-sm duration-200 hover:bg-slate-300"
+            type="button"
+            onClick={toggleShowPassword}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2"
           >
-            Inicia Sesion con Google{" "}
-            <Image src="google.svg" alt="google" width={20} height={20} />
+            {showPassword ? (
+              <EyeClosed className="w-6 h-6 text-gray-500" />
+            ) : (
+              <Eye className="w-6 h-6 text-gray-500" />
+            )}
           </button>
         </div>
-        <p className="mt-6 text-center text-sm text-gray-600">
-          ¿No tienes una cuenta?{" "}
-          <Link
-            href="/Register"
-            className="text-[#ef233c] hover:underline font-semibold"
-          >
-            Regístrate
-          </Link>
-        </p>
+        {touched.password && errors.password && (
+          <span className="text-red-500 text-sm block">
+            {errors.password}
+          </span>
+        )}
       </div>
+      <Button
+        type="submit"
+        className="w-full bg-[#ef233c] hover:bg-[#d90429] transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg"
+      >
+        Iniciar Sesión
+      </Button>
+    </form>
+    <div className="flex items-end justify-end mt-4 text-gray-900">
+      <button
+        onClick={handleGoogleLogin}
+        className="mx-auto w-full rounded-lg bg-slate-200 flex flex-row items-center justify-center gap-x-2 px-4 py-3 text-sm duration-200 hover:bg-slate-300"
+      >
+        Inicia Sesión con Google{" "}
+        <Image src="google.svg" alt="google" width={20} height={20} />
+      </button>
     </div>
+    <p className="mt-6 text-center text-sm text-gray-600">
+      ¿No tienes una cuenta?{" "}
+      <Link
+        href="/Register"
+        className="text-[#ef233c] hover:underline font-semibold"
+      >
+        Regístrate
+      </Link>
+    </p>
+  </div>
+</div>
   );
 }
