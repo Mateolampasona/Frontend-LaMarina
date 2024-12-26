@@ -4,6 +4,6 @@ export interface ILoginProps {
 }
 
 export interface ILoginErrors {
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
 }

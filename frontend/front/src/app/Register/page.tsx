@@ -69,7 +69,7 @@ export default function Register() {
       setError(errors);
       return;
     }
-
+  
     try {
       const res = await register(userData);
       console.log(res);
@@ -79,12 +79,11 @@ export default function Register() {
         customClass: {
           popup: "bg-white shadow-lg rounded-lg p-6",
           title: "text-2xl font-semibold text-gray-800",
-          confirmButton:
-            "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded",
+          confirmButton: "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded",
         },
         buttonsStyling: false,
       });
-
+  
       const UrlParams = new URLSearchParams(window.location.search);
       const redirect = UrlParams.get("redirect");
       if (redirect) {
@@ -94,15 +93,22 @@ export default function Register() {
       }
     } catch (error: unknown) {
       console.log("Error en el catch:", error);
+      let errorMessage = "Ocurrió un error en el registro.";
+      if (error instanceof Error) {
+        if (error.message.includes("User already exists")) {
+          errorMessage = "El correo electrónico ya está registrado.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
       Swal.fire({
         title: "Error en el registro",
-        text: (error as { message: string }).message,
+        text: errorMessage,
         icon: "error",
         customClass: {
           popup: "bg-white shadow-lg rounded-lg p-6",
           title: "text-2xl font-semibold text-gray-800",
-          confirmButton:
-            "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded",
+          confirmButton: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded",
         },
         buttonsStyling: false,
       });

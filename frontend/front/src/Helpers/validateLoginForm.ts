@@ -1,7 +1,7 @@
 import { ILoginProps, ILoginErrors } from "@/interfaces/ILoginProps";
 
 const validateLoginForm = (data: ILoginProps): ILoginErrors => {
-  const errors: ILoginErrors = {};
+  const errors: ILoginErrors = { email: "", password: "" };
 
   // Validar el email
   if (!data.email) {

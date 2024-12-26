@@ -1,17 +1,34 @@
 "use client";
 
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import { ShoppingCart, Search, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/Components/ui/input";
-
 import { Button } from "@/Components/ui/button";
-
 import SideBar from "./SideBar";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
+  const router = useRouter();
+
+  useEffect(() => {
+    // Verificar si la cookie de autenticación existe
+    const token = Cookies.get("accessToken");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Eliminar la cookie de autenticación
+    Cookies.remove("accessToken");
+    setIsAuthenticated(false);
+
+    router.push("/Login");
+  };
 
   return (
     <header className="border-b">
@@ -48,14 +65,24 @@ export default function Navbar() {
             <HelpCircle className="h-5 w-5" />
             <span className="sr-only">Ayuda</span>
           </Button>
-          <Link href={"/Login"}>
+          {isAuthenticated ? (
             <Button
               variant="default"
               className="bg-red-500 hover:bg-red-600 w-auto p-3 font-semibold"
+              onClick={handleLogout}
             >
-              Iniciar Sesion
+              Cerrar Sesión
             </Button>
-          </Link>
+          ) : (
+            <Link href={"/Login"}>
+              <Button
+                variant="default"
+                className="bg-red-500 hover:bg-red-600 w-auto p-3 font-semibold"
+              >
+                Iniciar Sesión
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 

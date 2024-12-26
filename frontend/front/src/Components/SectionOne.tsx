@@ -3,6 +3,7 @@
 import { ShoppingCart, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 const categories = [
   "Limpieza",
@@ -15,7 +16,7 @@ const categories = [
 
 export default function HeroSection() {
   return (
-    <section className="bgPrincipal min-h-screen overflow-hidden">
+    <section className="bgPrincipal overflow-hidden">
       <div className="container mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
@@ -58,7 +59,10 @@ export default function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
+                <Link href={"/Categories"}>
                 Ver Más
+    
+                </Link>
                 <ArrowRight className="w-5 h-5" />
               </motion.button>
             </motion.div>
