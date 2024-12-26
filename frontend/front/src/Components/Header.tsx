@@ -61,10 +61,12 @@ export default function Navbar() {
               <span className="sr-only">Carrito</span>
             </Button>
           </Link>
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <HelpCircle className="h-5 w-5" />
-            <span className="sr-only">Ayuda</span>
-          </Button>
+          <Link href={"/Help"}>
+            <Button variant="ghost" size="icon" className="hidden md:inline-flex">
+              <HelpCircle className="h-5 w-5" />
+              <span className="sr-only">Ayuda</span>
+            </Button>
+          </Link>
           {isAuthenticated ? (
             <Button
               variant="default"
