@@ -27,7 +27,7 @@ export default function Navbar() {
     Cookies.remove("accessToken");
     setIsAuthenticated(false);
 
-    router.push("/Login");
+    router.push("/login");
   };
 
   return (
@@ -61,7 +61,7 @@ export default function Navbar() {
               <span className="sr-only">Carrito</span>
             </Button>
           </Link>
-          <Link href={"/Help"}>
+          <Link href={"/help"}>
             <Button variant="ghost" size="icon" className="hidden md:inline-flex">
               <HelpCircle className="h-5 w-5" />
               <span className="sr-only">Ayuda</span>
@@ -76,7 +76,7 @@ export default function Navbar() {
               Cerrar Sesión
             </Button>
           ) : (
-            <Link href={"/Login"}>
+            <Link href={"/login"}>
               <Button
                 variant="default"
                 className="bg-red-500 hover:bg-red-600 w-auto p-3 font-semibold"
