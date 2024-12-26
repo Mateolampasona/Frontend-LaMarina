@@ -11,6 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
+import Image from 'next/image';
 import { Separator } from "@/Components/ui/separator";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Progress } from "@/Components/ui/progress";
@@ -194,10 +195,12 @@ export default function ShoppingCart() {
                   transition={{ duration: 0.3 }}
                   className="flex items-center space-x-4 mb-6"
                 >
-                  <img
+                  <Image
                     src={product.imageUrl}
                     alt={product.name}
-                    className="w-24 h-24 object-cover rounded-md"
+                    width={96}
+                    height={96}
+                    className="object-cover rounded-md"
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold">{product.name}</h3>

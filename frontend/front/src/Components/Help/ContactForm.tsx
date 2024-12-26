@@ -19,12 +19,26 @@ export default function ContactForm() {
     message: "",
   });
 
-  const handleChange = (e) => {
+  interface FormData {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }
+
+  interface ChangeEvent {
+    target: {
+      name: string;
+      value: string;
+    };
+  }
+
+  const handleChange = (e: ChangeEvent) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    setFormData((prevState: FormData) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
     // Aquí iría la lógica para enviar el formulario
@@ -56,12 +70,12 @@ export default function ContactForm() {
         </div>
         <div>
           <Label htmlFor="subject">Asunto</Label>
-          <Select
+            <Select
             name="subject"
-            onValueChange={(value) =>
-              setFormData((prevState) => ({ ...prevState, subject: value }))
+            onValueChange={(value: string) =>
+              setFormData((prevState: FormData) => ({ ...prevState, subject: value }))
             }
-          >
+            >
             <SelectTrigger>
               <SelectValue placeholder="Selecciona un asunto" />
             </SelectTrigger>
@@ -71,7 +85,7 @@ export default function ContactForm() {
               <SelectItem value="producto">Información de producto</SelectItem>
               <SelectItem value="reclamo">Reclamo</SelectItem>
             </SelectContent>
-          </Select>
+            </Select>
         </div>
         <div>
           <Label htmlFor="message">Mensaje</Label>

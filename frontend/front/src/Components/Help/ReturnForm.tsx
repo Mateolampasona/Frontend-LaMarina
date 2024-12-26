@@ -18,12 +18,13 @@ export default function ReturnForm() {
     details: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Return request submitted:", formData);
     // Aquí iría la lógica para procesar la solicitud de devolución
@@ -48,8 +49,8 @@ export default function ReturnForm() {
             <Label htmlFor="reason">Razón de la Devolución</Label>
             <Select
               name="reason"
-              onValueChange={(value) =>
-                setFormData((prevState) => ({ ...prevState, reason: value }))
+              onValueChange={(value: unknown) =>
+                setFormData((prevState) => ({ ...prevState, reason: value as string }))
               }
             >
               <SelectTrigger>
