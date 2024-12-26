@@ -18,6 +18,8 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+  console.log("hola");
+  
 
   const [error, setError] = useState<{
     name?: string;
