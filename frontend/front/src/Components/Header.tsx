@@ -55,20 +55,16 @@ export default function Navbar() {
             <Search className="h-5 w-5" />
             <span className="sr-only">Buscar</span>
           </Button>
-          <Button variant="ghost" size="icon">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="sr-only">Carrito</span>
-          </Button>
-          <Link href={"/Help"}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden md:inline-flex"
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span className="sr-only">Ayuda</span>
+          <Link href={"/cart"}>
+            <Button variant="ghost" size="icon">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="sr-only">Carrito</span>
             </Button>
           </Link>
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
+            <HelpCircle className="h-5 w-5" />
+            <span className="sr-only">Ayuda</span>
+          </Button>
           {isAuthenticated ? (
             <Button
               variant="default"
