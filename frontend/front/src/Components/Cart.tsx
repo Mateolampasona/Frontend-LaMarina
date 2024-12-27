@@ -21,6 +21,7 @@ import { Input } from "@/Components/ui/input";
 import { Toast } from "@/Components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { IProduct } from "@/interfaces/IProducts";
+import Image from "next/image";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 10;
@@ -194,10 +195,12 @@ export default function ShoppingCart() {
                   transition={{ duration: 0.3 }}
                   className="flex items-center space-x-4 mb-6"
                 >
-                  <img
+                  <Image
                     src={product.imageUrl}
                     alt={product.name}
-                    className="w-24 h-24 object-cover rounded-md"
+                    width={96}
+                    height={96}
+                    className="object-cover rounded-md"
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold">{product.name}</h3>
