@@ -5,10 +5,13 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
-import validateRegisterForm from "@/helpers/ValidateRegisterForm";
-import { register } from "@/helpers/authHelper";
+import validateRegisterForm from "@/helpers/ValidateRegisterForm.helper";
+import { register } from "@/helpers/auth.helper";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const FRONTURL = process.env.NEXT_PUBLIC_FRONTEND_URL;
+console.log("FRONTURL", FRONTURL);
 
 export default function Register() {
   const router = useRouter();
@@ -18,6 +21,8 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
+  console.log("hola");
+  
 
   const [error, setError] = useState<{
     name?: string;
@@ -89,7 +94,7 @@ export default function Register() {
       if (redirect) {
         router.push(`/login?redirect=${redirect}`);
       } else {
-        router.push("/");
+        router.push(`${FRONTURL}`);
       }
     } catch (error: unknown) {
       console.log("Error en el catch:", error);
@@ -247,7 +252,7 @@ export default function Register() {
           <p className="mt-6 text-center text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link
-              href="/Login"
+              href={`${FRONTURL}/login`}
               className="text-[#ef233c] hover:underline font-semibold"
             >
               Inicia Sesión

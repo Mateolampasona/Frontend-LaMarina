@@ -13,21 +13,22 @@ const navItems = [
     submenu: [
       { name: "Nuevos Productos", href: "/productos/nuevos" },
       { name: "Ofertas", href: "/productos/ofertas" },
-      { name: "Todos los Productos", href: "/productos/todos" },
+      { name: "Todos los Productos", href: "./categories" },
     ],
   },
   {
     name: "Categorías",
-    href: "/categorias",
+    href: "/Categories",
     submenu: [
-      { name: "Limpieza", href: "/categorias/ropa" },
-      { name: "Utencilios", href: "/categorias/electronica" },
-      { name: "Hogar", href: "/categorias/hogar" },
-      { name: "Quimicos", href: "/categorias/deportes" },
+      { name: "Limpieza", href: "/categories" },
+      { name: "Utencilios", href: "/categories" },
+      { name: "Hogar", href: "/categories" },
+      { name: "Quimicos", href: "/categories" },
+      { name: "Todas Las categorias", href: "/Categories" },
     ],
   },
-  { name: "Carrito", href: "/carrito", icon: ShoppingCart },
-  { name: "Ayuda", href: "/ayuda", icon: HelpCircle },
+  { name: "Carrito", href: "/cart", icon: ShoppingCart },
+  { name: "Ayuda", href: "/help", icon: HelpCircle },
 ];
 
 export default function Navbar() {

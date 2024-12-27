@@ -1,4 +1,4 @@
-import HelpSection from "@/Components/Help/HelpSection";
+import HelpSection from "@/views/Help/HelpSection";
 
 export default function AyudaPage() {
   return (

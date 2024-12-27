@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { Label } from "@/Components/ui/label";
+import { contactForm } from "@/helpers/contactFormHelper"; // Importa el helper
+import Swal from "sweetalert2"; // Importa SweetAlert
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -19,15 +21,54 @@ export default function ContactForm() {
     message: "",
   });
 
-  const handleChange = (e) => {
+  interface FormData {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }
+
+  interface ChangeEvent {
+    target: {
+      name: string;
+      value: string;
+    };
+  }
+
+  const handleChange = (e: ChangeEvent) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    setFormData((prevState: FormData) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  interface SubmitEvent {
+    preventDefault: () => void;
+  }
+
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
-    // Aquí iría la lógica para enviar el formulario
+    try {
+      await contactForm(formData); // Llama al helper para enviar los datos
+      Swal.fire({
+        icon: "success",
+        title: "Mensaje enviado con éxito",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      }); // Resetea los inputs
+    } catch (error: unknown) {
+      console.error("Error al enviar el formulario:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Hubo un error al enviar el mensaje",
+        text: (error instanceof Error) ? error.message : "Unknown error",
+      });
+    }
   };
 
   return (
