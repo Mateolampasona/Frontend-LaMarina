@@ -28,8 +28,8 @@ export default function Login() {
 
     if (token) {
       console.log(`Token: ${token}`);
-      Cookies.set("accessToken", token, { expires: 1 / 24 }); // Expiración de 1 hora
-      window.location.href = `${FRONTURL}`;
+      Cookies.set("accessToken", JSON.stringify(token));
+      window.location.href = "/";
     }
     else {
       console.log("No token found");
