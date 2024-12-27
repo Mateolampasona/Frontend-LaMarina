@@ -112,7 +112,7 @@ export default function Login() {
         },
         buttonsStyling: false,
       }).then(() => {
-        window.location.href = "/";
+        window.location.href = `${FRONTURL}}`;
       });
     } catch (error: unknown) {
       setErrors({ email: "Email o contraseña incorrectos.", password: "" });
@@ -227,7 +227,7 @@ export default function Login() {
     <p className="mt-6 text-center text-sm text-gray-600">
       ¿No tienes una cuenta?{" "}
       <Link
-        href="/Register"
+        href={`${FRONTURL}/register}`}
         className="text-[#ef233c] hover:underline font-semibold"
       >
         Regístrate
