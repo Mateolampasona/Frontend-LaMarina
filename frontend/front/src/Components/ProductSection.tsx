@@ -19,7 +19,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const decrementQuantity = () => setQuantity(prev => Math.max(prev - 1, 1));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
         {/* Image gallery */}
         <div className="relative aspect-square overflow-hidden rounded-lg shadow-lg">
