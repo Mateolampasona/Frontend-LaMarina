@@ -39,12 +39,12 @@ const navItems = [
   },
   {
     name: "Categorías",
-    href: "/categorias",
+    href: "/categories",
     submenu: [
-      { name: "Limpieza", href: "/categorias/limpieza" },
-      { name: "Utensilios", href: "/categorias/utensilios" },
-      { name: "Hogar", href: "/categorias/hogar" },
-      { name: "Químicos", href: "/categorias/quimicos" },
+      { name: "Limpieza", href: "/categories/limpieza" },
+      { name: "Utensilios", href: "/categories/utensilios" },
+      { name: "Hogar", href: "/categories/hogar" },
+      { name: "Químicos", href: "/categories/quimicos" },
     ],
   },
 ];
