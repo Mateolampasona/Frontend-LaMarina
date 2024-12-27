@@ -12,7 +12,10 @@ import validateLoginForm from "@/helpers/validateLoginForm.helper";
 import { Eye, EyeClosed } from "lucide-react";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-console.log(APIURL);
+const FRONTURL = process.env.NEXT_PUBLIC_FRONTEND_URL;
+console.log("APIURL", APIURL);
+console.log("FRONTURL", FRONTURL);
+
 
 export default function Login() {
   const handleGoogleLogin = () => {
@@ -25,8 +28,8 @@ export default function Login() {
 
     if (token) {
       console.log(`Token: ${token}`);
-      Cookies.set("accessToken", token, { expires: 1 / 24 }); // Expiración de 1 hora
-      window.location.href = "http://localhost:3001";
+      Cookies.set("accessToken", JSON.stringify(token));
+      window.location.href = "/";
     }
     else {
       console.log("No token found");
@@ -109,7 +112,7 @@ export default function Login() {
         },
         buttonsStyling: false,
       }).then(() => {
-        window.location.href = "/";
+        window.location.href = `${FRONTURL}}`;
       });
     } catch (error: unknown) {
       setErrors({ email: "Email o contraseña incorrectos.", password: "" });
@@ -224,7 +227,7 @@ export default function Login() {
     <p className="mt-6 text-center text-sm text-gray-600">
       ¿No tienes una cuenta?{" "}
       <Link
-        href="/Register"
+        href={`${FRONTURL}/register`}
         className="text-[#ef233c] hover:underline font-semibold"
       >
         Regístrate
