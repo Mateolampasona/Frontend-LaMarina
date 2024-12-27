@@ -12,7 +12,10 @@ import validateLoginForm from "@/helpers/validateLoginForm.helper";
 import { Eye, EyeClosed } from "lucide-react";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const FRONTURL = process.env.NEXT_PUBLIC_FRONTEND_URL;
 console.log(APIURL);
+console.log(FRONTURL);
+
 
 export default function Login() {
   const handleGoogleLogin = () => {
@@ -26,7 +29,7 @@ export default function Login() {
     if (token) {
       console.log(`Token: ${token}`);
       Cookies.set("accessToken", token, { expires: 1 / 24 }); // Expiración de 1 hora
-      window.location.href = "http://localhost:3001";
+      window.location.href = `${FRONTURL}`;
     }
     else {
       console.log("No token found");
