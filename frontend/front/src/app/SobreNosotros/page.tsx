@@ -95,7 +95,7 @@ export default function SobreNosotrosMejorado() {
             En <span className='text-[#ef233c]'>La Marina</span>, no solo vendemos productos, creamos soluciones. Entendemos que cada hogar y negocio es único, por eso ofrecemos una amplia gama de artículos de limpieza y bazar cuidadosamente seleccionados para satisfacer tus necesidades específicas. Nuestro compromiso va más allá de la venta; estamos aquí para asesorarte y asegurarnos de que encuentres exactamente lo que buscas.
           </p>
           <motion.a
-            href="#contacto"
+            href="/products"
             className="mt-8 inline-flex items-center font-mono justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#ef233c] hover:bg-[#d90429] transition-all duration-300 transform hover:scale-105"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
