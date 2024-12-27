@@ -13,8 +13,8 @@ import { Eye, EyeClosed } from "lucide-react";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const FRONTURL = process.env.NEXT_PUBLIC_FRONTEND_URL;
-console.log(APIURL);
-console.log(FRONTURL);
+console.log("APIURL", APIURL);
+console.log("FRONTURL", FRONTURL);
 
 
 export default function Login() {
