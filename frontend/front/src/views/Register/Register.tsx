@@ -10,6 +10,9 @@ import { register } from "@/helpers/auth.helper";
 import { Eye, EyeClosed } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+const FRONTURL = process.env.NEXT_PUBLIC_FRONTEND_URL;
+console.log("FRONTURL", FRONTURL);
+
 export default function Register() {
   const router = useRouter();
   const [userData, setUserData] = useState({
@@ -91,7 +94,7 @@ export default function Register() {
       if (redirect) {
         router.push(`/login?redirect=${redirect}`);
       } else {
-        router.push("/");
+        router.push(`${FRONTURL}`);
       }
     } catch (error: unknown) {
       console.log("Error en el catch:", error);
@@ -249,7 +252,7 @@ export default function Register() {
           <p className="mt-6 text-center text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link
-              href="/Login"
+              href={`${FRONTURL}/login`}
               className="text-[#ef233c] hover:underline font-semibold"
             >
               Inicia Sesión
