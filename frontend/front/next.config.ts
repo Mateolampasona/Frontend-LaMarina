@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       "res.cloudinary.com",
       "example.com",
       "localhost",
+      "images.unsplash.com",
     ], // Add the domain here
   },
 };

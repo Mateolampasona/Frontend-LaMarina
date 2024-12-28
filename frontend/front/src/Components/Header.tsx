@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingCart, Search, HelpCircle } from "lucide-react";
+import { ShoppingCart, Search, HelpCircle, User } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
@@ -62,8 +62,22 @@ export default function Navbar() {
             </Button>
           </Link>
           <Link href={"/help"}>
-            <Button variant="ghost" size="icon" className="hidden md:inline-flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:inline-flex"
+            >
               <HelpCircle className="h-5 w-5" />
+              <span className="sr-only">Ayuda</span>
+            </Button>
+          </Link>
+          <Link href={"/admin/dashboard"}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:inline-flex"
+            >
+              <User className="h-5 w-5" />
               <span className="sr-only">Ayuda</span>
             </Button>
           </Link>
