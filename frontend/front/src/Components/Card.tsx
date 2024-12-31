@@ -34,7 +34,7 @@ const handleAddToCart = () => {
   }
 };
 
-export function ProductCard({ products }: ProductCardProps) {
+export default function ProductCard({ products }: ProductCardProps) {
   // const [isLiked, setIsLiked] = useState(false);
 
   return (
