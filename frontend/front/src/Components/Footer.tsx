@@ -1,8 +1,43 @@
+"use client"
 import { Facebook,Instagram,Twitter } from "lucide-react"
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
+import { useState } from "react"
+import { newsLetterForm } from "@/helpers/newsLetter.helper"
+import Swal from "sweetalert2"
 
 export function Footer() {
+  const [email,setEmail] = useState('')
+  const handlesubmit = async ( e: React.FormEvent ) => {
+    e.preventDefault()
+    try {
+      await newsLetterForm(email)
+      
+      Swal.fire({
+        title: '¡Gracias por suscribirte!',
+        text: 'Recibirás nuestras últimas ofertas y novedades en tu correo.',
+        icon: 'success',
+        confirmButtonText: 'Cerrar'
+      })
+      setEmail('')
+    } catch (error: unknown) {
+      let errorMessage = 'Ha ocurrido un error, por favor intenta de nuevo.'
+      if (error instanceof Error) {
+        if (error.message.includes('email should not be empty')) {
+          errorMessage = 'El correo electrónico no debe estar vacío.'
+        } else if (error.message.includes('email must be an email')) {
+          errorMessage = 'El correo electrónico debe ser válido.'
+        }
+      }
+      Swal.fire({
+        title: '¡Ups!',
+        text: errorMessage,
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      })
+    }
+  }
+  
   return (
     <footer className="bg-[#edede9] text-gray-700 py-12">
       <div className="container mx-auto px-4">
@@ -38,10 +73,12 @@ export function Footer() {
             <h3 className="text-lg font-semibold text-[#ef233c]">Suscríbete</h3>
             <p className="text-sm">Recibe nuestras últimas ofertas y novedades.</p>
             <div className="flex space-x-2">
-              <Input type="email" placeholder="Tu email" className="bg-white" />
-              <Button className="bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors">
+              <form onSubmit={handlesubmit}>
+              <Input type="email" placeholder="Tu email" className="bg-white" value={email} onChange={(e) =>setEmail(e.target.value)}/>
+              <Button className="bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors" type="submit">
                 Suscribir
               </Button>
+              </form>
             </div>
             <div className="flex space-x-4 mt-4">
               <a href="#" className="text-gray-500 hover:text-[#ef233c] transition-colors">

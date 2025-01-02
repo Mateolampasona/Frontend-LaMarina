@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { Label } from "@/Components/ui/label";
-import { contactForm } from "@/helpers/contactFormHelper"; // Importa el helper
+import { contactForm } from "@/helpers/contactForm.helper"; // Importa el helper
 import Swal from "sweetalert2"; // Importa SweetAlert
 
 export default function ContactForm() {
