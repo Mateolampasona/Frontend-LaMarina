@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/Components/ui/button";
 import { ShoppingCart, Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
-import { IProduct } from "@/Interfaces/IProducts";
+import { IProduct } from "@/interfaces/IProducts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/Components/ui/accordion";
 

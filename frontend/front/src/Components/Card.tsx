@@ -1,6 +1,6 @@
 "use client";
 
-import { IProduct } from "@/Interfaces/IProducts";
+import { IProduct } from "@/interfaces/IProducts";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Image from "next/image";
