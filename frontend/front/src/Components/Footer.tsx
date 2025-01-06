@@ -3,7 +3,7 @@ import { Facebook,Instagram,Twitter } from "lucide-react"
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
 import { useState } from "react"
-import { newsLetterForm } from "@/helpers/newsLetter.helper"
+import { newsLetterForm } from "@/Helpers/newsLetter.helper"
 import Swal from "sweetalert2"
 
 export function Footer() {
@@ -46,7 +46,7 @@ export function Footer() {
             <h3 className="text-lg font-semibold text-[#ef233c]">Nuestra Tienda</h3>
             <ul className="space-y-2">
               <li><a href="/SobreNosotros" className="hover:text-[#ef233c] transition-colors">Sobre Nosotros</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Nuestras Tiendas</a></li>
+              <li><a href="/tienda" className="hover:text-[#ef233c] transition-colors">Nuestra Tienda</a></li>
               <li><a href="#" className="hover:text-[#ef233c] transition-colors">Términos y Condiciones</a></li>
               <li><a href="#" className="hover:text-[#ef233c] transition-colors">Política de Privacidad</a></li>
             </ul>
