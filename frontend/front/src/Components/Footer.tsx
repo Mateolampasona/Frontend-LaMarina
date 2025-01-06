@@ -43,51 +43,131 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#ef233c]">Nuestra Tienda</h3>
+            <h3 className="text-lg font-semibold text-[#ef233c]">
+              Nuestra Tienda
+            </h3>
             <ul className="space-y-2">
-              <li><a href="/SobreNosotros" className="hover:text-[#ef233c] transition-colors">Sobre Nosotros</a></li>
-              <li><a href="/tienda" className="hover:text-[#ef233c] transition-colors">Nuestra Tienda</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Términos y Condiciones</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Política de Privacidad</a></li>
+              <li>
+                <a
+                  href="/SobreNosotros"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
+                  Sobre Nosotros
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/tienda"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
+                  Nuestra Tienda
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Términos y Condiciones
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Política de Privacidad
+                </a>
+              </li>
             </ul>
           </div>
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#ef233c]">Atención al Cliente</h3>
+            <h3 className="text-lg font-semibold text-[#ef233c]">
+              Atención al Cliente
+            </h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Contacto</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Devoluciones</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Mapa del Sitio</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Preguntas Frecuentes</a></li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Contacto
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://maps.app.goo.gl/tLYbA5hikWgXyDBx5"
+                  className="hover:text-[#ef233c] transition-colors"
+                  target="_blank"
+                >
+                  Mapa del Sitio
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Preguntas Frecuentes
+                </a>
+              </li>
             </ul>
           </div>
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#ef233c]">Mis Pedidos</h3>
+            <h3 className="text-lg font-semibold text-[#ef233c]">
+              Mis Pedidos
+            </h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Estado del Pedido</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Seguimiento de Envío</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Historial de Compras</a></li>
-              <li><a href="#" className="hover:text-[#ef233c] transition-colors">Lista de Deseos</a></li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Estado del Pedido
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Seguimiento de Envío
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Historial de Compras
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                  Lista de Deseos
+                </a>
+              </li>
             </ul>
           </div>
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-[#ef233c]">Suscríbete</h3>
-            <p className="text-sm">Recibe nuestras últimas ofertas y novedades.</p>
+            <p className="text-sm">
+              Recibe nuestras últimas ofertas y novedades.
+            </p>
             <div className="flex space-x-2">
               <form onSubmit={handlesubmit}>
-              <Input type="email" placeholder="Tu email" className="bg-white" value={email} onChange={(e) =>setEmail(e.target.value)}/>
-              <Button className="bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors" type="submit">
-                Suscribir
-              </Button>
+                <Input
+                  type="email"
+                  placeholder="Tu email"
+                  className="bg-white mb-2"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button
+                  className="bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors"
+                  type="submit"
+                >
+                  Suscribir
+                </Button>
               </form>
             </div>
             <div className="flex space-x-4 mt-4">
-              <a href="#" className="text-gray-500 hover:text-[#ef233c] transition-colors">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-[#ef233c] transition-colors"
+              >
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-[#ef233c] transition-colors">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-[#ef233c] transition-colors"
+              >
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-gray-500 hover:text-[#ef233c] transition-colors">
+              <a
+                href="#"
+                className="text-gray-500 hover:text-[#ef233c] transition-colors"
+              >
                 <Twitter size={20} />
               </a>
             </div>
@@ -98,6 +178,6 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
