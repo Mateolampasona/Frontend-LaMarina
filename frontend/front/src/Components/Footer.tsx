@@ -3,7 +3,7 @@ import { Facebook,Instagram,Twitter } from "lucide-react"
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
 import { useState } from "react"
-import { newsLetterForm } from "@/Helpers/newsLetter.helper"
+import { newsLetterForm } from "@/helpers/newsLetter.helper"
 import Swal from "sweetalert2"
 
 export function Footer() {
