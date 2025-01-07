@@ -1,48 +1,56 @@
 "use client";
+
 import { IProduct } from "@/interfaces/IProducts";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart } from 'lucide-react';
 import Cookies from "js-cookie";
 import swal from "sweetalert2";
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   products: IProduct[];
 }
 
-const handleAddToCart = () => {
-  const accestoken = Cookies.get("accesToken");
-
-  if (!accestoken) {
-    swal
-      .fire({
-        title: "¡Inicia sesión!",
-        text: "Para añadir productos al carrito debes iniciar sesión.",
-        icon: "info",
-        confirmButtonText: "Iniciar sesión",
-        showCancelButton: true,
-        cancelButtonText: "Cancelar",
-        cancelButtonColor: "#d33",
-        confirmButtonColor: "#ef233c",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = "/login";
-        }
-      });
-  }
-};
-
 export function ProductCard({ products }: ProductCardProps) {
-  // const [isLiked, setIsLiked] = useState(false);
+  const router = useRouter();
+
+  const handleAddToCart = () => {
+    const accestoken = Cookies.get("accesToken");
+
+    if (!accestoken) {
+      swal
+        .fire({
+          title: "¡Inicia sesión!",
+          text: "Para añadir productos al carrito debes iniciar sesión.",
+          icon: "info",
+          confirmButtonText: "Iniciar sesión",
+          showCancelButton: true,
+          cancelButtonText: "Cancelar",
+          cancelButtonColor: "#d33",
+          confirmButtonColor: "#ef233c",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/login";
+          }
+        });
+    }
+  };
+
+  const handleCardClick = (productId: string) => {
+    router.push(`/product/${productId}`);
+  };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
       {products.map((product) => (
         <Card
           key={product.id}
-          className="w-full max-w-sm group bg-gray-50 border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden min-h-[350px] flex flex-col"
+          className="w-full max-w-sm group bg-gray-50 border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden min-h-[350px] flex flex-col cursor-pointer"
+          onClick={() => handleCardClick(product.id.toString()
+          )}
         >
           <div className="relative aspect-square overflow-hidden">
             <Image
@@ -58,6 +66,10 @@ export function ProductCard({ products }: ProductCardProps) {
                 size="icon"
                 className="bg-white/80 hover:bg-[#ef233c] hover:text-white transition-colors duration-200"
                 aria-label="Añadir al carrito"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart();
+                }}
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
@@ -103,7 +115,10 @@ export function ProductCard({ products }: ProductCardProps) {
           <CardFooter className="p-4 pt-0 mt-auto">
             <Button
               className="w-full bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors duration-200 group relative overflow-hidden"
-              onClick={handleAddToCart}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart();
+              }}
             >
               <span className="relative z-10">Añadir al carrito</span>
               <span className="absolute inset-0 bg-[#d90429] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
@@ -114,3 +129,4 @@ export function ProductCard({ products }: ProductCardProps) {
     </div>
   );
 }
+
