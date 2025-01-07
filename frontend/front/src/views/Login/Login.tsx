@@ -112,7 +112,7 @@ export default function Login() {
         },
         buttonsStyling: false,
       }).then(() => {
-        window.location.href = `${FRONTURL}}`;
+        window.location.href = `${FRONTURL}`;
       });
     } catch (error: unknown) {
       setErrors({ email: "Email o contraseña incorrectos.", password: "" });
