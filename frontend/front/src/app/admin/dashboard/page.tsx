@@ -44,9 +44,11 @@ export default function DashboardPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#ef233c]">
-          Dashboard Overview
+          Resumen del Dashboard
         </h1>
-        <p className="text-sm text-gray-500">Last updated: 5 minutes ago</p>
+        <p className="text-sm text-gray-500">
+          Última actualización: hace 5 minutos
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -58,9 +60,9 @@ export default function DashboardPage() {
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Recent Activity</h2>
+            <h2 className="text-lg font-semibold">Actividad Reciente</h2>
             <button className="flex items-center text-sm text-[#ef233c] hover:underline">
-              View All <ArrowRight className="ml-1 h-4 w-4" />
+              Ver Todo <ArrowRight className="ml-1 h-4 w-4" />
             </button>
           </div>
           <div className="space-y-4">
@@ -98,7 +100,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="mb-4 text-lg font-semibold">Quick Actions</h2>
+          <h2 className="mb-4 text-lg font-semibold">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
               { label: "Add User", icon: Users },

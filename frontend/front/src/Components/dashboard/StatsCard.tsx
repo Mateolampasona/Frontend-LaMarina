@@ -32,7 +32,7 @@ export function StatsCard({
       </div>
       <div className="bg-[#edede9] px-6 py-2">
         <button className="text-sm text-[#ef233c] hover:underline">
-          View Details →
+         ver detalles →
         </button>
       </div>
     </Card>

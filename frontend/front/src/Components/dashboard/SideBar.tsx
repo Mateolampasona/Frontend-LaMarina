@@ -42,7 +42,7 @@ export function Sidebar({
         </button>
       </div>
 
-      {/* Profile Section */}
+      
       <div className="mx-4 my-3 flex items-center space-x-4 border-b border-gray-200 pb-2">
         <Avatar className="h-12 w-12">
           <Image
@@ -54,7 +54,7 @@ export function Sidebar({
           />
         </Avatar>
         <div>
-          <p className="font-mono">John Doe</p>
+          <p className="font-mono">admin</p>
           <p className="text-sm text-gray-500">Admin</p>
         </div>
       </div>
