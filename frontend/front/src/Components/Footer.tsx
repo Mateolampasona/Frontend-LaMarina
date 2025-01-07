@@ -49,7 +49,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="/SobreNosotros"
+                  href="/sobreNosotross"
                   className="hover:text-[#ef233c] transition-colors"
                 >
                   Sobre Nosotros
@@ -180,4 +180,3 @@ export function Footer() {
     </footer>
   );
 }
-

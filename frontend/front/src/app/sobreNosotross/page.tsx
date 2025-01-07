@@ -66,11 +66,9 @@ export default function SobreNosotrosMejorado() {
             Nuestra Historia
           </h2>
           <p className="mt-4 text-md text-gray-600 max-w-3xl mx-auto">
-            Desde <span className="text-[#ef233c] font-mono font-semibold text-lg">1960</span>{" "}
-            , en{" "}
-            <span className="text-[#ef233c] font-mono text-lg font-semibold">La Marina</span>{" "}
-            nos dedicamos a hacer brillar hogares y negocios con nuestros
-            productos de limpieza y artículos de bazar de primera calidad.
+            Desde 1960, en <span className="text-[#ef233c]">La Marina</span> nos
+            dedicamos a hacer brillar hogares y negocios con nuestros productos
+            de limpieza y artículos de bazar de primera calidad.
           </p>
         </motion.div>
 
