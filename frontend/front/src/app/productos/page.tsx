@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllProducts } from "@/Helpers/products.helpers";
+import { getAllProducts } from "@/helpers/products.helpers";
 import ProductGrid from "@/Components/productsUI/Product-grid";
 import Sidebar from "@/Components/productsUI/Sidebar";
 import SearchSort from "@/Components/productsUI/Search-sort";
