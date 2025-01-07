@@ -125,7 +125,7 @@ export default function SobreNosotrosMejorado() {
             exactamente lo que buscas.
           </p>
           <motion.a
-            href="/products"
+            href="/productos"
             className="mt-8 inline-flex items-center font-mono justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#ef233c] hover:bg-[#d90429] transition-all duration-300 transform hover:scale-105"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
