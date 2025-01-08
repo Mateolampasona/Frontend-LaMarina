@@ -1,4 +1,4 @@
-import { IDeleteProduct, IOrderDetailAddProduct } from "@/interfaces/IOrder";
+import {  IOrderDetailAddProduct } from "@/interfaces/IOrder";
 
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 

@@ -10,6 +10,12 @@ interface UserContextProps {
   userId: string | null;
   userName: string | null;
 }
+interface DecodedToken {
+  role?: string;
+  sub?: string;
+  username?: string;
+  email?:string
+}
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
@@ -23,7 +29,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const parsedToken = JSON.parse(token || "null");
     if (parsedToken) {
       try {
-        const decodedToken: any = jwt.decode(parsedToken);
+        const decodedToken = jwt.decode(parsedToken) as DecodedToken | null;
         console.log("Decoded token:", decodedToken);
         const role = decodedToken?.role;
         console.log("Roles:", role);
@@ -40,7 +46,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (username) {
           setUsername(username);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error decoding token:", error);
       }
     }

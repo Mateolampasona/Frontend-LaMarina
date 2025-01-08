@@ -26,7 +26,6 @@ import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
 import { getOrderByUserId } from "@/helpers/orders.helper";
 import { addProductToOrder, deleteOrderDetail } from "@/helpers/orderDetail.helper";
-import { IDeleteProduct } from "@/interfaces/IOrder";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 10;
@@ -160,7 +159,7 @@ export default function ShoppingCart() {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const deleteProduct = async (id: IDeleteProduct) => {
+  const deleteProduct = async (id: string) => {
     try {
       const token = Cookies.get("accessToken") || "null";
       if (!token) {
@@ -172,8 +171,7 @@ export default function ShoppingCart() {
         throw new Error("Invalid token format");
       }
       console.log(typeof id);
-      
-  
+
       await deleteOrderDetail(parsedToken, id);
       console.log("ID del producto a eliminar:", id);
       
