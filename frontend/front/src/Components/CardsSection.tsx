@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import  ProductCard  from "@/Components/Card";
+import { ProductCard } from "@/Components/Card";
 import { getAllProducts } from "@/helpers/products.helpers";
 import { IProduct } from "@/interfaces/IProducts";
 

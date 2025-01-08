@@ -22,125 +22,94 @@ import { Toast } from "@/Components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { IProduct } from "@/interfaces/IProducts";
 import Image from "next/image";
+import { useUserContext } from "@/Context/userContext";
+import Cookies from "js-cookie";
+import { getOrderByUserId } from "@/helpers/orders.helper";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 10;
 
+interface IOrderDetail {
+  id: string;
+  quantity: number;
+  product: IProduct;
+}
+
+interface ICartItems {
+  totalOrder: number;
+  orderDetails: IOrderDetail[];
+}
+
+interface ProductWithQuantity {
+  product: IProduct;
+  quantity: number;
+}
+
 export default function ShoppingCart() {
-  const [products, setProducts] = useState<IProduct[]>([
-    {
-      id: 1,
-      name: "Detergente Líquido",
-      description:
-        "Detergente líquido para lavar platos y utensilios de cocina.",
-      price: 150,
-      discount: 10,
-      originalPrice: 165,
-      imageUrl:
-        "https://i.pinimg.com/736x/00/46/32/004632cced90e09a29f0f0a4345d42b3.jpg",
-      stock: 200,
-      quantitySell: 50,
-      isActive: true,
-      createdAt: "2024-12-01T08:00:00Z",
-      updatedAt: "2024-12-10T10:00:00Z",
-      category_id: {
-        categoryId: 1,
-        name: "Limpieza",
-        description: "Productos para la limpieza del hogar y oficina.",
-      },
-    },
-    {
-      id: 2,
-      name: "Limpiador Multiusos",
-      description: "Limpiador multiusos ideal para superficies duras.",
-      price: 250,
-      discount: 0,
-      originalPrice: null,
-      imageUrl:
-        "https://i.pinimg.com/736x/00/46/32/004632cced90e09a29f0f0a4345d42b3.jpg",
-      stock: 150,
-      quantitySell: 80,
-      isActive: true,
-      createdAt: "2024-11-15T09:30:00Z",
-      updatedAt: "2024-11-20T11:00:00Z",
-      category_id: {
-        categoryId: 1,
-        name: "Limpieza",
-        description: "Productos para la limpieza del hogar y oficina.",
-      },
-    },
-    {
-      id: 3,
-      name: "Desinfectante en Aerosol",
-      description:
-        "Desinfectante en aerosol para eliminar gérmenes y bacterias.",
-      price: 120,
-      discount: null,
-      originalPrice: null,
-      imageUrl:
-        "https://i.pinimg.com/736x/00/46/32/004632cced90e09a29f0f0a4345d42b3.jpg",
-      stock: 500,
-      quantitySell: 200,
-      isActive: true,
-      createdAt: "2024-10-30T10:00:00Z",
-      updatedAt: "2024-11-01T12:00:00Z",
-      category_id: {
-        categoryId: 1,
-        name: "Limpieza",
-        description: "Productos para la limpieza del hogar y oficina.",
-      },
-    },
-    {
-      id: 4,
-      name: "Limpiador de Vidrios",
-      description:
-        "Limpiador especializado en cristales y superficies vidriadas.",
-      price: 180,
-      discount: 5,
-      originalPrice: 190,
-      imageUrl:
-        "https://i.pinimg.com/736x/00/46/32/004632cced90e09a29f0f0a4345d42b3.jpg",
-      stock: 300,
-      quantitySell: 150,
-      isActive: true,
-      createdAt: "2024-11-05T08:30:00Z",
-      updatedAt: "2024-11-10T09:00:00Z",
-      category_id: {
-        categoryId: 1,
-        name: "Limpieza",
-        description: "Productos para la limpieza del hogar y oficina.",
-      },
-    },
-  ]);
+  const { userId } = useUserContext();
+  const token = Cookies.get("accessToken") || "null";
 
   const [isGift, setIsGift] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [cart, setCartItems] = useState<ICartItems | null>(null);
+  const [productsWithQuantities, setProductsWithQuantities] = useState<ProductWithQuantity[]>([]);
+  console.log("productsWithQuantities", productsWithQuantities);
 
-  const updateQuantity = (id: number, change: number) => {
-    setProducts(
-      products
-        .map((product) =>
-          product.id === id
-            ? {
-                ...product,
-                quantity: Math.max(0, product.quantitySell + change),
-              }
-            : product
-        )
-        .filter((product) => product.quantitySell > 0)
-    );
-  };
+  useEffect(() => {
+    // Hacemos el fetch al backend para obtener la orden del usuario
+    const fetchCartItems = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
 
-  const subtotal = products.reduce((sum, product) => {
-    const discountedPrice = product.discount
-      ? product.price * (1 - product.discount / 100)
-      : product.price;
-    return sum + discountedPrice * product.quantitySell;
-  }, 0);
+      try {
+        console.log("Fetching cart items with token:", parsedToken);
+        const data = await getOrderByUserId(parsedToken);
+        setCartItems(data);
+        console.log("data", data);
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    };
 
+    fetchCartItems();
+  }, [userId, token]);
+
+  // Actualizamos los productos del carrito con sus cantidades
+  useEffect(() => {
+    if (cart && cart.orderDetails) {
+      const newProductsWithQuantities = cart.orderDetails.map(detail => ({
+        product: detail.product,
+        quantity: detail.quantity,
+      }));
+      setProductsWithQuantities(newProductsWithQuantities);
+    }
+  }, [cart]);
+
+  const subtotal = cart?.totalOrder || 0;
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const total = subtotal + shipping;
+
+  const updateQuantity = (id: string, change: number) => {
+    setProductsWithQuantities(
+      productsWithQuantities
+        .map((item) =>
+          item.product.id.toString() === id
+            ? {
+                ...item,
+                quantity: Math.max(0, item.quantity + change),
+              }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
 
   const applyPromoCode = () => {
     setIsLoading(true);
@@ -180,15 +149,15 @@ export default function ShoppingCart() {
             Tu Carrito
           </h2>
           <Badge variant="secondary" className="text-[#ef233c]">
-            {products.length} {products.length === 1 ? "artículo" : "artículos"}
+            {productsWithQuantities.length} {productsWithQuantities.length === 1 ? "artículo" : "artículos"}
           </Badge>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <ScrollArea className="md:col-span-2 h-[calc(100vh-20rem)] pr-4">
             <AnimatePresence>
-              {products.map((product) => (
+              {productsWithQuantities.map((item) => (
                 <motion.div
-                  key={product.id}
+                  key={item.product.id}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
@@ -196,21 +165,21 @@ export default function ShoppingCart() {
                   className="flex items-center space-x-4 mb-6"
                 >
                   <Image
-                    src={product.imageUrl}
-                    alt={product.name}
+                    src={item.product.imageUrl}
+                    alt={item.product.name}
                     width={96}
                     height={96}
                     className="object-cover rounded-md"
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold">{product.name}</h3>
+                    <h3 className="font-semibold">{item.product.name}</h3>
                     <div className="flex items-center">
                       <p className="text-gray-600">
-                        ${product.price.toFixed(2)}
+                        ${item.product.price}
                       </p>
-                      {product.discount && (
+                      {item.product.discount && (
                         <Badge variant="destructive" className="ml-2">
-                          -{product.discount}%
+                          -{item.product.discount}%
                         </Badge>
                       )}
                     </div>
@@ -218,17 +187,17 @@ export default function ShoppingCart() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(product.id, -1)}
+                        onClick={() => updateQuantity(item.product.id.toString(), -1)}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
                       <span className="mx-2 w-8 text-center">
-                        {product.quantitySell}
+                        {item.quantity}
                       </span>
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => updateQuantity(product.id, 1)}
+                        onClick={() => updateQuantity(item.product.id.toString(), 1)}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -237,7 +206,7 @@ export default function ShoppingCart() {
                         size="icon"
                         className="ml-4"
                         onClick={() =>
-                          updateQuantity(product.id, -product.quantitySell)
+                          updateQuantity(item.product.id.toString(), -item.quantity)
                         }
                       >
                         <X className="h-4 w-4" />
@@ -245,12 +214,7 @@ export default function ShoppingCart() {
                     </div>
                   </div>
                   <p className="font-semibold">
-                    $
-                    {(
-                      (product.discount
-                        ? product.price * (1 - product.discount / 100)
-                        : product.price) * product.quantitySell
-                    ).toFixed(2)}
+                    ${item.product.price.toFixed(2)}
                   </p>
                 </motion.div>
               ))}
@@ -259,18 +223,13 @@ export default function ShoppingCart() {
           <div className="md:col-span-1 bg-gray-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4">Resumen del pedido</h3>
             <div className="space-y-2">
-              {products.map((product) => (
-                <div key={product.id} className="flex justify-between text-sm">
+              {productsWithQuantities.map((item) => (
+                <div key={item.product.id} className="flex justify-between text-sm">
                   <span>
-                    {product.name} (x{product.quantitySell})
+                    {item.product.name} (x{item.quantity})
                   </span>
                   <span>
-                    $
-                    {(
-                      (product.discount
-                        ? product.price * (1 - product.discount / 100)
-                        : product.price) * product.quantitySell
-                    ).toFixed(2)}
+                    ${item.product.price}
                   </span>
                 </div>
               ))}
