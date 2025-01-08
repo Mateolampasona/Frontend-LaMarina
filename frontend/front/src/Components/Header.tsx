@@ -81,6 +81,16 @@ export default function Navbar() {
               <span className="sr-only">Ayuda</span>
             </Button>
           </Link>
+          <Link href={"/user/dashboard"}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:inline-flex"
+            >
+              <User className="h-5 w-5" />
+              <span className="sr-only">Ayuda</span>
+            </Button>
+          </Link>
           {isAuthenticated ? (
             <Button
               variant="default"
