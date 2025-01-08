@@ -25,6 +25,8 @@ import Image from "next/image";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
 import { getOrderByUserId } from "@/helpers/orders.helper";
+import { addProductToOrder, deleteOrderDetail } from "@/helpers/orderDetail.helper";
+import { IDeleteProduct } from "@/interfaces/IOrder";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 10;
@@ -41,6 +43,7 @@ interface ICartItems {
 }
 
 interface ProductWithQuantity {
+  orderDetailId: string;
   product: IProduct;
   quantity: number;
 }
@@ -48,13 +51,14 @@ interface ProductWithQuantity {
 export default function ShoppingCart() {
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken") || "null";
-
   const [isGift, setIsGift] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [cart, setCartItems] = useState<ICartItems | null>(null);
   const [productsWithQuantities, setProductsWithQuantities] = useState<ProductWithQuantity[]>([]);
   console.log("productsWithQuantities", productsWithQuantities);
+  
+  
 
   useEffect(() => {
     // Hacemos el fetch al backend para obtener la orden del usuario
@@ -69,10 +73,8 @@ export default function ShoppingCart() {
       }
 
       try {
-        console.log("Fetching cart items with token:", parsedToken);
         const data = await getOrderByUserId(parsedToken);
         setCartItems(data);
-        console.log("data", data);
       } catch (error) {
         console.error("Error fetching cart items:", error);
       }
@@ -85,6 +87,7 @@ export default function ShoppingCart() {
   useEffect(() => {
     if (cart && cart.orderDetails) {
       const newProductsWithQuantities = cart.orderDetails.map(detail => ({
+        orderDetailId: detail.id,
         product: detail.product,
         quantity: detail.quantity,
       }));
@@ -92,23 +95,45 @@ export default function ShoppingCart() {
     }
   }, [cart]);
 
+  // Calculamos y asignamos los valores de subtotal, envío y total
   const subtotal = cart?.totalOrder || 0;
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const total = subtotal + shipping;
 
-  const updateQuantity = (id: string, change: number) => {
-    setProductsWithQuantities(
-      productsWithQuantities
-        .map((item) =>
-          item.product.id.toString() === id
-            ? {
-                ...item,
-                quantity: Math.max(0, item.quantity + change),
-              }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+
+  const updateQuantity = async (id: string, change: number) => {
+    const updatedProducts = productsWithQuantities.map((item) =>
+      item.product.id.toString() === id
+        ? {
+            ...item,
+            quantity: Math.max(0, item.quantity + change),
+          }
+        : item
+    )
+  
+    setProductsWithQuantities(updatedProducts);
+  
+    const productToUpdate = updatedProducts.find(item => item.product.id.toString() === id);
+    if (productToUpdate) {
+      try {
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+        const parsedToken = JSON.parse(token);
+        if (typeof parsedToken !== "string") {
+          throw new Error("Invalid token format");
+        }
+        await addProductToOrder(parsedToken, {
+          productId: productToUpdate.product.id,
+          quantity: productToUpdate.quantity,
+        });
+        const updatedCart = await getOrderByUserId(parsedToken);
+      setCartItems(updatedCart);
+      } catch (error) {
+        console.error("Error updating product quantity:", error);
+      }
+    }
   };
 
   const applyPromoCode = () => {
@@ -134,6 +159,32 @@ export default function ShoppingCart() {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
+
+  const deleteProduct = async (id: IDeleteProduct) => {
+    try {
+      const token = Cookies.get("accessToken") || "null";
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      console.log(typeof id);
+      
+  
+      await deleteOrderDetail(parsedToken, id);
+      console.log("ID del producto a eliminar:", id);
+      
+  
+      // Fetch the updated cart from the backend
+      const updatedCart = await getOrderByUserId(parsedToken);
+      setCartItems(updatedCart);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#edede9] flex items-center justify-center p-4">
@@ -205,16 +256,14 @@ export default function ShoppingCart() {
                         variant="ghost"
                         size="icon"
                         className="ml-4"
-                        onClick={() =>
-                          updateQuantity(item.product.id.toString(), -item.quantity)
-                        }
+                        onClick={() => deleteProduct(item.orderDetailId)}
                       >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                   <p className="font-semibold">
-                    ${item.product.price.toFixed(2)}
+                    ${(item.product.price * item.quantity).toFixed(2)}
                   </p>
                 </motion.div>
               ))}
