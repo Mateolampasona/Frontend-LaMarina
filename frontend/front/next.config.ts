@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       "example.com",
       "localhost",
       "images.unsplash.com",
+      "i.pinimg.com"
     ], // Add the domain here
   },
 };
