@@ -12,6 +12,11 @@ import {
 import Link from "next/link";
 import { Avatar } from "@/Components/ui/avatar";
 import Image from "next/image";
+import { useUserContext } from "@/Context/userContext";
+import Cookies from "js-cookie";
+import {  useEffect, useState } from "react";
+import { getUserById } from "@/helpers/users.helpers";
+import { IUser } from "@/interfaces/IUser";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "#" },
@@ -29,11 +34,48 @@ export function Sidebar({
   isOpen: boolean;
   onClose: () => void;
 }) {
+
+  const token = Cookies.get("accessToken") || "null";
+  const {userId} = useUserContext();
+
+  const [user, setUser] = useState<IUser>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      let parsedToken;
+      try {
+        parsedToken = JSON.parse(token);
+      } catch (error) {
+        console.error("Error parsing token:", error);
+        return;
+      }
+      if (typeof parsedToken !== "string") {
+        console.error("Invalid token format");
+        return;
+      }
+      try {
+        const user = await getUserById(parsedToken, userId);
+        setUser(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+  
+    if (userId && token) {
+      fetchUser();
+    }
+  }, [userId, token]);
+
+  console.log("user", user);
+  
   return (
     <aside
-      className={`fixed left-0 top-0 z-40 h-screen w-64 transform bg-[#edede9] transition-transform duration-300 ease-in-out ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={`fixed left-0 top-0 z-40 h-screen w-64 transform bg-[#edede9] transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
     >
       <div className="flex h-16 items-center justify-between px-4">
         <h1 className="text-xl font-semibold text-[#ef233c]">Admin Panel</h1>
@@ -42,7 +84,7 @@ export function Sidebar({
         </button>
       </div>
 
-      
+
       <div className="mx-4 my-3 flex items-center space-x-4 border-b border-gray-200 pb-2">
         <Avatar className="h-12 w-12">
           <Image
@@ -54,8 +96,8 @@ export function Sidebar({
           />
         </Avatar>
         <div>
-          <p className="font-mono">admin</p>
-          <p className="text-sm text-gray-500">Admin</p>
+          <p className="font-mono">Admin</p>
+          <p className="text-sm text-gray-500">{user?.name}</p>
         </div>
       </div>
 
