@@ -10,6 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import Image from "next/image";
+import { getUserById } from "@/helpers/users.helpers";
+import { useEffect, useState } from "react";
+import { IUser } from "@/interfaces/IUser";
+import Cookies from "js-cookie";
+import { useUserContext } from "@/Context/userContext";
 
 export function Header({
   onMenuClick,
@@ -18,6 +23,42 @@ export function Header({
   onMenuClick: () => void;
   isSidebarOpen: boolean;
 }) {
+  const token = Cookies.get("accessToken") || "null";
+  const {userId} = useUserContext();
+
+  const [user, setUser] = useState<IUser>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      let parsedToken;
+      try {
+        parsedToken = JSON.parse(token);
+      } catch (error) {
+        console.error("Error parsing token:", error);
+        return;
+      }
+      if (typeof parsedToken !== "string") {
+        console.error("Invalid token format");
+        return;
+      }
+      try {
+        const user = await getUserById(parsedToken, userId);
+        setUser(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+  
+    if (userId && token) {
+      fetchUser();
+    }
+  }, [userId, token]);
+
+  console.log("user", user);
   return (
     <header className="flex h-16 items-center justify-between bg-[#edede9] px-4 shadow-sm">
       <div className="flex items-center">
@@ -50,7 +91,7 @@ export function Header({
           <DropdownMenuTrigger>
             <Avatar className="h-8 w-8">
               <Image
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                src={"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
                 alt="Profile"
                 width={300}
                 height={300}

@@ -16,3 +16,14 @@ export interface ICreateUser {
 export interface IBanUser {
   banreason: string;
 }
+
+
+export interface IUser {
+  authProvider:string;
+  createdAt:Date;
+  email: string;
+  idBanned: boolean;
+  name: string;
+  role: string;
+  userId: number;
+}

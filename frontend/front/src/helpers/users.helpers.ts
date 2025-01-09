@@ -20,13 +20,13 @@ export const getAllUsers = async (token: string) => {
   }
 };
 
-export const getUserById = async (token: string, id: string) => {
+export const getUserById = async (parsedToken: string , userId: string) => {
   try {
-    const response = await fetch(`${APIURL}/users/${id}`, {
+    const response = await fetch(`${APIURL}/users/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${parsedToken}`,
       },
     });
     console.log(response);
@@ -129,3 +129,20 @@ export const unbanUser = async (token: string, id: number) => {
     throw error;
   }
 };
+
+export const getTotalUsers = async (token:string) => {
+  try{
+    const response = await fetch(`${APIURL}/users/total-users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const res = await response.json();
+    return res;
+  } catch (error){
+    console.log("Ocurrio un error en getTotalUsers", error);
+    throw error;
+  }
+}

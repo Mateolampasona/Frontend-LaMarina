@@ -7,13 +7,11 @@ import jwt from "jsonwebtoken";
 interface UserContextProps {
   role: string | null;
   setRole: React.Dispatch<React.SetStateAction<string | null>>;
-  userId: string | null;
-  userName: string | null;
+  userId: string;
 }
 interface DecodedToken {
   role?: string;
   sub?: string;
-  username?: string;
   email?:string
 }
 
@@ -21,8 +19,7 @@ const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);  
-  const [userName, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>('');  
   
   useEffect(() => {
     const token = Cookies.get("accessToken");
@@ -41,11 +38,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (userId) {
           setUserId(userId);
         }
-        const username = decodedToken?.username;
-        console.log("Username:", username);
-        if (username) {
-          setUsername(username);
-        }
       } catch (error: unknown) {
         console.error("Error decoding token:", error);
       }
@@ -53,7 +45,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ role, setRole, userId, userName }}>
+    <UserContext.Provider value={{ role, setRole, userId }}>
       {children}
     </UserContext.Provider>
   );
