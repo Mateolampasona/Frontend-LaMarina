@@ -1,7 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import { IProfileInfoProps } from "@/interfaces/IProfileInfoProps";
 import { User } from "lucide-react";
 
-export function ProfileInfo() {
+function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+export function ProfileInfo({name,email}:IProfileInfoProps) {
   return (
     <div className="flex items-center space-x-4">
       <Avatar className="h-20 w-20">
@@ -11,8 +16,8 @@ export function ProfileInfo() {
         </AvatarFallback>
       </Avatar>
       <div>
-        <h3 className="text-lg font-semibold text-[#2d2d2d]">Juan Pérez</h3>
-        <p className="text-sm text-gray-600">juan.perez@ejemplo.com</p>
+        <h3 className="text-lg font-semibold text-[#2d2d2d]">{capitalizeFirstLetter(name) || "Nombre"}</h3>
+        <p className="text-sm text-gray-600">{capitalizeFirstLetter(email) || "Client@mail.com"}</p>
       </div>
     </div>
   );

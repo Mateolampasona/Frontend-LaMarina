@@ -4,14 +4,12 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Camera } from "lucide-react";
+import { IEditProfileFormProps } from "@/interfaces/IEditProfileform";
 
-interface EditProfileFormProps {
-  onCancel: () => void;
-}
 
-export function EditProfileForm({ onCancel }: EditProfileFormProps) {
-  const [name, setName] = useState("Juan Pérez");
-  const [email, setEmail] = useState("juan.perez@ejemplo.com");
+export function EditProfileForm({name:initialName ,email: initialEmail, onCancel}: IEditProfileFormProps) {
+  const [name, setName] = useState(initialName);
+  const [email, setEmail] = useState(initialEmail);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
