@@ -30,9 +30,9 @@ import { usePathname } from "next/navigation";
 const navItems = [
   {
     name: "Productos",
-    href: "/productos",
+    href: "#",
     submenu: [
-      { name: "Nuevos Productos", href: "/productos/nuevos" },
+      { name: "Nuevos Productos", href: "/productos" },
       { name: "Ofertas", href: "/productos/ofertas" },
       { name: "Todos los Productos", href: "/productos/todos" },
     ],

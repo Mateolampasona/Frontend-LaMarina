@@ -37,4 +37,5 @@ export interface IProduct {
   createdAt: string;
   updatedAt: string;
   category_id: ICategory; // Actualizado aquí
+  rating?: number;
 }
