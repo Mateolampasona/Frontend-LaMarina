@@ -146,3 +146,20 @@ export const getTotalUsers = async (token:string) => {
     throw error;
   }
 }
+
+export const getLastUser = async (token:string) => {
+  try{
+    const response = await fetch(`${APIURL}/users/last-user`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const res = await response.json();
+    return res;
+  } catch(error){
+    console.log("Ocurrio un error en getLastUser", error);
+    throw error;
+  }
+}

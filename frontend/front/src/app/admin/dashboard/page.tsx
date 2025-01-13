@@ -11,7 +11,7 @@ import {
   FileText,
   Settings,
 } from "lucide-react";
-import { getTotalUsers, getUserById } from "@/helpers/users.helpers";
+import { getLastUser, getTotalUsers, getUserById } from "@/helpers/users.helpers";
 import { useEffect, useState } from "react";
 import { IUser } from "@/interfaces/IUser";
 import Cookies from "js-cookie";
@@ -21,45 +21,22 @@ import { getLastOrder, getTotalCarts } from "@/helpers/orders.helper";
 import { IOrder } from "@/interfaces/IOrder";
 
 export default function DashboardPage() {
+  const [user, setUser] = useState<IUser>();
+  const token = Cookies.get("accessToken") || "null";
+  const { userId } = useUserContext();
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [totalVentas, setTotalVentas] = useState<number>(0);
   const [totalCarts, setTotalCarts] = useState<number>(0);
-  const [lastCart, setLastCart] = useState<IOrder>();
   const [hoursAgoCart, setHoursAgoCart] = useState<number>(0);
   const [minutesAgoCart, setMinutesAgoCart] = useState<number>(0);
-  const [lastCompra, setLastCompra] = useState<IOrder>();
   const [minutesAgoCompra, setMinutesAgoCompra] = useState<number>(0);
   const [hoursAgoCompra, setHoursAgoCompra] = useState<number>(0);
-  const token = Cookies.get("accessToken") || "null";
-  const { userId } = useUserContext();
-  const [user, setUser] = useState<IUser>();
-
-  const stats = [
-    {
-      title: "Total de usuarios",
-      value: `${totalUsers}`,
-      icon: Users,
-      trend: "+12% from last month",
-    },
-    {
-      title: "Ventas",
-      value: `${totalVentas}`,
-      icon: DollarSign,
-      trend: "+8% from last month",
-    },
-    {
-      title: "Carritos",
-      value: `${totalCarts}`,
-      icon: ShoppingCart,
-      trend: "+5% from last month",
-    },
-    {
-      title: "Estadisticas",
-      value: "23%",
-      icon: TrendingUp,
-      trend: "+2% from last month",
-    },
-  ];
+  const [minutesAgoLastUser, setMinutesAgoLastUser] = useState<number>(0);
+  const [hoursAgoLastUser, setHoursAgoLastUser] = useState<number>(0);
+  const [lastCart, setLastCart] = useState<IOrder>();
+  const [lastCompra, setLastCompra] = useState<IOrder>();
+  const [lastUser, setLastUser] = useState<IUser>();
+  console.log("user", user);
 
   useEffect(() => {
     const fetchTotalsData = async () => {
@@ -89,6 +66,8 @@ export default function DashboardPage() {
         setLastCart(lastCart);
         const lastCompra = await getLastCompra(parsedToken);
         setLastCompra(lastCompra);
+        const lastUser = await getLastUser(parsedToken);
+        setLastUser(lastUser);
       } catch (error) {
         console.error("Error fetching total users:", error);
       }
@@ -143,11 +122,39 @@ export default function DashboardPage() {
       }
     };
 
+    
+
     calculateTimeDifferenceCompra();
     const interval = setInterval(calculateTimeDifferenceCompra, 60000); // Update every minute
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [lastCompra]);
+  
+
+  // Calcular tiempo desde el ultimo registro
+  useEffect(() => {
+    const calculateTimeDifferenceLastUser = () => {
+      if (lastUser) {
+        const now = new Date();
+        const lastUserDate = new Date(lastUser.createdAt);
+        const timeDifference = now.getTime() - lastUserDate.getTime();
+
+        if (timeDifference >= 0) {
+          setHoursAgoLastUser(Math.floor(timeDifference / (1000 * 60 * 60)));
+          setMinutesAgoLastUser(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)));
+        } else {
+          console.error("Order date is in the future");
+          setHoursAgoLastUser(0);
+          setMinutesAgoLastUser(0);
+        }
+      }
+    };
+
+    calculateTimeDifferenceLastUser();
+    const interval = setInterval(calculateTimeDifferenceLastUser, 60000); 
+
+    return () => clearInterval(interval); 
+  }, [lastUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -182,7 +189,7 @@ export default function DashboardPage() {
   const recentActivities = [
     {
       action: "Ultimo usuario registrado",
-      time: "2 hours ago",
+      time: `${hoursAgoLastUser} hours and ${minutesAgoLastUser} minutes ago`,
       icon: Users,
     },
     {
@@ -197,7 +204,34 @@ export default function DashboardPage() {
     },
   ];
 
-  console.log("user", user);
+  const stats = [
+    {
+      title: "Total de usuarios",
+      value: `${totalUsers}`,
+      icon: Users,
+      trend: "+12% from last month",
+    },
+    {
+      title: "Ventas",
+      value: `${totalVentas}`,
+      icon: DollarSign,
+      trend: "+8% from last month",
+    },
+    {
+      title: "Carritos",
+      value: `${totalCarts}`,
+      icon: ShoppingCart,
+      trend: "+5% from last month",
+    },
+    {
+      title: "Estadisticas",
+      value: "23%",
+      icon: TrendingUp,
+      trend: "+2% from last month",
+    },
+  ];
+
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
