@@ -32,9 +32,9 @@ const navItems = [
     name: "Productos",
     href: "#",
     submenu: [
-      { name: "Nuevos Productos", href: "/productos" },
-      { name: "Ofertas", href: "/productos/ofertas" },
-      { name: "Todos los Productos", href: "/productos/todos" },
+      
+      { name: "Ofertas", href: "/ofertas" },
+      { name: "Todos los Productos", href: "/productos" },
     ],
   },
   {
