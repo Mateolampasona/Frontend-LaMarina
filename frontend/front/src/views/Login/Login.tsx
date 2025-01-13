@@ -66,9 +66,15 @@ export default function Login() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const lowerCaseUserData = {
+      ...userData,
+      email: userData.email.toLowerCase(),
+      password: userData.password,
+
+    }
 
     // Validación del formulario
-    const errors = validateLoginForm(userData);
+    const errors = validateLoginForm(lowerCaseUserData);
     setErrors(errors);
 
     if (Object.values(errors).some((error) => error !== "")) {
@@ -88,7 +94,7 @@ export default function Login() {
     }
 
     try {
-      const response = await login(userData);
+      const response = await login(lowerCaseUserData);
       const { accessToken } = response;
 
       // Guardar token en cookies

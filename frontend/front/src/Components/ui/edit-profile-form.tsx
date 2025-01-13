@@ -5,6 +5,10 @@ import { Label } from "@/Components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Camera } from "lucide-react";
 import { IEditProfileFormProps } from "@/interfaces/IEditProfileform";
+import { useUserContext } from "@/Context/userContext";
+import Cookies from "js-cookie";
+import { modifyUser } from "@/helpers/users.helpers";
+import Swal from "sweetalert2";
 
 
 export function EditProfileForm({name:initialName ,email: initialEmail, onCancel}: IEditProfileFormProps) {
@@ -12,15 +16,43 @@ export function EditProfileForm({name:initialName ,email: initialEmail, onCancel
   const [email, setEmail] = useState(initialEmail);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const token = Cookies.get("accessToken") || "null";
+  const {userId} = useUserContext();
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí iría la lógica para actualizar el perfil en el backend
-    console.log(
-      "Perfil actualizado: Tus cambios han sido guardados exitosamente.",
-      { name, email, profilePicture }
-    );
-    onCancel();
+    if(!token){
+      console.log("No token found");
+      return
+    }
+    let parsedToken
+    try{
+      parsedToken = JSON.parse(token)
+    } catch(error){
+      console.log("Error parsing token",error)
+      return
+    }
+    if(typeof parsedToken !=="string"){
+      console.error('Invalid token format')
+      return
+    }
+    try {const modifyData = {name: name.toLocaleLowerCase(), email: email.toLocaleLowerCase()}
+    await modifyUser(parsedToken, Number(userId),modifyData)
+      Swal.fire({
+        title: "Perfil actualizado",
+        icon: "success",
+        confirmButtonText: "Ok",
+      }).then(() => {
+        onCancel();
+      })
+      onCancel();
+    
+      
+    } catch (error) {
+      console.error("Error al actualizar el perfil", error);
+    }
+    
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
