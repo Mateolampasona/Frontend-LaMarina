@@ -1,6 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+<<<<<<< Updated upstream
 import { ProductCard } from "@/Components/Card";
+=======
+import  {ProductCard}  from "@/Components/Card";
+>>>>>>> Stashed changes
 import { getAllProducts } from "@/helpers/products.helpers";
 import { IProduct } from "@/interfaces/IProducts";
 
