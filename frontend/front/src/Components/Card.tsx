@@ -4,10 +4,13 @@ import { IProduct } from "@/interfaces/IProducts";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Image from "next/image";
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from "lucide-react";
 import Cookies from "js-cookie";
 import swal from "sweetalert2";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import socket from "@/utils/socket";
+import { getAllProducts, getProductById } from "@/helpers/products.helpers";
 
 interface ProductCardProps {
   products: IProduct[];
@@ -15,6 +18,11 @@ interface ProductCardProps {
 
 export function ProductCard({ products }: ProductCardProps) {
   const router = useRouter();
+  const [productList, setProductList] = useState<IProduct[]>([]);
+
+  useEffect(() => {
+    setProductList(products);
+  }, [products]);
 
   const handleAddToCart = () => {
     const accestoken = Cookies.get("accesToken");
@@ -39,18 +47,34 @@ export function ProductCard({ products }: ProductCardProps) {
     }
   };
 
+  useEffect(() => {
+    socket.on("stockUpdate", async (data) => {
+      const updatedProduct = await getProductById(data);
+      setProductList((prevProducts) =>
+        prevProducts.map((product) =>
+          product.productId === updatedProduct.productId
+            ? updatedProduct
+            : product
+        )
+      );
+    });
+
+    return () => {
+      socket.off("stockUpdate");
+    };
+  }, []);
+
   const handleCardClick = (productId: string) => {
     router.push(`/product/${productId}`);
   };
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-      {products.map((product) => (
+      {productList.map((product) => (
         <Card
-          key={product.id}
+          key={product.productId}
           className="w-full max-w-sm group bg-gray-50 border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden min-h-[350px] flex flex-col cursor-pointer"
-          onClick={() => handleCardClick(product.id.toString()
-          )}
+          onClick={() => handleCardClick(product.productId.toString())}
         >
           <div className="relative aspect-square overflow-hidden">
             <Image
@@ -129,4 +153,3 @@ export function ProductCard({ products }: ProductCardProps) {
     </div>
   );
 }
-
