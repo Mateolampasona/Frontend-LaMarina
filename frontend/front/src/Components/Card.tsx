@@ -39,8 +39,12 @@ export function ProductCard({ products }: ProductCardProps) {
     }
   };
 
-  const handleCardClick = (productId: string) => {
-    router.push(`/product/${productId}`);
+  const handleCardClick = (productId: string | undefined) => {
+    if (productId) {
+      router.push(`/product/${productId}`);
+    } else {
+      console.error("Product ID is invalid:", productId);
+    }
   };
 
   return (
@@ -49,8 +53,13 @@ export function ProductCard({ products }: ProductCardProps) {
         <Card
           key={product.id}
           className="w-full max-w-sm group bg-gray-50 border-none shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl overflow-hidden min-h-[350px] flex flex-col cursor-pointer"
-          onClick={() => handleCardClick(product.id.toString()
-          )}
+          onClick={() => {
+            if (product.id) {
+              handleCardClick(product.id.toString());
+            } else {
+              console.error("Product ID is invalid:", product.id);
+            }
+          }}
         >
           <div className="relative aspect-square overflow-hidden">
             <Image
