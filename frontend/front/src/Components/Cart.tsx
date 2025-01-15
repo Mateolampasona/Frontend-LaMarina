@@ -106,17 +106,17 @@ export default function ShoppingCart() {
 
   // Actualizamos los productos del carrito al agregar un producto
   useEffect(() => {
-    socket.on("addProductToCart", async (data) => {
+    socket.on("cartUpdate", async (data) => {
       setCartItems(data);
     });
     return () => {
-      socket.off("addProductToCart");
+      socket.off("cartUpdate");
     };
   }, []);
 
   // Actualizamos los productos del carrito al eliminar un producto
   useEffect(() => {
-    socket.on("deleteProductFromCart", async (data) => {
+    socket.on("cartUpdate", async (data) => {
       console.log("DeletedData", data);
       if (!token) {
         console.error("No token found");
@@ -134,7 +134,7 @@ export default function ShoppingCart() {
       }
     });
     return () => {
-      socket.off("deleteProductFromCart");
+      socket.off("cartUpdate");
     };
   }, [token]);
 

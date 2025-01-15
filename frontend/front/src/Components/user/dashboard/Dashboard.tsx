@@ -165,15 +165,10 @@ export default function UserDashboard() {
       }
     };
 
-    socket.on("addFavoriteProduct", handleUserUpdate);
-    socket.on("deleteFavoriteProduct", handleUserUpdate);
-    socket.on("updateUser", handleUserUpdate);
+    socket.on("updateDashboard", handleUserUpdate);
 
     return () => {
-      socket.off("addFavoriteProduct", handleUserUpdate);
-      socket.off("deleteFavoriteProduct", handleUserUpdate);
-      socket.off("paymentSuccess", handleUserUpdate);
-      socket.off("updateUser", handleUserUpdate);
+      socket.off("updateDashboard", handleUserUpdate);
     };
   }, [token]);
 
