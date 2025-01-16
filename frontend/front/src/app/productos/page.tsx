@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllProducts } from "@/helpers/products.helpers";
+import { getAllProducts, getProductById } from "@/helpers/products.helpers";
 import ProductGrid from "@/Components/productsUI/Product-grid";
 import Sidebar from "@/Components/productsUI/Sidebar";
 import SearchSort from "@/Components/productsUI/Search-sort";
 import { IProduct, ICategory } from "@/interfaces/IProducts";
+import socket from "@/utils/socket";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -32,6 +33,29 @@ export default function ProductsPage() {
     };
 
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const handleStockUpdate = async (data: number) => {
+      try {
+        const updatedProduct = await getProductById(data);
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.productId === updatedProduct.productId
+              ? updatedProduct
+              : product
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching updated product:", error);
+      }
+    };
+
+    socket.on("stockUpdate", handleStockUpdate);
+
+    return () => {
+      socket.off("stockUpdate", handleStockUpdate);
+    };
   }, []);
 
   const handleSearch = (term: string) => {

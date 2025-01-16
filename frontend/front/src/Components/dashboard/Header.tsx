@@ -24,7 +24,7 @@ export function Header({
   isSidebarOpen: boolean;
 }) {
   const token = Cookies.get("accessToken") || "null";
-  const {userId} = useUserContext();
+  const { userId } = useUserContext();
 
   const [user, setUser] = useState<IUser>();
 
@@ -46,13 +46,13 @@ export function Header({
         return;
       }
       try {
-        const user = await getUserById(parsedToken, userId);
+        const user = await getUserById(parsedToken, Number(userId));
         setUser(user);
       } catch (error) {
         console.error("Error fetching user:", error);
       }
     };
-  
+
     if (userId && token) {
       fetchUser();
     }
@@ -91,7 +91,9 @@ export function Header({
           <DropdownMenuTrigger>
             <Avatar className="h-8 w-8">
               <Image
-                src={"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                src={
+                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                }
                 alt="Profile"
                 width={300}
                 height={300}
