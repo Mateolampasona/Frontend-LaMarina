@@ -43,6 +43,8 @@ import {
 import { IUser } from "@/interfaces/IUser";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getProductById } from "@/helpers/products.helpers";
+import socket from "@/utils/socket";
 
 interface ProductDetailProps {
   product: IProduct;
@@ -52,14 +54,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [productRender, setProduct] = useState<IProduct>(product);
   const [user, setUser] = useState<IUser>();
-  const [price, setPrice] = useState<Number>(product.price);
-  const [stock, setStock] = useState<Number>(product.stock);
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken") || "null";
   const images = [product.imageUrl, ...Array(3).fill(product.imageUrl)]; // Simulando múltiples imágenes del producto
   const router = useRouter();
-  console.log(isLiked);
 
   // Fetch User
   useEffect(() => {
@@ -80,7 +80,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
         return;
       }
       try {
-        const user = await getUserById(parsedToken, userId);
+        const user = await getUserById(parsedToken, Number(userId));
         setUser(user);
         const isProductLiked: boolean = user.favorites.some(
           (favorite: { productId: string }) =>
@@ -97,6 +97,30 @@ export function ProductDetail({ product }: ProductDetailProps) {
     }
   }, [userId, token]);
   console.log(user);
+
+  // Socket para actualizar producto
+  useEffect(() => {
+    const handleStockUpdate = async (data: number) => {
+      console.log("DATA", data);
+      if (data !== product.productId) {
+        console.log("Product ID does not match", data, product.productId);
+        return;
+      }
+      try {
+        const updatedProduct = await getProductById(data);
+        console.log("Updated product:", updatedProduct);
+        setProduct(updatedProduct);
+      } catch (error) {
+        console.error("Error fetching updated product:", error);
+      }
+    };
+
+    socket.on("stockUpdate", handleStockUpdate);
+
+    return () => {
+      socket.off("stockUpdate", handleStockUpdate);
+    };
+  }, []);
 
   // Anadir o eliminar producto favorito
   const setFavorite = async () => {
@@ -194,7 +218,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [product.productId]);
 
   const handleShareClick = () => {
     const url = window.location.href;
@@ -230,17 +254,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 >
                   <Image
                     src={images[activeImage]}
-                    alt={product.name}
+                    alt={productRender.name}
                     fill
                     className="object-cover"
                   />
                 </motion.div>
               </AnimatePresence>
-              {product.discount && product.originalPrice && (
+              {productRender.discount && productRender.originalPrice && (
                 <Badge className="absolute top-4 right-4 bg-red-500">
                   {Math.round(
-                    ((product.originalPrice - product.price) /
-                      product.originalPrice) *
+                    ((productRender.originalPrice - productRender.price) /
+                      productRender.originalPrice) *
                       100
                   )}
                   % DE DESCUENTO
@@ -265,7 +289,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   >
                     <Image
                       src={img}
-                      alt={`${product.name} vista ${index + 1}`}
+                      alt={`${productRender.name} vista ${index + 1}`}
                       fill
                       className="object-cover"
                     />
@@ -278,27 +302,29 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Información del producto */}
           <div className="mt-10 lg:mt-0 lg:w-1/2 text-center lg:text-left">
             <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mb-2">
-              {product.name}
+              {productRender.name}
             </h1>
 
             <div className="mb-6">
-              {product.discount && product.originalPrice ? (
+              {productRender.discount && productRender.originalPrice ? (
                 <div className="flex items-baseline">
                   <p className="text-2xl font-bold text-red-600">
-                    ${product.price.toFixed(2)}
+                    ${productRender.price.toFixed(2)}
                   </p>
                   <p className="ml-2 text-xl font-medium text-gray-500 line-through">
-                    ${product.originalPrice.toFixed(2)}
+                    ${productRender.originalPrice.toFixed(2)}
                   </p>
                 </div>
               ) : (
                 <p className="text-2xl font-bold text-gray-900">
-                  ${product.price.toFixed(2)}
+                  ${productRender.price.toFixed(2)}
                 </p>
               )}
             </div>
 
-            <p className="text-lg text-gray-700 mb-4">{product.description}</p>
+            <p className="text-lg text-gray-700 mb-4">
+              {productRender.description}
+            </p>
 
             <div className="flex items-center justify-center lg:justify-start mb-8">
               <span className="mr-3 text-sm font-medium text-gray-700">
@@ -322,7 +348,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </button>
               </div>
               <span className="ml-4 text-sm text-gray-500">
-                {product.stock} disponibles
+                {productRender.stock} disponibles
               </span>
             </div>
 
@@ -390,7 +416,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <TabsTrigger value="reviews">Reseñas</TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-4">
-                <p className="text-gray-700">{product.description}</p>
+                <p className="text-gray-700">{productRender.description}</p>
               </TabsContent>
               <TabsContent value="specifications" className="mt-4">
                 <Accordion type="single" collapsible>

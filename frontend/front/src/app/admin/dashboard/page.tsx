@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const token = Cookies.get("accessToken") || "null";
   const { userId } = useUserContext();
   const [user, setUser] = useState<IUser>();
-  console.log(lastUser);
+  console.log(user);
 
   const stats = [
     {
@@ -284,7 +284,7 @@ export default function DashboardPage() {
         return;
       }
       try {
-        const user = await getUserById(parsedToken, userId);
+        const user = await getUserById(parsedToken, Number(userId));
         setUser(user);
       } catch (error) {
         console.error("Error fetching user:", error);

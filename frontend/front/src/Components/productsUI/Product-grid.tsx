@@ -50,9 +50,12 @@ export default function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
-        {currentProducts.map((product) => (
-          <SingleProductCard key={product.productId} product={product} />
-        ))}
+        {currentProducts.map(
+          (product) =>
+            product && (
+              <SingleProductCard key={product.productId} product={product} />
+            )
+        )}
       </div>
 
       {totalPages > 1 && (

@@ -10,7 +10,7 @@ import swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import socket from "@/utils/socket";
-import { getAllProducts, getProductById } from "@/helpers/products.helpers";
+import { getProductById } from "@/helpers/products.helpers";
 
 interface ProductCardProps {
   products: IProduct[];

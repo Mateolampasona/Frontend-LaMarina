@@ -9,6 +9,7 @@ import socket from "@/utils/socket";
 
 const PromocionesYOfertas = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
+  console.log(products);
   const [discountProducts, setDiscountProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
@@ -159,7 +160,14 @@ const ProductosEnOferta = ({ productos }: { productos: IProduct[] }) => {
               </div>
             </div>
             <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
-              {producto.discount}% OFF
+              {producto.originalPrice !== null
+                ? (
+                    ((producto.originalPrice - producto.price) /
+                      producto.originalPrice) *
+                    100
+                  ).toFixed(0)
+                : 0}
+              % OFF
             </div>
           </motion.div>
         ))}
