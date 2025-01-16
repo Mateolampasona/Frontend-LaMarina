@@ -1,10 +1,15 @@
 import { getProductById } from "@/helpers/products.helpers";
 import { ProductDetail } from "@/Components/ProductDetail";
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
+import { UserProvider } from "@/Context/userContext";
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = await params;
-  const product = await getProductById(resolvedParams.id);
+  const product = await getProductById(Number(resolvedParams.id));
 
   if (!product) {
     notFound();
@@ -12,7 +17,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="bg-white min-h-screen">
-      <ProductDetail product={product} />
+      <UserProvider>
+        <ProductDetail product={product} />
+      </UserProvider>
     </div>
   );
 }

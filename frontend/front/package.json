@@ -37,6 +37,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.0",
     "react-redux": "^9.2.0",
+    "react-toastify": "^11.0.3",
     "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.15.2",
     "swiper": "^11.1.15",

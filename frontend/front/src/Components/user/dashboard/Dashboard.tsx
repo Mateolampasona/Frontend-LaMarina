@@ -53,7 +53,7 @@ export default function UserDashboard() {
         return;
       }
       try {
-        const user = await getUserById(parsedToken, userId);
+        const user = await getUserById(parsedToken, Number(userId));
         setUser(user);
         setCompras(
           user.compras.map((compra: ICompra) => ({
@@ -108,7 +108,10 @@ export default function UserDashboard() {
 
   // Socket
   useEffect(() => {
-    const handleUserUpdate = async (user: IUser) => {
+    const handleUserUpdate = async (socketUserId: number) => {
+      if (socketUserId !== Number(userId)) {
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;
@@ -124,7 +127,9 @@ export default function UserDashboard() {
         console.error("Invalid token format");
         return;
       }
+      console.log("try");
       try {
+        const user = await getUserById(parsedToken, socketUserId);
         setUser(user);
         setCompras(
           user.compras.map((compra: ICompra) => ({
@@ -170,7 +175,7 @@ export default function UserDashboard() {
     return () => {
       socket.off("updateDashboard", handleUserUpdate);
     };
-  }, [token]);
+  }, [userId, token]);
 
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

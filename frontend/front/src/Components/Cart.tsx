@@ -53,7 +53,6 @@ export default function ShoppingCart() {
   const [productsWithQuantities, setProductsWithQuantities] = useState<
     ProductWithQuantity[]
   >([]);
-  console.log("productsWithQuantities", productsWithQuantities);
 
   // Fetch para obtener orden del USUARIO
   useEffect(() => {
@@ -106,18 +105,35 @@ export default function ShoppingCart() {
 
   // Actualizamos los productos del carrito al agregar un producto
   useEffect(() => {
-    socket.on("cartUpdate", async (data) => {
+    socket.on("cartUpdate", async (socketUserId: number) => {
+      if (Number(userId) !== socketUserId) {
+        console.log("User ID does not match", userId, socketUserId);
+        return;
+      }
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      const data = await getOrderByUserId(parsedToken);
+      console.log("DATA", data);
       setCartItems(data);
     });
     return () => {
       socket.off("cartUpdate");
     };
-  }, []);
+  }, [token, userId]);
 
   // Actualizamos los productos del carrito al eliminar un producto
   useEffect(() => {
-    socket.on("cartUpdate", async (data) => {
-      console.log("DeletedData", data);
+    socket.on("cartUpdate", async (socketUserId: number) => {
+      if (Number(userId) !== socketUserId) {
+        console.log("User ID does not matchas", userId, socketUserId);
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;
@@ -136,7 +152,7 @@ export default function ShoppingCart() {
     return () => {
       socket.off("cartUpdate");
     };
-  }, [token]);
+  }, [token, userId]);
 
   // Actualizamos los productos del carrito con sus cantidades
   useEffect(() => {

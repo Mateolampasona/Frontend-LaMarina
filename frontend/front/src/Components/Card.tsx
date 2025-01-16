@@ -48,19 +48,25 @@ export function ProductCard({ products }: ProductCardProps) {
   };
 
   useEffect(() => {
-    socket.on("stockUpdate", async (data) => {
-      const updatedProduct = await getProductById(data);
-      setProductList((prevProducts) =>
-        prevProducts.map((product) =>
-          product.productId === updatedProduct.productId
-            ? updatedProduct
-            : product
-        )
-      );
-    });
+    const handleStockUpdate = async (data: number) => {
+      try {
+        const updatedProduct = await getProductById(data);
+        setProductList((prevProducts) =>
+          prevProducts.map((product) =>
+            product.productId === updatedProduct.productId
+              ? updatedProduct
+              : product
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching updated product:", error);
+      }
+    };
+
+    socket.on("stockUpdate", handleStockUpdate);
 
     return () => {
-      socket.off("stockUpdate");
+      socket.off("stockUpdate", handleStockUpdate);
     };
   }, []);
 
