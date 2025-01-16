@@ -11,7 +11,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  console.log('Product:', product); // Agregar este log para verificar las propiedades del producto
+  console.log("Product:", product); // Agregar este log para verificar las propiedades del producto
   const hasDiscount = product.discount !== null && product.discount > 0;
 
   return (

@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Tag, Zap } from "lucide-react";
-import { getAllProducts } from "@/helpers/products.helpers";
+import { getAllProducts, getProductById } from "@/helpers/products.helpers";
 import { IProduct } from "@/interfaces/IProducts";
+import socket from "@/utils/socket";
 
 const PromocionesYOfertas = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [discountProducts, setDiscountProducts] = useState<IProduct[]>([]);
   console.log(products);
-  
+  const [discountProducts, setDiscountProducts] = useState<IProduct[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -28,6 +28,28 @@ const PromocionesYOfertas = () => {
       }
     };
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    socket.on("stockUpdate", async (data) => {
+      const updatedProduct = await getProductById(data);
+      setProducts((prevProducts) => {
+        const updatedProducts = prevProducts.map((product) =>
+          product.productId === updatedProduct.productId
+            ? updatedProduct
+            : product
+        );
+        const updatedDiscountedProducts = updatedProducts.filter(
+          (product: IProduct) => product.discount !== null
+        );
+        setDiscountProducts(updatedDiscountedProducts);
+        return updatedProducts;
+      });
+    });
+
+    return () => {
+      socket.off("stockUpdate");
+    };
   }, []);
   return (
     <section className="bg-gradient-to-r bg-[#edede9] py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -138,7 +160,14 @@ const ProductosEnOferta = ({ productos }: { productos: IProduct[] }) => {
               </div>
             </div>
             <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
-              {producto.discount}% OFF
+              {producto.originalPrice !== null
+                ? (
+                    ((producto.originalPrice - producto.price) /
+                      producto.originalPrice) *
+                    100
+                  ).toFixed(0)
+                : 0}
+              % OFF
             </div>
           </motion.div>
         ))}
