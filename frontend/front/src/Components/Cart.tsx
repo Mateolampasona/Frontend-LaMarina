@@ -23,7 +23,7 @@ import {
 import socket from "@/utils/socket";
 
 const SHIPPING_THRESHOLD = 100;
-const SHIPPING_COST = 10;
+const SHIPPING_COST = 0;
 
 // Interfaces
 interface IOrderDetail {
@@ -256,86 +256,102 @@ export default function ShoppingCart() {
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <ScrollArea className="md:col-span-2 h-[calc(100vh-20rem)] pr-4">
             <AnimatePresence>
-              {productsWithQuantities.map((item) => (
+              {productsWithQuantities.length === 0 ? (
                 <motion.div
-                  key={item.product.productId}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center space-x-4 mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center text-gray-500"
                 >
-                  <Image
-                    src={item.product.imageUrl}
-                    alt={item.product.name}
-                    width={96}
-                    height={96}
-                    className="object-cover rounded-md"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.product.name}</h3>
-                    <div className="flex items-center">
-                      <p className="text-gray-600">${item.product.price}</p>
-                      {item.product.discount && (
-                        <Badge variant="destructive" className="ml-2">
-                          -{item.product.discount}%
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center mt-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                          updateQuantity(item.product.productId.toString(), -1)
-                        }
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="mx-2 w-8 text-center">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() =>
-                          updateQuantity(item.product.productId.toString(), 1)
-                        }
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="ml-4"
-                        onClick={() => deleteProduct(item.orderDetailId)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="font-semibold">
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </p>
+                  Tu carrito está vacío.
                 </motion.div>
-              ))}
+              ) : (
+                productsWithQuantities.map((item) => (
+                  <motion.div
+                    key={item.product.productId}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center space-x-4 mb-6"
+                  >
+                    <Image
+                      src={item.product.imageUrl}
+                      alt={item.product.name}
+                      width={96}
+                      height={96}
+                      className="object-cover rounded-md"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{item.product.name}</h3>
+                      <div className="flex items-center">
+                        <p className="text-gray-600">${item.product.price}</p>
+                        {item.product.discount && (
+                          <Badge variant="destructive" className="ml-2">
+                            -{item.product.discount}%
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center mt-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            updateQuantity(
+                              item.product.productId.toString(),
+                              -1
+                            )
+                          }
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="mx-2 w-8 text-center">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            updateQuantity(item.product.productId.toString(), 1)
+                          }
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="ml-4"
+                          onClick={() => deleteProduct(item.orderDetailId)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="font-semibold">
+                      ${(item.product.price * item.quantity).toFixed(2)}
+                    </p>
+                  </motion.div>
+                ))
+              )}
             </AnimatePresence>
           </ScrollArea>
           <div className="md:col-span-1 bg-gray-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4">Resumen del pedido</h3>
-            <div className="space-y-2">
-              {productsWithQuantities.map((item) => (
-                <div
-                  key={item.product.productId}
-                  className="flex justify-between text-sm"
-                >
-                  <span>
-                    {item.product.name} (x{item.quantity})
-                  </span>
-                  <span>${item.product.price}</span>
-                </div>
-              ))}
-            </div>
+            {productsWithQuantities.length > 0 && (
+              <div className="space-y-2">
+                {productsWithQuantities.map((item) => (
+                  <div
+                    key={item.product.productId}
+                    className="flex justify-between text-sm"
+                  >
+                    <span>
+                      {item.product.name} (x{item.quantity})
+                    </span>
+                    <span>${item.product.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <Separator className="my-4" />
             <div className="flex justify-between font-semibold">
               <span>Subtotal</span>
@@ -343,9 +359,7 @@ export default function ShoppingCart() {
             </div>
             <div className="flex justify-between text-sm mt-2">
               <span>Envío</span>
-              <span>
-                {shipping === 0 ? "Gratis" : `$${shipping.toFixed(2)}`}
-              </span>
+              <span>{shipping === 0 ? "Gratis" : `$${shipping}`}</span>
             </div>
             {shipping > 0 && (
               <div className="mt-2">

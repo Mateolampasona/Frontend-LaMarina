@@ -31,6 +31,35 @@ const PromocionesYOfertas = () => {
   }, []);
 
   useEffect(() => {
+    socket.on("discountProduct", async (productId: number) => {
+      console.log("id del producto con descuento", productId);
+      try {
+        const offertProduct = await getProductById(productId);
+        console.log(offertProduct);
+        setProducts((prevProducts) => {
+          const updatedProducts = prevProducts.map((product) =>
+            product.productId === offertProduct.productId
+              ? offertProduct
+              : product
+          );
+          const updatedDiscountedProducts = updatedProducts.filter(
+            (product: IProduct) => product.discount !== null
+          );
+          setDiscountProducts(updatedDiscountedProducts);
+          return updatedProducts;
+        });
+      } catch (error) {
+        console.error("Error al obtener el producto con descuento", error);
+      }
+    });
+
+    return () => {
+      socket.off("discountProduct");
+    };
+  }, []);
+
+  // Socket para actualizacion de productos
+  useEffect(() => {
     socket.on("stockUpdate", async (data) => {
       const updatedProduct = await getProductById(data);
       setProducts((prevProducts) => {
@@ -140,37 +169,43 @@ const ProductosEnOferta = ({ productos }: { productos: IProduct[] }) => {
         </motion.div>
       </h3>
       <div className="grid gap-4 sm:gap-8">
-        {productos.map((producto, index) => (
-          <motion.div
-            key={producto.name}
-            className="bg-[#edede9] rounded-md p-4 sm:p-6 text-gray-800 shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center border hover:bg-[#f8c6c6] transform transition-all duration-200"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.2 }}
-          >
-            <div>
-              <div className="font-bold text-base sm:text-lg">
-                {producto.name}
+        {productos.length === 0 ? (
+          <div className="text-center text-gray-500">
+            No hay productos en oferta en este momento.
+          </div>
+        ) : (
+          productos.map((producto, index) => (
+            <motion.div
+              key={producto.name}
+              className="bg-[#edede9] rounded-md p-4 sm:p-6 text-gray-800 shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center border hover:bg-[#f8c6c6] transform transition-all duration-200"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.2 }}
+            >
+              <div>
+                <div className="font-bold text-base sm:text-lg">
+                  {producto.name}
+                </div>
+                <div className="text-xs sm:text-sm line-through text-gray-500">
+                  ${producto.originalPrice}
+                </div>
+                <div className="text-xl sm:text-2xl font-extrabold text-[#ef233c]">
+                  ${producto.price}
+                </div>
               </div>
-              <div className="text-xs sm:text-sm line-through text-gray-500">
-                ${producto.originalPrice}
+              <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
+                {producto.originalPrice !== null
+                  ? (
+                      ((producto.originalPrice - producto.price) /
+                        producto.originalPrice) *
+                      100
+                    ).toFixed(0)
+                  : 0}
+                % OFF
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold text-[#ef233c]">
-                ${producto.price}
-              </div>
-            </div>
-            <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
-              {producto.originalPrice !== null
-                ? (
-                    ((producto.originalPrice - producto.price) /
-                      producto.originalPrice) *
-                    100
-                  ).toFixed(0)
-                : 0}
-              % OFF
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))
+        )}
       </div>
     </div>
   );
