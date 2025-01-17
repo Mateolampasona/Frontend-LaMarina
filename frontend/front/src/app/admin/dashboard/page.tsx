@@ -11,7 +11,11 @@ import {
   FileText,
   Settings,
 } from "lucide-react";
-import { getTotalUsers, getUserById } from "@/helpers/users.helpers";
+import {
+  getLastUser,
+  getTotalUsers,
+  getUserById,
+} from "@/helpers/users.helpers";
 import { useEffect, useState } from "react";
 import { IUser } from "@/interfaces/IUser";
 import Cookies from "js-cookie";
@@ -19,20 +23,27 @@ import { useUserContext } from "@/Context/userContext";
 import { getLastCompra, getTotalVentas } from "@/helpers/compras.helper";
 import { getLastOrder, getTotalCarts } from "@/helpers/orders.helper";
 import { IOrder } from "@/interfaces/IOrder";
+import socket from "@/utils/socket";
 
 export default function DashboardPage() {
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [totalVentas, setTotalVentas] = useState<number>(0);
   const [totalCarts, setTotalCarts] = useState<number>(0);
   const [lastCart, setLastCart] = useState<IOrder>();
+  const [lastUser, setLastUser] = useState<IUser>();
+  const [minutesAgoUser, setMinutesAgoUser] = useState<number>(0);
+  const [hoursAgoUser, setHoursAgoUser] = useState<number>(0);
   const [hoursAgoCart, setHoursAgoCart] = useState<number>(0);
   const [minutesAgoCart, setMinutesAgoCart] = useState<number>(0);
   const [lastCompra, setLastCompra] = useState<IOrder>();
   const [minutesAgoCompra, setMinutesAgoCompra] = useState<number>(0);
   const [hoursAgoCompra, setHoursAgoCompra] = useState<number>(0);
+  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [minutesAgoUpdate, setMinutesAgoUpdate] = useState<number>(0);
   const token = Cookies.get("accessToken") || "null";
   const { userId } = useUserContext();
   const [user, setUser] = useState<IUser>();
+  console.log(user);
 
   const stats = [
     {
@@ -61,6 +72,25 @@ export default function DashboardPage() {
     },
   ];
 
+  const recentActivities = [
+    {
+      action: "Ultimo usuario registrado",
+      time: `${hoursAgoUser} hours and ${minutesAgoUser} minutes ago`,
+      icon: Users,
+    },
+    {
+      action: "Ultimo carrito realizado",
+      time: `${hoursAgoCart} hours and ${minutesAgoCart} minutes ago`,
+      icon: ShoppingCart,
+    },
+    {
+      action: "Ultima venta realizada",
+      time: `${hoursAgoCompra} hours and ${minutesAgoCompra} minutes ago`,
+      icon: FileText,
+    },
+  ];
+
+  // Fetch totals data
   useEffect(() => {
     const fetchTotalsData = async () => {
       if (!token) {
@@ -89,6 +119,8 @@ export default function DashboardPage() {
         setLastCart(lastCart);
         const lastCompra = await getLastCompra(parsedToken);
         setLastCompra(lastCompra);
+        const lastUser = await getLastUser(parsedToken);
+        setLastUser(lastUser);
       } catch (error) {
         console.error("Error fetching total users:", error);
       }
@@ -98,6 +130,60 @@ export default function DashboardPage() {
       fetchTotalsData();
     }
   }, [token]);
+
+  // Socket
+  useEffect(() => {
+    const handleDashboardUpdate = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      let parsedToken;
+      try {
+        parsedToken = JSON.parse(token);
+      } catch (error) {
+        console.error("Error parsing token:", error);
+        return;
+      }
+      if (typeof parsedToken !== "string") {
+        console.error("Invalid token format");
+        return;
+      }
+      try {
+        const totalUsers = await getTotalUsers(parsedToken);
+        setTotalUsers(totalUsers);
+        const totalVentas = await getTotalVentas(parsedToken);
+        setTotalVentas(totalVentas);
+        const totalCarts = await getTotalCarts(parsedToken);
+        setTotalCarts(totalCarts);
+        const lastCart = await getLastOrder(parsedToken);
+        setLastCart(lastCart);
+        const lastCompra = await getLastCompra(parsedToken);
+        setLastCompra(lastCompra);
+        const lastUser = await getLastUser(parsedToken);
+        setLastUser(lastUser);
+        setLastUpdate(new Date());
+      } catch (error) {
+        console.error("Error fetching total users:", error);
+      }
+    };
+    socket.on("adminDashboardUpdate", handleDashboardUpdate);
+
+    return () => {
+      socket.off("adminDashboardUpdate", handleDashboardUpdate);
+    };
+  }, [token]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const timeDifference = now.getTime() - lastUpdate.getTime();
+      const minutes = Math.floor(timeDifference / (1000 * 60));
+      setMinutesAgoUpdate(minutes);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [lastUpdate]);
 
   // Calcular tiempo desde el ultimo cart
   useEffect(() => {
@@ -109,7 +195,9 @@ export default function DashboardPage() {
 
         if (timeDifference >= 0) {
           setHoursAgoCart(Math.floor(timeDifference / (1000 * 60 * 60)));
-          setMinutesAgoCart(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)));
+          setMinutesAgoCart(
+            Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
+          );
         } else {
           console.error("Order date is in the future");
           setHoursAgoCart(0);
@@ -119,10 +207,37 @@ export default function DashboardPage() {
     };
 
     calculateTimeDifferenceCart();
-    const interval = setInterval(calculateTimeDifferenceCart, 60000); 
+    const interval = setInterval(calculateTimeDifferenceCart, 60000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [lastCart]);
+
+  // Calcular diferencia de tiempo del último usuario
+  useEffect(() => {
+    const calculateTimeDifferenceUser = () => {
+      if (lastUser) {
+        const now = new Date();
+        const userDate = new Date(lastUser.createdAt);
+        const timeDifference = now.getTime() - userDate.getTime();
+
+        if (timeDifference >= 0) {
+          setHoursAgoUser(Math.floor(timeDifference / (1000 * 60 * 60)));
+          setMinutesAgoUser(
+            Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
+          );
+        } else {
+          console.error("User date is in the future");
+          setHoursAgoUser(0);
+          setMinutesAgoUser(0);
+        }
+      }
+    };
+
+    calculateTimeDifferenceUser();
+    const interval = setInterval(calculateTimeDifferenceUser, 60000);
+
+    return () => clearInterval(interval);
+  }, [lastUser]);
 
   // Calcular diferencia de tiempo de la última compra
   useEffect(() => {
@@ -134,11 +249,13 @@ export default function DashboardPage() {
 
         if (timeDifference >= 0) {
           setHoursAgoCompra(Math.floor(timeDifference / (1000 * 60 * 60)));
-          setMinutesAgoCompra(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)));
+          setMinutesAgoCompra(
+            Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
+          );
         } else {
           console.error("Order date is in the future");
-          setHoursAgoCompra(2);
-          setMinutesAgoCompra(23);
+          setHoursAgoCompra(0);
+          setMinutesAgoCompra(0);
         }
       }
     };
@@ -167,7 +284,7 @@ export default function DashboardPage() {
         return;
       }
       try {
-        const user = await getUserById(parsedToken, userId);
+        const user = await getUserById(parsedToken, Number(userId));
         setUser(user);
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -179,25 +296,6 @@ export default function DashboardPage() {
     }
   }, [userId, token]);
 
-  const recentActivities = [
-    {
-      action: "Ultimo usuario registrado",
-      time: "2 hours ago",
-      icon: Users,
-    },
-    {
-      action: "Ultimo carrito realizado",
-      time: `${hoursAgoCart} hours and ${minutesAgoCart} minutes ago`,
-      icon: ShoppingCart,
-    },
-    {
-      action: "Ultima venta realizada",
-      time: `${hoursAgoCompra} hours and ${minutesAgoCompra} minutes ago`,
-      icon: FileText,
-    },
-  ];
-
-  console.log("user", user);
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -205,7 +303,7 @@ export default function DashboardPage() {
           Resumen del Dashboard
         </h1>
         <p className="text-sm text-gray-500">
-          Última actualización: hace 5 minutos
+          Última actualización: hace {minutesAgoUpdate} minutos
         </p>
       </div>
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell,  Edit, HelpCircle } from "lucide-react";
-import Link from 'next/link';
+import { Bell, CreditCard, Edit, HelpCircle } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
@@ -16,86 +16,164 @@ import { IUser } from "@/interfaces/IUser";
 import { useUserContext } from "@/Context/userContext";
 import { ICompra } from "@/interfaces/ICompra";
 import { IFavorite } from "@/interfaces/IFavorite";
+import socket from "@/utils/socket";
 
 export default function UserDashboard() {
   const [compras, setCompras] = useState<ICompra[]>([]);
-  const[user,setUser] = useState<IUser>();
+  const [user, setUser] = useState<IUser>();
   const token = Cookies.get("accessToken") || "null";
-  const {userId} = useUserContext();
+  const { userId } = useUserContext();
   const [favorites, setFavorites] = useState<IFavorite[]>([]);
-  const [transactions,setTransactions] = useState<ICompra[]>([]);
+  const [transactions, setTransactions] = useState<ICompra[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  console.log(user);
-  
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if(!token){
-        console.error("No token found");
-        return;
-      }
-      let parsedToken
-      try{
-        parsedToken = JSON.parse(token);
-      } catch(error){
-        console.error("Error parsing token:", error);
-        return;
-      }
-      if(typeof parsedToken !=="string"){
-        console.error("Invalid token format");
-        return;
-      }
-      try{
-        const user = await getUserById(parsedToken, userId);
-        setUser(user);
-        setCompras(user.compras.map((compra: ICompra) => ({
-          compraId: compra.compraId,
-          paymentMethod: compra.paymentMethod,
-          payment_preference_id: compra.payment_preference_id,
-          purchaseDate: compra.purchaseDate,
-          purchaseDetails: compra.purchaseDetails,
-          status: compra.status,
-          total: compra.total
-        })));
-        setFavorites(user.favorites.map((favorite: IFavorite) => ({
-          id: favorite.productId,
-          name: favorite.name,
-          price: favorite.price,
-          discount: favorite.discount,
-          imageUrl: favorite.imageUrl,
-          isActive: favorite.isActive,
-          originalPrice: favorite.originalPrice,
-          stock: favorite.stock
-        })));
-        setTransactions(user.compras.map((compra: ICompra) => ({
-          compraId: compra.compraId,
-          paymentMethod: compra.paymentMethod,
-          payment_preference_id: compra.payment_preference_id,
-          purchaseDate: compra.purchaseDate,
-          purchaseDetails: compra.purchaseDetails,
-          status: compra.status,
-          total: compra.total
-        })));
-      } catch(error){
-        console.error("Error fetching user:", error);
-      }
-    }
-    if(userId && token){
-      fetchUser();
-    }
-  },[userId, token]);
-
   const [activeOrders] = useState([
     { id: 4, status: "procesando", date: "2023-05-22", total: "$150.00" },
     { id: 5, status: "enviado", date: "2023-05-21", total: "$95.00" },
   ]);
+
+  // Traemos los datos del usuario
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      let parsedToken;
+      try {
+        parsedToken = JSON.parse(token);
+      } catch (error) {
+        console.error("Error parsing token:", error);
+        return;
+      }
+      if (typeof parsedToken !== "string") {
+        console.error("Invalid token format");
+        return;
+      }
+      try {
+        const user = await getUserById(parsedToken, Number(userId));
+        setUser(user);
+        setCompras(
+          user.compras.map((compra: ICompra) => ({
+            compraId: compra.compraId,
+            paymentMethod: compra.paymentMethod,
+            payment_preference_id: compra.payment_preference_id,
+            purchaseDate: compra.purchaseDate,
+            purchaseDetails: compra.purchaseDetails,
+            status: compra.status,
+            total: compra.total,
+          }))
+        );
+        setFavorites(
+          user.favorites.map((favorite: IFavorite) => ({
+            productId: favorite.productId,
+            name: favorite.name,
+            price: favorite.price,
+            discount: favorite.discount,
+            imageUrl: favorite.imageUrl,
+            isActive: favorite.isActive,
+            originalPrice: favorite.originalPrice,
+            stock: favorite.stock,
+          }))
+        );
+        setTransactions(
+          user.compras.map((compra: ICompra) => ({
+            compraId: compra.compraId,
+            paymentMethod: compra.paymentMethod,
+            payment_preference_id: compra.payment_preference_id,
+            purchaseDate: compra.purchaseDate,
+            purchaseDetails: compra.purchaseDetails,
+            status: compra.status,
+            total: compra.total,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    if (userId && token) {
+      fetchUser();
+    }
+  }, [userId, token]);
+
+  // Timer para recargar la página
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Socket
+  useEffect(() => {
+    const handleUserUpdate = async (socketUserId: number) => {
+      if (socketUserId !== Number(userId)) {
+        return;
+      }
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      let parsedToken;
+      try {
+        parsedToken = JSON.parse(token);
+      } catch (error) {
+        console.error("Error parsing token:", error);
+        return;
+      }
+      if (typeof parsedToken !== "string") {
+        console.error("Invalid token format");
+        return;
+      }
+      console.log("try");
+      try {
+        const user = await getUserById(parsedToken, socketUserId);
+        setUser(user);
+        setCompras(
+          user.compras.map((compra: ICompra) => ({
+            compraId: compra.compraId,
+            paymentMethod: compra.paymentMethod,
+            payment_preference_id: compra.payment_preference_id,
+            purchaseDate: compra.purchaseDate,
+            purchaseDetails: compra.purchaseDetails,
+            status: compra.status,
+            total: compra.total,
+          }))
+        );
+        setFavorites(
+          user.favorites.map((favorite: IFavorite) => ({
+            productId: favorite.productId,
+            name: favorite.name,
+            price: favorite.price,
+            discount: favorite.discount,
+            imageUrl: favorite.imageUrl,
+            isActive: favorite.isActive,
+            originalPrice: favorite.originalPrice,
+            stock: favorite.stock,
+          }))
+        );
+        setTransactions(
+          user.compras.map((compra: ICompra) => ({
+            compraId: compra.compraId,
+            paymentMethod: compra.paymentMethod,
+            payment_preference_id: compra.payment_preference_id,
+            purchaseDate: compra.purchaseDate,
+            purchaseDetails: compra.purchaseDetails,
+            status: compra.status,
+            total: compra.total,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    socket.on("updateDashboard", handleUserUpdate);
+
+    return () => {
+      socket.off("updateDashboard", handleUserUpdate);
+    };
+  }, [userId, token]);
 
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -105,7 +183,8 @@ export default function UserDashboard() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-semibold font-mono text-[#2d2d2d]">
-            ¡Hola, {capitalizeFirstLetter(user?.name ?? "Cliente")}! Aquí está tu resumen
+            ¡Hola, {capitalizeFirstLetter(user?.name ?? "Cliente")}! Aquí está
+            tu resumen
           </h1>
         </div>
 
@@ -126,16 +205,19 @@ export default function UserDashboard() {
               </Button>
             </CardHeader>
             <CardContent>
-  {isEditingProfile ? (
-    <EditProfileForm
-      name={capitalizeFirstLetter(user?.name ?? '')}
-      email={capitalizeFirstLetter(user?.email ?? '')}
-      onCancel={() => setIsEditingProfile(false)}
-    />
-  ) : (
-    <ProfileInfo name={user?.name || ""} email={user?.email || ""} />
-  )}
-</CardContent>
+              {isEditingProfile ? (
+                <EditProfileForm
+                  name={capitalizeFirstLetter(user?.name ?? "")}
+                  email={capitalizeFirstLetter(user?.email ?? "")}
+                  onCancel={() => setIsEditingProfile(false)}
+                />
+              ) : (
+                <ProfileInfo
+                  name={user?.name || ""}
+                  email={user?.email || ""}
+                />
+              )}
+            </CardContent>
           </Card>
 
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-200">
@@ -172,7 +254,11 @@ export default function UserDashboard() {
                           >
                             Pedido #{index + 1}
                           </p>
-                          <p className="text-xs text-gray-600">{new Date(compra.purchaseDate).toLocaleDateString('en-CA')}</p>
+                          <p className="text-xs text-gray-600">
+                            {new Date(compra.purchaseDate).toLocaleDateString(
+                              "en-CA"
+                            )}
+                          </p>
                         </div>
                         <Badge
                           variant={
@@ -306,48 +392,50 @@ export default function UserDashboard() {
                     Transacciones Recientes
                   </h4>
                   <ScrollArea className="h-[100px] pr-4">
-  {isLoading
-    ? Array(3)
-        .fill(0)
-        .map((_, i) => (
-          <div
-            key={i}
-            className="flex justify-between items-center mb-4"
-          >
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-[100px]" />
-              <Skeleton className="h-3 w-[80px]" />
-            </div>
-            <Skeleton className="h-4 w-[60px]" />
-          </div>
-        ))
-    : transactions.map((transaction) => (
-        <div
-          key={transaction.compraId}
-          className="flex justify-between items-center mb-4 group"
-        >
-          <div>
-            <p
-              className={`text-sm font-medium text-[#2d2d2d] group-hover:text-[#ef233c] transition-colors duration-200`}
-            >
-              {transaction.paymentMethod}
-            </p>
-            <p className="text-xs text-gray-600">
-              {new Date(transaction.purchaseDate).toLocaleDateString('en-CA')}
-            </p>
-          </div>
-          <span
-            className={`text-sm ${
-              transaction.total.toString().startsWith("+")
-                ? "text-green-500"
-                : "text-[#ef233c]"
-            }`}
-          >
-            $ {transaction.total}
-          </span>
-        </div>
-      ))}
-</ScrollArea>
+                    {isLoading
+                      ? Array(3)
+                          .fill(0)
+                          .map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex justify-between items-center mb-4"
+                            >
+                              <div className="space-y-2">
+                                <Skeleton className="h-4 w-[100px]" />
+                                <Skeleton className="h-3 w-[80px]" />
+                              </div>
+                              <Skeleton className="h-4 w-[60px]" />
+                            </div>
+                          ))
+                      : transactions.map((transaction) => (
+                          <div
+                            key={transaction.compraId}
+                            className="flex justify-between items-center mb-4 group"
+                          >
+                            <div>
+                              <p
+                                className={`text-sm font-medium text-[#2d2d2d] group-hover:text-[#ef233c] transition-colors duration-200`}
+                              >
+                                {transaction.paymentMethod}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {new Date(
+                                  transaction.purchaseDate
+                                ).toLocaleDateString("en-CA")}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-sm ${
+                                transaction.total.toString().startsWith("+")
+                                  ? "text-green-500"
+                                  : "text-[#ef233c]"
+                              }`}
+                            >
+                              $ {transaction.total}
+                            </span>
+                          </div>
+                        ))}
+                  </ScrollArea>
                 </div>
               </div>
             </CardContent>
@@ -367,19 +455,20 @@ export default function UserDashboard() {
                 </>
               ) : (
                 <>
-                <Link href="/help">
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-start hover:bg-gray-100 transition-colors duration-200 text-[#2d2d2d]`}
-                    onClick={() =>
-                      console.log("Redirigiendo a las preguntas frecuentes...")
-                      
-                    }
+                  <Link href="/help">
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start hover:bg-gray-100 transition-colors duration-200 text-[#2d2d2d]`}
+                      onClick={() =>
+                        console.log(
+                          "Redirigiendo a las preguntas frecuentes..."
+                        )
+                      }
                     >
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    Preguntas Frecuentes
-                  </Button>
-                    </Link>
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      Preguntas Frecuentes
+                    </Button>
+                  </Link>
                   <Button
                     variant="outline"
                     className={`w-full justify-start hover:bg-gray-100 transition-colors duration-200 text-[#2d2d2d]`}

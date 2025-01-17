@@ -5,7 +5,7 @@ const page = () => {
   return (
     <div>
       <UserProvider>
-      <Dashboard />
+        <Dashboard />
       </UserProvider>
     </div>
   );
