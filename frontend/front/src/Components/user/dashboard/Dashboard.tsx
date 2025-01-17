@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, CreditCard, Edit, HelpCircle } from "lucide-react";
+import { Bell, Edit, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
