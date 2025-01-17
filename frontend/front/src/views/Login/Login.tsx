@@ -6,7 +6,7 @@ import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import Image from "next/image";
-import { login } from "@/helpers/auth.helper";
+import { forgotPassword, login } from "@/helpers/auth.helper";
 import Cookies from "js-cookie";
 import validateLoginForm from "@/helpers/validateLoginForm.helper";
 import { Eye, EyeClosed } from "lucide-react";
@@ -27,8 +27,7 @@ export default function Login() {
       console.log(`Token: ${token}`);
       Cookies.set("accessToken", JSON.stringify(token));
       window.location.href = "/";
-    }
-    else {
+    } else {
       console.log("No token found");
     }
   }, []);
@@ -70,8 +69,7 @@ export default function Login() {
       ...userData,
       email: userData.email.toLowerCase(),
       password: userData.password,
-
-    }
+    };
 
     // Validación del formulario
     const errors = validateLoginForm(lowerCaseUserData);
@@ -134,109 +132,182 @@ export default function Login() {
       });
     }
   };
+  const handleForgotPassword = () => {
+    Swal.fire({
+      title: "Recuperar contraseña",
+      html: `
+        <input type="email" id="swal-input-email" class="swal2-input" placeholder="Correo electrónico">
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Enviar",
+      customClass: {
+        popup: "bg-white shadow-lg rounded-lg p-6",
+        title: "text-2xl font-semibold text-gray-800",
+        confirmButton:
+          "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded",
+        cancelButton:
+          "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded",
+      },
+      buttonsStyling: false,
+      preConfirm: () => {
+        const email = (
+          document.getElementById("swal-input-email") as HTMLInputElement
+        ).value;
+        if (!email) {
+          Swal.showValidationMessage(
+            "Por favor, ingresa tu correo electrónico"
+          );
+        }
+        return { email };
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const { email } = result.value;
+        const minEmail = email.toLowerCase();
+        try {
+          await forgotPassword(minEmail);
+          Swal.fire({
+            title: "Correo enviado",
+            text: "Revisa tu bandeja de entrada para recuperar tu contraseña.",
+            icon: "success",
+            customClass: {
+              popup: "bg-white shadow-lg rounded-lg p-6",
+              title: "text-2xl font-semibold text-gray-800",
+              confirmButton:
+                "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded",
+            },
+            buttonsStyling: false,
+          });
+        } catch (error: unknown) {
+          Swal.fire({
+            title: "Error",
+            text: `No se pudo enviar el correo de recuperación. Inténtalo de nuevo más tarde. ${
+              (error as Error).message
+            }`,
+            icon: "error",
+            customClass: {
+              popup: "bg-white shadow-lg rounded-lg p-6",
+              title: "text-2xl font-semibold text-gray-800",
+              confirmButton:
+                "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
+            },
+            buttonsStyling: false,
+          });
+        }
+      }
+    });
+  };
 
   return (
-<div className="min-h-screen flex items-center justify-center bg-[#edede9] relative">
-  <div className="absolute inset-0 z-0 bg-[#edede9] bg-opacity-65 backdrop-blur-sm filter" />
+    <div className="min-h-screen flex items-center justify-center bg-[#edede9] relative">
+      <div className="absolute inset-0 z-0 bg-[#edede9] bg-opacity-65 backdrop-blur-sm filter" />
 
-  <div className="bg-white px-6 py-8 rounded-lg shadow-2xl max-w-md w-full z-10 relative backdrop-blur-sm bg-opacity-80">
-    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#ef233c] rounded-full p-3 shadow-lg">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        className="w-8 h-8 text-white"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-        />
-      </svg>
-    </div>
-    <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 mt-4">
-      Iniciar Sesión
-    </h2>
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="mb-4">
-        <Label htmlFor="email" className="text-gray-700">
-          Correo Electrónico
-        </Label>
-        <Input
-          type="email"
-          id="email"
-          name="email"
-          value={userData.email}
-          onChange={handleOnChange}
-          onBlur={handleOnBlur}
-          required
-          className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2"
-        />
-        {touched.email && errors.email && (
-          <span className="text-red-500 text-sm block">{errors.email}</span>
-        )}
-      </div>
-      <div className="mb-4">
-        <Label htmlFor="password" className="text-gray-700">
-          Contraseña
-        </Label>
-        <div className="relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            value={userData.password}
-            onChange={handleOnChange}
-            onBlur={handleOnBlur}
-            required
-            className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2 pr-10"
-          />
-          <button
-            type="button"
-            onClick={toggleShowPassword}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+      <div className="bg-white px-6 py-8 rounded-lg shadow-2xl max-w-md w-full z-10 relative backdrop-blur-sm bg-opacity-80">
+        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#ef233c] rounded-full p-3 shadow-lg">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-8 h-8 text-white"
           >
-            {showPassword ? (
-              <EyeClosed className="w-6 h-6 text-gray-500" />
-            ) : (
-              <Eye className="w-6 h-6 text-gray-500" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 mt-4">
+          Iniciar Sesión
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="mb-4">
+            <Label htmlFor="email" className="text-gray-700">
+              Correo Electrónico
+            </Label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={userData.email}
+              onChange={handleOnChange}
+              onBlur={handleOnBlur}
+              required
+              className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2"
+            />
+            {touched.email && errors.email && (
+              <span className="text-red-500 text-sm block">{errors.email}</span>
             )}
+          </div>
+          <div className="mb-4">
+            <Label htmlFor="password" className="text-gray-700">
+              Contraseña
+            </Label>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={userData.password}
+                onChange={handleOnChange}
+                onBlur={handleOnBlur}
+                required
+                className="w-full bg-gray-50 border-gray-300 focus:border-[#ef233c] focus:ring-[#ef233c] p-2 pr-10"
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <EyeClosed className="w-6 h-6 text-gray-500" />
+                ) : (
+                  <Eye className="w-6 h-6 text-gray-500" />
+                )}
+              </button>
+            </div>
+            {touched.password && errors.password && (
+              <span className="text-red-500 text-sm block">
+                {errors.password}
+              </span>
+            )}
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-[#ef233c] hover:bg-[#d90429] transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg"
+          >
+            Iniciar Sesión
+          </Button>
+        </form>
+        <div className="flex items-end justify-end mt-4 text-gray-900">
+          <button
+            onClick={handleGoogleLogin}
+            className="mx-auto w-full rounded-lg bg-slate-200 flex flex-row items-center justify-center gap-x-2 px-4 py-3 text-sm duration-200 hover:bg-slate-300"
+          >
+            Inicia Sesión con Google{" "}
+            <Image src="google.svg" alt="google" width={20} height={20} />
           </button>
         </div>
-        {touched.password && errors.password && (
-          <span className="text-red-500 text-sm block">
-            {errors.password}
-          </span>
-        )}
+        <div>
+          <button
+            onClick={handleForgotPassword}
+            className="mt-4 text-[#ef233c] hover:underline font-semibold"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          ¿No tienes una cuenta?{" "}
+          <Link
+            href={`${FRONTURL}/register`}
+            className="text-[#ef233c] hover:underline font-semibold"
+          >
+            Regístrate
+          </Link>
+        </p>
       </div>
-      <Button
-        type="submit"
-        className="w-full bg-[#ef233c] hover:bg-[#d90429] transition-colors duration-300 text-white font-semibold py-2 px-4 rounded-md shadow-md hover:shadow-lg"
-      >
-        Iniciar Sesión
-      </Button>
-    </form>
-    <div className="flex items-end justify-end mt-4 text-gray-900">
-      <button
-        onClick={handleGoogleLogin}
-        className="mx-auto w-full rounded-lg bg-slate-200 flex flex-row items-center justify-center gap-x-2 px-4 py-3 text-sm duration-200 hover:bg-slate-300"
-      >
-        Inicia Sesión con Google{" "}
-        <Image src="google.svg" alt="google" width={20} height={20} />
-      </button>
     </div>
-    <p className="mt-6 text-center text-sm text-gray-600">
-      ¿No tienes una cuenta?{" "}
-      <Link
-        href={`${FRONTURL}/register`}
-        className="text-[#ef233c] hover:underline font-semibold"
-      >
-        Regístrate
-      </Link>
-    </p>
-  </div>
-</div>
   );
 }

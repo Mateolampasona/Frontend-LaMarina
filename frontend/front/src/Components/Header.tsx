@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import { useUserContext } from "@/Context/userContext";
 import { getUserById } from "@/helpers/users.helpers";
 import { IUser } from "@/interfaces/IUser";
+import Swal from "sweetalert2";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -54,11 +55,30 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    // Eliminar la cookie de autenticación
-    Cookies.remove("accessToken");
-    setIsAuthenticated(false);
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Quieres cerrar sesión?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cerrar sesión",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "bg-white shadow-lg rounded-lg p-6",
+        title: "text-2xl font-semibold text-gray-800",
+        confirmButton:
+          "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
+        cancelButton:
+          "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded",
+      },
+      buttonsStyling: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Cookies.remove("accessToken");
+        setIsAuthenticated(false);
 
-    router.push("/login");
+        router.push("/login");
+      }
+    });
   };
 
   return (

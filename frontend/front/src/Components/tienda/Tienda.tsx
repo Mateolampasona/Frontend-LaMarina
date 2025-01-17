@@ -22,7 +22,7 @@ export default function TiendaVistaMejorada() {
             Explora una experiencia de compra única con productos de alta
             calidad y un servicio excepcional.
           </p>
-          <Link href={"/"}>
+          <Link href={"/productos"}>
             <Button className="bg-[#ef233c] text-white hover:bg-[#d90429] transition-colors">
               Ver Catálogo
             </Button>
@@ -106,9 +106,11 @@ export default function TiendaVistaMejorada() {
                   <span>+264 572 4251</span>
                 </li>
               </ul>
-              <Button className="mt-8 bg-[#ef233c] text-white hover:bg-[#d90429] transition-colors">
-                Contáctanos
-              </Button>
+              <Link href="/help">
+                <Button className="mt-8 bg-[#ef233c] text-white hover:bg-[#d90429] transition-colors">
+                  Contáctanos
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </section>
