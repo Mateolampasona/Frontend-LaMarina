@@ -20,7 +20,7 @@ export const getAllUsers = async (token: string) => {
   }
 };
 
-export const getUserById = async (parsedToken: string , userId: string) => {
+export const getUserById = async (parsedToken: string, userId: number) => {
   try {
     const response = await fetch(`${APIURL}/users/${userId}`, {
       method: "GET",
@@ -130,8 +130,8 @@ export const unbanUser = async (token: string, id: number) => {
   }
 };
 
-export const getTotalUsers = async (token:string) => {
-  try{
+export const getTotalUsers = async (token: string) => {
+  try {
     const response = await fetch(`${APIURL}/users/total-users`, {
       method: "GET",
       headers: {
@@ -141,8 +141,65 @@ export const getTotalUsers = async (token:string) => {
     });
     const res = await response.json();
     return res;
-  } catch (error){
+  } catch (error) {
     console.log("Ocurrio un error en getTotalUsers", error);
     throw error;
   }
-}
+};
+
+export const getLastUser = async (token: string) => {
+  try {
+    const response = await fetch(`${APIURL}/users/last-user`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.log("Ocurrio un error en getLastUser", error);
+    throw error;
+  }
+};
+
+export const addFavorite = async (token: string, productId: number) => {
+  try {
+    const response = await fetch(
+      `${APIURL}/users/favorite-products/${productId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.log("Ocurrio un error en addFavorite", error);
+    throw error;
+  }
+};
+
+export const deleteFavorite = async (token: string, productId: number) => {
+  try {
+    const response = await fetch(
+      `${APIURL}/users/favorite-products/${productId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.log("Ocurrio un error en deleteFavorite", error);
+    throw error;
+  }
+};

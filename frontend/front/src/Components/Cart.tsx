@@ -1,15 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Minus,
-  Plus,
-  ShoppingBag,
-  X,
-  Truck,
-  Gift,
-  CreditCard,
-  Loader2,
-} from "lucide-react";
+import { Minus, Plus, ShoppingBag, X, Gift, Loader2 } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Separator } from "@/Components/ui/separator";
 import { ScrollArea } from "@/Components/ui/scroll-area";
@@ -25,13 +16,18 @@ import Image from "next/image";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
 import { getOrderByUserId } from "@/helpers/orders.helper";
-import { addProductToOrder, deleteOrderDetail } from "@/helpers/orderDetail.helper";
+import {
+  addProductToOrder,
+  deleteOrderDetail,
+} from "@/helpers/orderDetail.helper";
+import socket from "@/utils/socket";
 
 const SHIPPING_THRESHOLD = 100;
-const SHIPPING_COST = 10;
+const SHIPPING_COST = 0;
 
+// Interfaces
 interface IOrderDetail {
-  id: string;
+  orderDetailId: string;
   quantity: number;
   product: IProduct;
 }
@@ -43,8 +39,8 @@ interface ICartItems {
 
 interface ProductWithQuantity {
   orderDetailId: string;
-  product: IProduct;
   quantity: number;
+  product: IProduct;
 }
 
 export default function ShoppingCart() {
@@ -54,13 +50,12 @@ export default function ShoppingCart() {
   const [promoCode, setPromoCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [cart, setCartItems] = useState<ICartItems | null>(null);
-  const [productsWithQuantities, setProductsWithQuantities] = useState<ProductWithQuantity[]>([]);
-  console.log("productsWithQuantities", productsWithQuantities);
-  
-  
+  const [productsWithQuantities, setProductsWithQuantities] = useState<
+    ProductWithQuantity[]
+  >([]);
 
+  // Fetch para obtener orden del USUARIO
   useEffect(() => {
-    // Hacemos el fetch al backend para obtener la orden del usuario
     const fetchCartItems = async () => {
       if (!token) {
         console.error("No token found");
@@ -82,11 +77,88 @@ export default function ShoppingCart() {
     fetchCartItems();
   }, [userId, token]);
 
+  // Eliminar producto del carrito
+  const deleteProduct = async (id: string) => {
+    console.log("ID del producto a eliminar:", id);
+    try {
+      const token = Cookies.get("accessToken") || "null";
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      console.log(typeof id);
+
+      await deleteOrderDetail(parsedToken, id);
+      console.log("ID del producto a eliminar:", id);
+
+      // Fetch the updated cart from the backend
+      const updatedCart = await getOrderByUserId(parsedToken);
+      setCartItems(updatedCart);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
+
+  // Actualizamos los productos del carrito al agregar un producto
+  useEffect(() => {
+    socket.on("cartUpdate", async (socketUserId: number) => {
+      if (Number(userId) !== socketUserId) {
+        console.log("User ID does not match", userId, socketUserId);
+        return;
+      }
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      const data = await getOrderByUserId(parsedToken);
+      console.log("DATA", data);
+      setCartItems(data);
+    });
+    return () => {
+      socket.off("cartUpdate");
+    };
+  }, [token, userId]);
+
+  // Actualizamos los productos del carrito al eliminar un producto
+  useEffect(() => {
+    socket.on("cartUpdate", async (socketUserId: number) => {
+      if (Number(userId) !== socketUserId) {
+        console.log("User ID does not matchas", userId, socketUserId);
+        return;
+      }
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      try {
+        const updatedCart = await getOrderByUserId(parsedToken);
+        setCartItems(updatedCart);
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
+    });
+    return () => {
+      socket.off("cartUpdate");
+    };
+  }, [token, userId]);
+
   // Actualizamos los productos del carrito con sus cantidades
   useEffect(() => {
     if (cart && cart.orderDetails) {
-      const newProductsWithQuantities = cart.orderDetails.map(detail => ({
-        orderDetailId: detail.id,
+      const newProductsWithQuantities = cart.orderDetails.map((detail) => ({
+        orderDetailId: detail.orderDetailId,
         product: detail.product,
         quantity: detail.quantity,
       }));
@@ -95,24 +167,28 @@ export default function ShoppingCart() {
   }, [cart]);
 
   // Calculamos y asignamos los valores de subtotal, envío y total
-  const subtotal = cart?.totalOrder || 0;
+  const subtotal = productsWithQuantities.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
+    0
+  );
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const total = subtotal + shipping;
 
-
   const updateQuantity = async (id: string, change: number) => {
     const updatedProducts = productsWithQuantities.map((item) =>
-      item.product.id.toString() === id
+      item.product.productId.toString() === id
         ? {
             ...item,
             quantity: Math.max(0, item.quantity + change),
           }
         : item
-    )
-  
+    );
+
     setProductsWithQuantities(updatedProducts);
-  
-    const productToUpdate = updatedProducts.find(item => item.product.id.toString() === id);
+
+    const productToUpdate = updatedProducts.find(
+      (item) => item.product.productId.toString() === id
+    );
     if (productToUpdate) {
       try {
         if (!token) {
@@ -124,11 +200,11 @@ export default function ShoppingCart() {
           throw new Error("Invalid token format");
         }
         await addProductToOrder(parsedToken, {
-          productId: productToUpdate.product.id,
+          productId: productToUpdate.product.productId,
           quantity: productToUpdate.quantity,
         });
         const updatedCart = await getOrderByUserId(parsedToken);
-      setCartItems(updatedCart);
+        setCartItems(updatedCart);
       } catch (error) {
         console.error("Error updating product quantity:", error);
       }
@@ -159,31 +235,6 @@ export default function ShoppingCart() {
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const deleteProduct = async (id: string) => {
-    try {
-      const token = Cookies.get("accessToken") || "null";
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
-      }
-      console.log(typeof id);
-
-      await deleteOrderDetail(parsedToken, id);
-      console.log("ID del producto a eliminar:", id);
-      
-  
-      // Fetch the updated cart from the backend
-      const updatedCart = await getOrderByUserId(parsedToken);
-      setCartItems(updatedCart);
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#edede9] flex items-center justify-center p-4">
       <motion.div
@@ -198,89 +249,109 @@ export default function ShoppingCart() {
             Tu Carrito
           </h2>
           <Badge variant="secondary" className="text-[#ef233c]">
-            {productsWithQuantities.length} {productsWithQuantities.length === 1 ? "artículo" : "artículos"}
+            {productsWithQuantities.length}{" "}
+            {productsWithQuantities.length === 1 ? "artículo" : "artículos"}
           </Badge>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <ScrollArea className="md:col-span-2 h-[calc(100vh-20rem)] pr-4">
             <AnimatePresence>
-              {productsWithQuantities.map((item) => (
+              {productsWithQuantities.length === 0 ? (
                 <motion.div
-                  key={item.product.id}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex items-center space-x-4 mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center text-gray-500"
                 >
-                  <Image
-                    src={item.product.imageUrl}
-                    alt={item.product.name}
-                    width={96}
-                    height={96}
-                    className="object-cover rounded-md"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.product.name}</h3>
-                    <div className="flex items-center">
-                      <p className="text-gray-600">
-                        ${item.product.price}
-                      </p>
-                      {item.product.discount && (
-                        <Badge variant="destructive" className="ml-2">
-                          -{item.product.discount}%
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center mt-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => updateQuantity(item.product.id.toString(), -1)}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="mx-2 w-8 text-center">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => updateQuantity(item.product.id.toString(), 1)}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="ml-4"
-                        onClick={() => deleteProduct(item.orderDetailId)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="font-semibold">
-                    ${(item.product.price * item.quantity).toFixed(2)}
-                  </p>
+                  Tu carrito está vacío.
                 </motion.div>
-              ))}
+              ) : (
+                productsWithQuantities.map((item) => (
+                  <motion.div
+                    key={item.product.productId}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-center space-x-4 mb-6"
+                  >
+                    <Image
+                      src={item.product.imageUrl}
+                      alt={item.product.name}
+                      width={96}
+                      height={96}
+                      className="object-cover rounded-md"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{item.product.name}</h3>
+                      <div className="flex items-center">
+                        <p className="text-gray-600">${item.product.price}</p>
+                        {item.product.discount && (
+                          <Badge variant="destructive" className="ml-2">
+                            -{item.product.discount}%
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center mt-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            updateQuantity(
+                              item.product.productId.toString(),
+                              -1
+                            )
+                          }
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="mx-2 w-8 text-center">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() =>
+                            updateQuantity(item.product.productId.toString(), 1)
+                          }
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="ml-4"
+                          onClick={() => deleteProduct(item.orderDetailId)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="font-semibold">
+                      ${(item.product.price * item.quantity).toFixed(2)}
+                    </p>
+                  </motion.div>
+                ))
+              )}
             </AnimatePresence>
           </ScrollArea>
           <div className="md:col-span-1 bg-gray-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4">Resumen del pedido</h3>
-            <div className="space-y-2">
-              {productsWithQuantities.map((item) => (
-                <div key={item.product.id} className="flex justify-between text-sm">
-                  <span>
-                    {item.product.name} (x{item.quantity})
-                  </span>
-                  <span>
-                    ${item.product.price}
-                  </span>
-                </div>
-              ))}
-            </div>
+            {productsWithQuantities.length > 0 && (
+              <div className="space-y-2">
+                {productsWithQuantities.map((item) => (
+                  <div
+                    key={item.product.productId}
+                    className="flex justify-between text-sm"
+                  >
+                    <span>
+                      {item.product.name} (x{item.quantity})
+                    </span>
+                    <span>${item.product.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <Separator className="my-4" />
             <div className="flex justify-between font-semibold">
               <span>Subtotal</span>
@@ -288,9 +359,7 @@ export default function ShoppingCart() {
             </div>
             <div className="flex justify-between text-sm mt-2">
               <span>Envío</span>
-              <span>
-                {shipping === 0 ? "Gratis" : `$${shipping.toFixed(2)}`}
-              </span>
+              <span>{shipping === 0 ? "Gratis" : `$${shipping}`}</span>
             </div>
             {shipping > 0 && (
               <div className="mt-2">
@@ -341,12 +410,6 @@ export default function ShoppingCart() {
                 </Button>
               </div>
             </div>
-            <Button className="w-full mt-6 bg-[#ef233c] hover:bg-[#d90429] text-white">
-              <CreditCard className="mr-2 h-4 w-4" /> Proceder al pago
-            </Button>
-            <Button variant="outline" className="w-full mt-2">
-              <Truck className="mr-2 h-4 w-4" /> Calcular envío
-            </Button>
           </div>
         </div>
       </motion.div>
