@@ -26,56 +26,39 @@ import { IOrder } from "@/interfaces/IOrder";
 import socket from "@/utils/socket";
 
 export default function DashboardPage() {
+  const [user, setUser] = useState<IUser>();
+  const token = Cookies.get("accessToken") || "null";
+  const { userId } = useUserContext();
   const [totalUsers, setTotalUsers] = useState<number>(0);
   const [totalVentas, setTotalVentas] = useState<number>(0);
   const [totalCarts, setTotalCarts] = useState<number>(0);
-  const [lastCart, setLastCart] = useState<IOrder>();
-  const [lastUser, setLastUser] = useState<IUser>();
-  const [minutesAgoUser, setMinutesAgoUser] = useState<number>(0);
-  const [hoursAgoUser, setHoursAgoUser] = useState<number>(0);
   const [hoursAgoCart, setHoursAgoCart] = useState<number>(0);
   const [minutesAgoCart, setMinutesAgoCart] = useState<number>(0);
-  const [lastCompra, setLastCompra] = useState<IOrder>();
   const [minutesAgoCompra, setMinutesAgoCompra] = useState<number>(0);
   const [hoursAgoCompra, setHoursAgoCompra] = useState<number>(0);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [minutesAgoLastUser, setMinutesAgoLastUser] = useState<number>(0);
   const [minutesAgoUpdate, setMinutesAgoUpdate] = useState<number>(0);
-  const token = Cookies.get("accessToken") || "null";
-  const { userId } = useUserContext();
-  const [user, setUser] = useState<IUser>();
-  console.log(user);
-
+  const [hoursAgoLastUser, setHoursAgoLastUser] = useState<number>(0);
+  const [lastCart, setLastCart] = useState<IOrder>();
+  const [lastCompra, setLastCompra] = useState<IOrder>();
+  const [lastUser, setLastUser] = useState<IUser>();
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  console.log("user", user);
   const stats = [
+    { title: "Total Users", value: totalUsers, icon: Users, trend: "up" },
+    { title: "Total Sales", value: totalVentas, icon: DollarSign, trend: "up" },
     {
-      title: "Total de usuarios",
-      value: `${totalUsers}`,
-      icon: Users,
-      trend: "+12% from last month",
-    },
-    {
-      title: "Ventas",
-      value: `${totalVentas}`,
-      icon: DollarSign,
-      trend: "+8% from last month",
-    },
-    {
-      title: "Carritos",
-      value: `${totalCarts}`,
+      title: "Total Carts",
+      value: totalCarts,
       icon: ShoppingCart,
-      trend: "+5% from last month",
-    },
-    {
-      title: "Estadisticas",
-      value: "23%",
-      icon: TrendingUp,
-      trend: "+2% from last month",
+      trend: "up",
     },
   ];
 
   const recentActivities = [
     {
       action: "Ultimo usuario registrado",
-      time: `${hoursAgoUser} hours and ${minutesAgoUser} minutes ago`,
+      time: `${hoursAgoLastUser} hours and ${minutesAgoLastUser} minutes ago`,
       icon: Users,
     },
     {
@@ -221,14 +204,14 @@ export default function DashboardPage() {
         const timeDifference = now.getTime() - userDate.getTime();
 
         if (timeDifference >= 0) {
-          setHoursAgoUser(Math.floor(timeDifference / (1000 * 60 * 60)));
-          setMinutesAgoUser(
+          setHoursAgoLastUser(Math.floor(timeDifference / (1000 * 60 * 60)));
+          setMinutesAgoLastUser(
             Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
           );
         } else {
           console.error("User date is in the future");
-          setHoursAgoUser(0);
-          setMinutesAgoUser(0);
+          setHoursAgoLastUser(0);
+          setMinutesAgoLastUser(0);
         }
       }
     };
@@ -265,6 +248,33 @@ export default function DashboardPage() {
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, [lastCompra]);
+
+  // Calcular tiempo desde el ultimo registro
+  useEffect(() => {
+    const calculateTimeDifferenceLastUser = () => {
+      if (lastUser) {
+        const now = new Date();
+        const lastUserDate = new Date(lastUser.createdAt);
+        const timeDifference = now.getTime() - lastUserDate.getTime();
+
+        if (timeDifference >= 0) {
+          setHoursAgoLastUser(Math.floor(timeDifference / (1000 * 60 * 60)));
+          setMinutesAgoLastUser(
+            Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))
+          );
+        } else {
+          console.error("Order date is in the future");
+          setHoursAgoLastUser(0);
+          setMinutesAgoLastUser(0);
+        }
+      }
+    };
+
+    calculateTimeDifferenceLastUser();
+    const interval = setInterval(calculateTimeDifferenceLastUser, 60000);
+
+    return () => clearInterval(interval);
+  }, [lastUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -309,7 +319,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <StatsCard key={stat.title} {...stat} />
+          <StatsCard key={stat.title} {...stat} value={stat.value.toString()} />
         ))}
       </div>
 
