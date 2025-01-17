@@ -1,4 +1,8 @@
-import { ICreateProduct, IUpdateproduct } from "@/interfaces/IProducts";
+import {
+  ICreateProduct,
+  IProduct,
+  IUpdateproduct,
+} from "@/interfaces/IProducts";
 const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export const getAllProducts = async () => {
@@ -18,7 +22,7 @@ export const getAllProducts = async () => {
   }
 };
 
-export const getProductById = async (id: string) => {
+export const getProductById = async (id: number): Promise<IProduct> => {
   try {
     const response = await fetch(`${APIURL}/products/${id}`, {
       method: "GET",
