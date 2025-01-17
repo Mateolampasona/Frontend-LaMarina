@@ -178,10 +178,12 @@ export default function Login() {
             },
             buttonsStyling: false,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           Swal.fire({
             title: "Error",
-            text: "No se pudo enviar el correo de recuperación. Inténtalo de nuevo más tarde.",
+            text: `No se pudo enviar el correo de recuperación. Inténtalo de nuevo más tarde. ${
+              (error as Error).message
+            }`,
             icon: "error",
             customClass: {
               popup: "bg-white shadow-lg rounded-lg p-6",
