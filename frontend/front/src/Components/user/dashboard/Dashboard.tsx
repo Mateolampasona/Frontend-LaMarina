@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, CreditCard, Edit, HelpCircle } from "lucide-react";
+import { Bell, Edit, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Skeleton } from "@/Components/ui/skeleton";
-
-import { Separator } from "@/Components/ui/separator";
 import { ProfileInfo } from "@/Components/ui/profile-info";
 import { EditProfileForm } from "@/Components/ui/edit-profile-form";
 import Cookies from "js-cookie";
@@ -331,7 +329,7 @@ export default function UserDashboard() {
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-[#2d2d2d]">
-                Favoritos
+                Productos Favoritos
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -373,7 +371,7 @@ export default function UserDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div>
+                {/* <div>
                   <h4 className="text-sm font-medium text-[#2d2d2d] mb-2">
                     Métodos de Pago
                   </h4>
@@ -387,8 +385,8 @@ export default function UserDashboard() {
                       </span>
                     </div>
                   )}
-                </div>
-                <Separator className="bg-gray-200" />
+                </div> */}
+                {/* <Separator className="bg-gray-200" /> */}
                 <div>
                   <h4 className="text-sm font-medium text-[#2d2d2d] mb-2">
                     Transacciones Recientes

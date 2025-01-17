@@ -44,7 +44,7 @@ export const modifyUser = async (
   modifyData: IModifyUser
 ) => {
   try {
-    const response = await fetch(`${APIURL}/users/${id}`, {
+    const response = await fetch(`${APIURL}/users/modify/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
