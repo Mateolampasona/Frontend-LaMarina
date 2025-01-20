@@ -5,6 +5,10 @@ import { ShoppingCart } from "lucide-react";
 import { IProduct } from "@/interfaces/IProducts";
 import { Card, CardContent, CardFooter } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
+import { useRouter } from "next/navigation";
+import { addProductToOrder } from "@/helpers/orderDetail.helper";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 interface SingleProductCardProps {
   product: IProduct;
@@ -12,10 +16,78 @@ interface SingleProductCardProps {
 
 const SingleProductCard: React.FC<SingleProductCardProps> = ({ product }) => {
   const hasDiscount = (product.discount ?? 0) > 0;
+  const router = useRouter();
+  const token = Cookies.get("accessToken");
+
+  const handleCardClick = () => {
+    router.push(`/product/${product.productId}`);
+  };
+
+  const addProduct = async (productId: string) => {
+    if (!token || token === "null") {
+      Swal.fire({
+        title: "Necesitas iniciar sesión",
+        text: "Por favor, inicia sesión para agregar productos al carrito.",
+        icon: "warning",
+        confirmButtonText: "Iniciar sesión",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/login");
+        }
+      });
+      return;
+    }
+    if (!productId) {
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo agregar el producto al carrito.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      });
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Token is not a string");
+    }
+    try {
+      const response = await addProductToOrder(parsedToken, {
+        productId: Number(productId),
+        quantity: 1,
+      });
+      console.log("Producto agregado al carrito", response);
+      Swal.fire({
+        title: "Producto agregado al carrito",
+        text: "El producto se ha agregado correctamente al carrito.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      });
+    } catch (error) {
+      console.error("Error al agregar el producto al carrito", error);
+    }
+  };
 
   return (
     <Card className="group relative flex flex-col h-full overflow-hidden  hover:shadow-lg  bg-white bg-opacity-80 backdrop-blur-sm border border-gray-200">
-      <div className="relative aspect-square w-full overflow-hidden">
+      <div
+        className="relative aspect-square w-full overflow-hidden"
+        onClick={handleCardClick}
+      >
         <Image
           src={product.imageUrl}
           alt={product.name}
@@ -49,7 +121,10 @@ const SingleProductCard: React.FC<SingleProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      <CardContent className="flex flex-col justify-between flex-grow p-3">
+      <CardContent
+        className="flex flex-col justify-between flex-grow p-3"
+        onClick={handleCardClick}
+      >
         <div>
           <h3 className="font-semibold text-sm mb-1 line-clamp-2  transition-colors duration-200">
             {product.name}
@@ -71,7 +146,12 @@ const SingleProductCard: React.FC<SingleProductCardProps> = ({ product }) => {
           className="w-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 group relative overflow-hidden text-sm py-1"
           disabled={product.stock === 0 || !product.isActive}
         >
-          <span className="relative z-10">Añadir al carrito</span>
+          <span
+            className="relative z-10"
+            onClick={() => addProduct(product.productId.toString())}
+          >
+            Añadir al carrito
+          </span>
           <span className="absolute inset-0 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
         </Button>
       </CardFooter>

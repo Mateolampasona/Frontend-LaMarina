@@ -16,15 +16,8 @@ import {
   Shield,
 } from "lucide-react";
 import { IProduct } from "@/interfaces/IProducts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/Components/ui/accordion";
 import { Badge } from "@/Components/ui/badge";
-import { Progress } from "@/Components/ui/progress";
+
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -45,8 +38,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getProductById } from "@/helpers/products.helpers";
 import socket from "@/utils/socket";
-
-const APIURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+import { getAllCategories } from "@/helpers/categories.helper";
 
 interface ProductDetailProps {
   product: IProduct;
@@ -224,12 +216,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        if (!APIURL) throw new Error("API URL is not defined");
-        console.log(`Fetching categories from: ${APIURL}/categories`);
-        const response = await fetch(`${APIURL}/categories`);
-        if (!response.ok) throw new Error("Error al cargar categorías");
-        const data = await response.json();
-        setCategories(data);
+        const categories = await getAllCategories();
+        setCategories(categories);
       } catch (error) {
         console.error("Fetch error:", error);
       } finally {
@@ -482,6 +470,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     <Button
                       size="lg"
                       className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+                      onClick={addProduct}
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
                       Agregar al carrito
@@ -490,7 +479,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => setIsLiked(!isLiked)}
+                        onClick={() => setFavorite()}
                         className={isLiked ? "text-red-600" : ""}
                       >
                         <Heart fill={isLiked ? "currentColor" : "none"} />
