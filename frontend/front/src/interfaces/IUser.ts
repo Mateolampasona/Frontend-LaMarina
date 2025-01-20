@@ -1,5 +1,6 @@
 import { ICompra } from "./ICompra";
 import { IFavorite } from "./IFavorite";
+import { IOrder } from "./IOrder";
 
 export interface IModifyUser {
   email?: string;
@@ -30,4 +31,5 @@ export interface IUser {
   userId: number;
   compras: ICompra[];
   favorites: IFavorite[];
+  order: IOrder;
 }
