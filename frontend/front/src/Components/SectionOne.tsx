@@ -51,19 +51,20 @@ export default function HeroSection() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Comprar Ahora
-                <ShoppingCart className="w-5 h-5" />
+                <Link href="/productos" className="flex items-center gap-2">
+                  Comprar Ahora
+                  <ShoppingCart className="w-5 h-5" />
+                </Link>
               </motion.button>
               <motion.button
                 className="bg-gray-100 text-gray-900 px-8 py-3 rounded-lg font-medium flex items-center gap-2 hover:bg-gray-200 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link href={"/categorias"}>
-                Ver Más
-    
+                <Link href="/categorias" className="flex items-center gap-2">
+                  Ver Más
+                  <ArrowRight className="w-5 h-5" />
                 </Link>
-                <ArrowRight className="w-5 h-5" />
               </motion.button>
             </motion.div>
           </div>
@@ -98,9 +99,11 @@ export default function HeroSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
               >
-                <button className="text-sm hover:text-[#ef233c] transition-colors">
-                  {category}
-                </button>
+                <Link href={`/categorias/${category}`}>
+                  <button className="text-sm hover:text-[#ef233c] transition-colors">
+                    {category}
+                  </button>
+                </Link>
               </motion.li>
             ))}
           </ul>

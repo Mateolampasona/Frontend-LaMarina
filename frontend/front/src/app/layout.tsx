@@ -5,6 +5,7 @@ import { Footer } from "@/Components/Footer";
 import "./globals.css";
 import WhatsAppBubble from "@/Components/WhatsappBubble";
 import { AuthProvider } from "@/Context/AuthContext";
+import { UserProvider } from "@/Context/userContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +36,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-[#edede9]`}
       >
         <AuthProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <WhatsAppBubble />
+          <UserProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+            <WhatsAppBubble />
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>

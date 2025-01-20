@@ -73,3 +73,23 @@ export const register = async (userData: IRegisterProps) => {
     throw new Error(String(error));
   }
 };
+
+export const forgotPassword = async (email: string) => {
+  try {
+    const response = await fetch(`${APIURL}/auth/forgot-password`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+    const res = await response.json();
+    if (res.statusCode === 400) {
+      throw new Error(res.message);
+    } else {
+      return res;
+    }
+  } catch (error: unknown) {
+    throw new Error(String(error));
+  }
+};
