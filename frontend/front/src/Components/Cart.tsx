@@ -21,6 +21,10 @@ import {
   deleteOrderDetail,
 } from "@/helpers/orderDetail.helper";
 import socket from "@/utils/socket";
+import { createPreference } from "@/helpers/payment.helper";
+import { getUserById } from "@/helpers/users.helpers";
+import { IUser } from "@/interfaces/IUser";
+import PaymentButton from "./paymentButton";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 0;
@@ -48,13 +52,20 @@ export default function ShoppingCart() {
   const token = Cookies.get("accessToken") || "null";
   const [isGift, setIsGift] = useState(false);
   const [promoCode, setPromoCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [cart, setCartItems] = useState<ICartItems | null>(null);
   const [productsWithQuantities, setProductsWithQuantities] = useState<
     ProductWithQuantity[]
   >([]);
+  const [preferenceId, setPreferenceId] = useState<string | null>(null);
+  const [user, setUser] = useState<IUser | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<
+    "efectivo" | "mercadopago"
+  >();
+  console.log("preferenceId", preferenceId);
+  console.log(user);
 
-  // Fetch para obtener orden del USUARIO
+  // Fetch para obtener orden del USUARIO y el usuario
   useEffect(() => {
     const fetchCartItems = async () => {
       if (!token) {
@@ -68,14 +79,47 @@ export default function ShoppingCart() {
 
       try {
         const data = await getOrderByUserId(parsedToken);
+        const user = await getUserById(parsedToken, Number(userId));
+        setUser(user);
         setCartItems(data);
+        setIsLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error("Error fetching cart items:", error);
+        setIsLoading(false); // Set loading to false even if there is an error
       }
     };
 
     fetchCartItems();
   }, [userId, token]);
+
+  useEffect(() => {
+    const createPaymentPreference = async () => {
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+      const parsedToken = JSON.parse(token);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      if (!user) {
+        console.error("No user found");
+        return;
+      }
+      try {
+        const data = {
+          email: user.email,
+          orderId: user.order.orderId,
+        };
+        const response = await createPreference(parsedToken, data);
+        setPreferenceId(response.preferenceId);
+      } catch (error) {
+        console.error("Error creating preference:", error);
+      }
+    };
+
+    createPaymentPreference();
+  }, [token, user]);
 
   // Eliminar producto del carrito
   const deleteProduct = async (id: string) => {
@@ -234,6 +278,14 @@ export default function ShoppingCart() {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#edede9] flex items-center justify-center p-4">
@@ -408,6 +460,40 @@ export default function ShoppingCart() {
                     "Aplicar"
                   )}
                 </Button>
+              </div>
+              <div className="mt-4">
+                <Label>Método de pago</Label>
+                <div className="flex mt-1 space-x-2">
+                  <Button
+                    onClick={() => setPaymentMethod("efectivo")}
+                    className={
+                      paymentMethod === "efectivo"
+                        ? "bg-blue-500 text-white"
+                        : ""
+                    }
+                  >
+                    Efectivo
+                  </Button>
+                  <Button
+                    onClick={() => setPaymentMethod("mercadopago")}
+                    className={
+                      paymentMethod === "mercadopago"
+                        ? "bg-blue-500 text-white"
+                        : ""
+                    }
+                  >
+                    MercadoPago
+                  </Button>
+                </div>
+                <div className="mt-4">
+                  {paymentMethod === "mercadopago" && preferenceId ? (
+                    <PaymentButton preferenceId={preferenceId} />
+                  ) : (
+                    <div className="text-sm text-gray-600">
+                      Puedes pagar en efectivo al retirar tu pedido.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
