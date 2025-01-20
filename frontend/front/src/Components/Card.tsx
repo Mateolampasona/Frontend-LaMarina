@@ -6,11 +6,12 @@ import { Button } from "@/Components/ui/button";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import Cookies from "js-cookie";
-import swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import socket from "@/utils/socket";
 import { getProductById } from "@/helpers/products.helpers";
+import { addProductToOrder } from "@/helpers/orderDetail.helper";
+import Swal from "sweetalert2";
 
 interface ProductCardProps {
   products: IProduct[];
@@ -19,31 +20,68 @@ interface ProductCardProps {
 export function ProductCard({ products }: ProductCardProps) {
   const router = useRouter();
   const [productList, setProductList] = useState<IProduct[]>([]);
+  const token = Cookies.get("accessToken");
 
   useEffect(() => {
     setProductList(products);
   }, [products]);
 
-  const handleAddToCart = () => {
-    const accestoken = Cookies.get("accesToken");
-
-    if (!accestoken) {
-      swal
-        .fire({
-          title: "¡Inicia sesión!",
-          text: "Para añadir productos al carrito debes iniciar sesión.",
-          icon: "info",
-          confirmButtonText: "Iniciar sesión",
-          showCancelButton: true,
-          cancelButtonText: "Cancelar",
-          cancelButtonColor: "#d33",
-          confirmButtonColor: "#ef233c",
-        })
-        .then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/login";
-          }
-        });
+  const addProduct = async (productId: string) => {
+    if (!token || token === "null") {
+      Swal.fire({
+        title: "Necesitas iniciar sesión",
+        text: "Por favor, inicia sesión para agregar productos al carrito.",
+        icon: "warning",
+        confirmButtonText: "Iniciar sesión",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/login");
+        }
+      });
+      return;
+    }
+    if (!productId) {
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo agregar el producto al carrito.",
+        icon: "error",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      });
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Token is not a string");
+    }
+    try {
+      const response = await addProductToOrder(parsedToken, {
+        productId: Number(productId),
+        quantity: 1,
+      });
+      console.log("Producto agregado al carrito", response);
+      Swal.fire({
+        title: "Producto agregado al carrito",
+        text: "El producto se ha agregado correctamente al carrito.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      });
+    } catch (error) {
+      console.error("Error al agregar el producto al carrito", error);
     }
   };
 
@@ -98,7 +136,7 @@ export function ProductCard({ products }: ProductCardProps) {
                 aria-label="Añadir al carrito"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleAddToCart();
+                  addProduct(product.productId.toString());
                 }}
               >
                 <ShoppingCart className="h-4 w-4" />
@@ -147,7 +185,7 @@ export function ProductCard({ products }: ProductCardProps) {
               className="w-full bg-[#ef233c] hover:bg-[#d90429] text-white transition-colors duration-200 group relative overflow-hidden"
               onClick={(e) => {
                 e.stopPropagation();
-                handleAddToCart();
+                addProduct(product.productId.toString());
               }}
             >
               <span className="relative z-10">Añadir al carrito</span>
