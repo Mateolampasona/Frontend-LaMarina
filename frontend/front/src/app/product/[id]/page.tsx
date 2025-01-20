@@ -1,4 +1,4 @@
-import { getProductById } from "@/Helpers/products.helpers";
+import { getProductById } from "@/helpers/products.helpers";
 import { ProductDetail } from "@/Components/ProductDetail";
 import { notFound } from "next/navigation";
 import { UserProvider } from "@/Context/userContext";

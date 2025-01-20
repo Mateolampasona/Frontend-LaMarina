@@ -13,7 +13,6 @@ import {
   Share2,
   ArrowLeft,
   Truck,
-  Shield,
 } from "lucide-react";
 import { IProduct } from "@/interfaces/IProducts";
 import { Badge } from "@/Components/ui/badge";
@@ -62,6 +61,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const token = Cookies.get("accessToken") || "null";
   const images = [product.imageUrl, ...Array(3).fill(product.imageUrl)]; // Simulando múltiples imágenes del producto
   const router = useRouter();
+  console.log(productRender);
 
   // Fetch User
   useEffect(() => {
@@ -484,7 +484,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       >
                         <Heart fill={isLiked ? "currentColor" : "none"} />
                       </Button>
-                      <Button size="icon" variant="outline">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={handleShareClick}
+                      >
                         <Share2 />
                       </Button>
                     </div>

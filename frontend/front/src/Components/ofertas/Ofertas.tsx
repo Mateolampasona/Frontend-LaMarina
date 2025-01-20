@@ -24,12 +24,10 @@ import {
 } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Search, ShoppingCart } from "lucide-react";
-import { getAllProducts } from "@/Helpers/products.helpers";
+import { getAllProducts } from "@/helpers/products.helpers";
 import { IProduct } from "@/interfaces/IProducts";
 
 import Loading from "../Loading";
-
-
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const [ref, inView] = useInView({
@@ -61,7 +59,7 @@ const ProductCard = ({ product }: { product: IProduct }) => {
           <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">
             {product.name}
           </CardTitle>
-          
+
           <div className="flex justify-between items-center mt-2">
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-primary">
@@ -84,8 +82,6 @@ const ProductCard = ({ product }: { product: IProduct }) => {
     </motion.div>
   );
 };
-
-
 
 const VistaOfertas = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,7 +120,7 @@ const VistaOfertas = () => {
 
   const categories = [
     "todas",
-    ...new Set(products.map((product) => product.category_id.name)),
+    ...Array.from(new Set(products.map((product) => product.category_id.name))),
   ];
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -138,8 +134,6 @@ const VistaOfertas = () => {
 
   return (
     <div className="bg-gradient-to-b from-[#edede9] to-white min-h-screen p-8 flex flex-col items-center">
-     
-
       <div className="w-full max-w-4xl flex flex-col md:flex-row justify-center items-center mb-8 space-y-4 md:space-y-0 md:space-x-4">
         <div className="relative w-full md:w-1/3">
           <Input
@@ -171,7 +165,7 @@ const VistaOfertas = () => {
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {<Loading/>}
+          {<Loading />}
         </div>
       ) : error ? (
         <p className="text-center text-red-500 mt-8">{error}</p>
@@ -180,7 +174,7 @@ const VistaOfertas = () => {
           <AnimatePresence>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {currentProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.productId} product={product} />
               ))}
             </div>
           </AnimatePresence>

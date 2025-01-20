@@ -6,7 +6,6 @@ import { Button } from "@/Components/ui/button";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import Cookies from "js-cookie";
-import swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import socket from "@/utils/socket";
