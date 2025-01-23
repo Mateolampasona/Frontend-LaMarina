@@ -1,43 +1,43 @@
-"use client"
-import { Facebook,Instagram,Twitter } from "lucide-react"
-import { Button } from "@/Components/ui/button"
-import { Input } from "@/Components/ui/input"
-import { useState } from "react"
-import { newsLetterForm } from "@/helpers/newsLetter.helper"
-import Swal from "sweetalert2"
+"use client";
+import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { useState } from "react";
+import { newsLetterForm } from "@/helpers/newsLetter.helper";
+import Swal from "sweetalert2";
 
 export function Footer() {
-  const [email,setEmail] = useState('')
-  const handlesubmit = async ( e: React.FormEvent ) => {
-    e.preventDefault()
+  const [email, setEmail] = useState("");
+  const handlesubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      await newsLetterForm(email)
-      
+      await newsLetterForm(email);
+
       Swal.fire({
-        title: '¡Gracias por suscribirte!',
-        text: 'Recibirás nuestras últimas ofertas y novedades en tu correo.',
-        icon: 'success',
-        confirmButtonText: 'Cerrar'
-      })
-      setEmail('')
+        title: "¡Gracias por suscribirte!",
+        text: "Recibirás nuestras últimas ofertas y novedades en tu correo.",
+        icon: "success",
+        confirmButtonText: "Cerrar",
+      });
+      setEmail("");
     } catch (error: unknown) {
-      let errorMessage = 'Ha ocurrido un error, por favor intenta de nuevo.'
+      let errorMessage = "Ha ocurrido un error, por favor intenta de nuevo.";
       if (error instanceof Error) {
-        if (error.message.includes('email should not be empty')) {
-          errorMessage = 'El correo electrónico no debe estar vacío.'
-        } else if (error.message.includes('email must be an email')) {
-          errorMessage = 'El correo electrónico debe ser válido.'
+        if (error.message.includes("email should not be empty")) {
+          errorMessage = "El correo electrónico no debe estar vacío.";
+        } else if (error.message.includes("email must be an email")) {
+          errorMessage = "El correo electrónico debe ser válido.";
         }
       }
       Swal.fire({
-        title: '¡Ups!',
+        title: "¡Ups!",
         text: errorMessage,
-        icon: 'error',
-        confirmButtonText: 'Cerrar'
-      })
+        icon: "error",
+        confirmButtonText: "Cerrar",
+      });
     }
-  }
-  
+  };
+
   return (
     <footer className="bg-[#edede9] text-gray-700 py-12">
       <div className="container mx-auto px-4">
@@ -60,7 +60,7 @@ export function Footer() {
                   href="/tienda"
                   className="hover:text-[#ef233c] transition-colors"
                 >
-                  Nuestra Tienda
+                  Sucursal
                 </a>
               </li>
               <li>
@@ -81,7 +81,10 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="help"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Contacto
                 </a>
               </li>
@@ -96,7 +99,10 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="help"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Preguntas Frecuentes
                 </a>
               </li>
@@ -108,22 +114,34 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="user/dashboard"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Estado del Pedido
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="user/dashboard"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Seguimiento de Envío
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="user/dashboard"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Historial de Compras
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
+                <a
+                  href="user/dashboard"
+                  className="hover:text-[#ef233c] transition-colors"
+                >
                   Lista de Deseos
                 </a>
               </li>
@@ -153,13 +171,13 @@ export function Footer() {
             </div>
             <div className="flex space-x-4 mt-4">
               <a
-                href="#"
+                href="https://www.facebook.com/lamarina.ok"
                 className="text-gray-500 hover:text-[#ef233c] transition-colors"
               >
                 <Facebook size={20} />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/lamarina_sanjuann"
                 className="text-gray-500 hover:text-[#ef233c] transition-colors"
               >
                 <Instagram size={20} />

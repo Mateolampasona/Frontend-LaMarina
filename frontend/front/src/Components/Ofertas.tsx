@@ -183,25 +183,29 @@ const ProductosEnOferta = ({ productos }: { productos: IProduct[] }) => {
               transition={{ delay: index * 0.2 }}
             >
               <div>
-                <div className="font-bold text-base sm:text-lg">
-                  {producto.name}
-                </div>
-                <div className="text-xs sm:text-sm line-through text-gray-500">
-                  ${producto.originalPrice}
-                </div>
-                <div className="text-xl sm:text-2xl font-extrabold text-[#ef233c]">
-                  ${producto.price}
-                </div>
+                <a href={`product/${producto.productId}`}>
+                  <div className="font-bold text-base sm:text-lg">
+                    {producto.name}
+                  </div>
+                  <div className="text-xs sm:text-sm line-through text-gray-500">
+                    ${producto.originalPrice}
+                  </div>
+                  <div className="text-xl sm:text-2xl font-extrabold text-[#ef233c]">
+                    ${producto.price}
+                  </div>
+                </a>
               </div>
               <div className="bg-[#ef233c] text-white font-bold rounded-full p-2 sm:p-3 text-xs sm:text-sm mt-2 sm:mt-0">
-                {producto.originalPrice !== null
-                  ? (
-                      ((producto.originalPrice - producto.price) /
-                        producto.originalPrice) *
-                      100
-                    ).toFixed(0)
-                  : 0}
-                % OFF
+                <a href={`product/${producto.productId}`}>
+                  {producto.originalPrice !== null
+                    ? (
+                        ((producto.originalPrice - producto.price) /
+                          producto.originalPrice) *
+                        100
+                      ).toFixed(0)
+                    : 0}
+                  % OFF
+                </a>
               </div>
             </motion.div>
           ))
