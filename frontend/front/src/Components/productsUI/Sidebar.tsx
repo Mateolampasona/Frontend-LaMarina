@@ -6,7 +6,7 @@ import { ICategory } from "@/interfaces/IProducts";
 
 interface SidebarProps {
   categories: ICategory[];
-  onCategoryChange: (categoryId: number) => void;
+  onCategoryChange: (categoryId: number[] | null) => void;
   onPriceRangeChange: (range: [number, number]) => void;
 }
 
@@ -15,7 +15,7 @@ export default function Sidebar({
   onCategoryChange,
   onPriceRangeChange,
 }: SidebarProps) {
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 25000]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
   const handleCategoryChange = (categoryId: number) => {
@@ -24,14 +24,20 @@ export default function Sidebar({
       : [...selectedCategories, categoryId];
 
     setSelectedCategories(newSelectedCategories);
-    onCategoryChange(categoryId);
+    onCategoryChange(newSelectedCategories); // Pasa el array completo de categorías seleccionadas
   };
+  console.log("selectedCategories", selectedCategories);
 
   const handlePriceChange = (newRange: number[]) => {
     setPriceRange(newRange as [number, number]);
     onPriceRangeChange(newRange as [number, number]);
   };
-
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setPriceRange([0, 25000]);
+    onCategoryChange(null); // Llama a la función de cambio de categoría con null o un valor que indique que se deben limpiar los filtros
+    onPriceRangeChange([0, 2500000]);
+  };
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
       <div>
@@ -57,9 +63,9 @@ export default function Sidebar({
       <div>
         <h3 className="text-lg font-mono font-semibold mb-4">Precio</h3>
         <Slider
-          defaultValue={[0, 1000]}
-          max={1000}
-          step={10}
+          defaultValue={[0, 25000]}
+          max={25000}
+          step={2500}
           value={priceRange}
           onValueChange={handlePriceChange}
           className="mt-2"
@@ -69,6 +75,12 @@ export default function Sidebar({
           <span>${priceRange[1]}</span>
         </div>
       </div>
+      <button
+        onClick={clearFilters}
+        className="w-full px-4 py-2 bg-red-500 text-white rounded"
+      >
+        Limpiar Filtros
+      </button>
     </div>
   );
 }
