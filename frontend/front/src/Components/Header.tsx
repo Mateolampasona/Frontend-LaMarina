@@ -24,6 +24,9 @@ export default function Navbar() {
   // Fetch user
   useEffect(() => {
     const fetchUser = async () => {
+      if (!token || !userId) {
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;

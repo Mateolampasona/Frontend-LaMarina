@@ -30,6 +30,10 @@ export default function ProductGrid({ products }: ProductGridProps) {
     };
   }, []);
 
+  useEffect(() => {
+    setProductList(products);
+  }, [products]);
+
   // Filtrar productos activos
   const activeProducts = productList.filter((product) => product.isActive);
 
