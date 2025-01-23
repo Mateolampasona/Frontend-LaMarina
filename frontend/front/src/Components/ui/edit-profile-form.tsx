@@ -10,49 +10,52 @@ import Cookies from "js-cookie";
 import { modifyUser } from "@/helpers/users.helpers";
 import Swal from "sweetalert2";
 
-
-export function EditProfileForm({name:initialName ,email: initialEmail, onCancel}: IEditProfileFormProps) {
+export function EditProfileForm({
+  name: initialName,
+  email: initialEmail,
+  onCancel,
+}: IEditProfileFormProps) {
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const token = Cookies.get("accessToken") || "null";
-  const {userId} = useUserContext();
-
+  const { userId } = useUserContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!token){
+    if (!token) {
       console.log("No token found");
-      return
+      return;
     }
-    let parsedToken
-    try{
-      parsedToken = JSON.parse(token)
-    } catch(error){
-      console.log("Error parsing token",error)
-      return
+    let parsedToken;
+    try {
+      parsedToken = JSON.parse(token);
+    } catch (error) {
+      console.log("Error parsing token", error);
+      return;
     }
-    if(typeof parsedToken !=="string"){
-      console.error('Invalid token format')
-      return
+    if (typeof parsedToken !== "string") {
+      console.error("Invalid token format");
+      return;
     }
-    try {const modifyData = {name: name.toLocaleLowerCase(), email: email.toLocaleLowerCase()}
-    await modifyUser(parsedToken, Number(userId),modifyData)
+    try {
+      const modifyData = {
+        name: name.toLocaleLowerCase(),
+        email: email.toLocaleLowerCase(),
+      };
+      await modifyUser(parsedToken, Number(userId), modifyData);
       Swal.fire({
         title: "Perfil actualizado",
         icon: "success",
         confirmButtonText: "Ok",
       }).then(() => {
         onCancel();
-      })
+      });
       onCancel();
-    
-      
     } catch (error) {
       console.error("Error al actualizar el perfil", error);
     }
-    
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +75,7 @@ export function EditProfileForm({name:initialName ,email: initialEmail, onCancel
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex flex-col items-center">
+      {/* <div className="flex flex-col items-center">
         <Avatar
           className="w-24 h-24 cursor-pointer relative"
           onClick={triggerFileInput}
@@ -98,7 +101,7 @@ export function EditProfileForm({name:initialName ,email: initialEmail, onCancel
         >
           Cambiar foto
         </Button>
-      </div>
+      </div> */}
       <div>
         <Label htmlFor="name">Nombre</Label>
         <Input

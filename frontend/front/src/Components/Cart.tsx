@@ -62,12 +62,17 @@ export default function ShoppingCart() {
   const [paymentMethod, setPaymentMethod] = useState<
     "efectivo" | "mercadopago"
   >();
-  console.log("preferenceId", preferenceId);
-  console.log(user);
+  const [loadingQuantities, setLoadingQuantities] = useState<{
+    [key: string]: boolean;
+  }>({});
 
+  console.log("USER", user);
   // Fetch para obtener orden del USUARIO y el usuario
   useEffect(() => {
     const fetchCartItems = async () => {
+      if (!token || !userId) {
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;
@@ -76,10 +81,15 @@ export default function ShoppingCart() {
       if (typeof parsedToken !== "string") {
         throw new Error("Invalid token format");
       }
+      if (!userId) {
+        console.error("No userId found");
+        return;
+      }
 
       try {
+        const id = Number(userId);
         const data = await getOrderByUserId(parsedToken);
-        const user = await getUserById(parsedToken, Number(userId));
+        const user = await getUserById(parsedToken, id);
         setUser(user);
         setCartItems(data);
         setIsLoading(false); // Set loading to false after data is fetched
@@ -94,6 +104,9 @@ export default function ShoppingCart() {
 
   useEffect(() => {
     const createPaymentPreference = async () => {
+      if (!token || !userId) {
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;
@@ -109,9 +122,9 @@ export default function ShoppingCart() {
       try {
         const data = {
           email: user.email,
-          orderId: user.order.orderId,
         };
         const response = await createPreference(parsedToken, data);
+        console.log("RESPONSE", response);
         setPreferenceId(response.preferenceId);
       } catch (error) {
         console.error("Error creating preference:", error);
@@ -219,6 +232,8 @@ export default function ShoppingCart() {
   const total = subtotal + shipping;
 
   const updateQuantity = async (id: string, change: number) => {
+    setLoadingQuantities((prev) => ({ ...prev, [id]: true }));
+
     const updatedProducts = productsWithQuantities.map((item) =>
       item.product.productId.toString() === id
         ? {
@@ -251,6 +266,8 @@ export default function ShoppingCart() {
         setCartItems(updatedCart);
       } catch (error) {
         console.error("Error updating product quantity:", error);
+      } finally {
+        setLoadingQuantities((prev) => ({ ...prev, [id]: false }));
       }
     }
   };
@@ -354,8 +371,17 @@ export default function ShoppingCart() {
                               -1
                             )
                           }
+                          disabled={
+                            loadingQuantities[item.product.productId.toString()]
+                          }
                         >
-                          <Minus className="h-4 w-4" />
+                          {loadingQuantities[
+                            item.product.productId.toString()
+                          ] ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Minus className="h-4 w-4" />
+                          )}
                         </Button>
                         <span className="mx-2 w-8 text-center">
                           {item.quantity}
@@ -366,8 +392,17 @@ export default function ShoppingCart() {
                           onClick={() =>
                             updateQuantity(item.product.productId.toString(), 1)
                           }
+                          disabled={
+                            loadingQuantities[item.product.productId.toString()]
+                          }
                         >
-                          <Plus className="h-4 w-4" />
+                          {loadingQuantities[
+                            item.product.productId.toString()
+                          ] ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Plus className="h-4 w-4" />
+                          )}
                         </Button>
                         <Button
                           variant="ghost"

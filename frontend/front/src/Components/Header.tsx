@@ -20,8 +20,6 @@ export default function Navbar() {
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken");
   const router = useRouter();
-  console.log("UserId", userId);
-  console.log("USER", user);
 
   // Fetch user
   useEffect(() => {
