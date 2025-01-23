@@ -2,8 +2,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { Camera } from "lucide-react";
+
 import { IEditProfileFormProps } from "@/interfaces/IEditProfileform";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
@@ -17,8 +16,7 @@ export function EditProfileForm({
 }: IEditProfileFormProps) {
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // const fileInputRef = useRef<HTMLInputElement>(null);
   const token = Cookies.get("accessToken") || "null";
   const { userId } = useUserContext();
 
@@ -58,20 +56,20 @@ export function EditProfileForm({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePicture(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setProfilePicture(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  // const triggerFileInput = () => {
+  //   fileInputRef.current?.click();
+  // };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
