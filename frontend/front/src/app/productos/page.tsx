@@ -12,6 +12,10 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[] | null>(
+    null
+  );
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 25000]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -58,6 +62,23 @@ export default function ProductsPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let filtered = products;
+
+    if (selectedCategories && selectedCategories.length > 0) {
+      filtered = filtered.filter((product) =>
+        selectedCategories.includes(product.category_id.categoryId)
+      );
+    }
+
+    filtered = filtered.filter(
+      (product) =>
+        product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+
+    setFilteredProducts(filtered);
+  }, [selectedCategories, priceRange, products]);
+
   const handleSearch = (term: string) => {
     const filtered = products.filter(
       (product) =>
@@ -91,18 +112,12 @@ export default function ProductsPage() {
     setFilteredProducts(sorted);
   };
 
-  const handleCategoryFilter = (categoryId: number) => {
-    const filtered = products.filter(
-      (product) => product.category_id.categoryId === categoryId
-    );
-    setFilteredProducts(filtered);
+  const handleCategoryFilter = (categoryIds: number[] | null) => {
+    setSelectedCategories(categoryIds);
   };
 
   const handlePriceRangeFilter = (range: [number, number]) => {
-    const filtered = products.filter(
-      (product) => product.price >= range[0] && product.price <= range[1]
-    );
-    setFilteredProducts(filtered);
+    setPriceRange(range);
   };
 
   if (loading) {

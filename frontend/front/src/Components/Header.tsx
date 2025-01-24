@@ -48,6 +48,9 @@ export default function Navbar() {
       if (!isUserDataReady) {
         return;
       }
+      if (!token || !userId) {
+        return;
+      }
       if (!token) {
         console.error("No token found");
         return;
