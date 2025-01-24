@@ -86,6 +86,7 @@ export default function ShoppingCart() {
   const [isCartReady, setIsCartReady] = useState(false);
 
   console.log("USER", user);
+  console.log(isCartReady);
 
   useEffect(() => {
     const fetchUserData = async () => {
