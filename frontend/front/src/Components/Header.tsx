@@ -20,10 +20,34 @@ export default function Navbar() {
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken");
   const router = useRouter();
+  const [isUserDataReady, setIsUserDataReady] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (token && userId) {
+        setIsUserDataReady(true);
+      } else {
+        setTimeout(fetchUserData, 25);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (!token || !userId) {
+        setIsUserDataReady(true);
+      }
+    }, 25);
+
+    fetchUserData();
+
+    return () => clearTimeout(timeoutId);
+  }, [userId, token]);
 
   // Fetch user
   useEffect(() => {
     const fetchUser = async () => {
+      if (!isUserDataReady) {
+        return;
+      }
       if (!token || !userId) {
         return;
       }

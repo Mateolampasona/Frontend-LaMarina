@@ -47,6 +47,23 @@ interface ProductWithQuantity {
   product: IProduct;
 }
 
+const validateUserData = (token: string, userId: string) => {
+  if (!token) {
+    console.error("No token found");
+    return { isValid: false, parsedToken: "" };
+  }
+  const parsedToken = JSON.parse(token);
+  if (typeof parsedToken !== "string") {
+    throw new Error("Invalid token format");
+  }
+  if (!userId) {
+    console.error("No userId found");
+    return { isValid: false, parsedToken: "" };
+  }
+  console.log("Token and userId are valid");
+  return { isValid: true, parsedToken, userId };
+};
+
 export default function ShoppingCart() {
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken") || "null";
@@ -65,61 +82,82 @@ export default function ShoppingCart() {
   const [loadingQuantities, setLoadingQuantities] = useState<{
     [key: string]: boolean;
   }>({});
+  const [isUserDataReady, setIsUserDataReady] = useState(false);
+  const [isCartReady, setIsCartReady] = useState(false);
 
   console.log("USER", user);
-  // Fetch para obtener orden del USUARIO y el usuario
+  console.log(isCartReady);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (token && userId) {
+        setIsUserDataReady(true);
+      } else {
+        setTimeout(fetchUserData, 25);
+        setIsLoading(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      setIsUserDataReady(true);
+    }, 1000); // Timeout after 1 second to handle the case when not logged in
+
+    fetchUserData();
+
+    return () => clearTimeout(timeoutId);
+  }, [userId, token]);
+
   useEffect(() => {
     const fetchCartItems = async () => {
-      if (!token || !userId) {
-        return;
-      }
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
-      }
-      if (!userId) {
-        console.error("No userId found");
+      if (!isUserDataReady) return;
+
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
         return;
       }
 
       try {
         const id = Number(userId);
-        const data = await getOrderByUserId(parsedToken);
-        const user = await getUserById(parsedToken, id);
+        const [data, user] = await Promise.all([
+          getOrderByUserId(parsedToken),
+          getUserById(parsedToken, id),
+        ]);
+
         setUser(user);
         setCartItems(data);
-        setIsLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error("Error fetching cart items:", error);
-        setIsLoading(false); // Set loading to false even if there is an error
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+          setIsCartReady(true);
+        }, 1000); // Delay of 1 second before setting isLoading to false
       }
     };
 
     fetchCartItems();
-  }, [userId, token]);
+  }, [isUserDataReady, userId, token]);
 
+  // Crear preferencia de pago si existe el usuario y la orden.Y si la orden es mayor a 0
   useEffect(() => {
     const createPaymentPreference = async () => {
-      if (!token || !userId) {
-        return;
-      }
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
-      }
-      if (!user) {
-        console.error("No user found");
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
         return;
       }
       try {
+        if (!user) {
+          console.error("User is null");
+          return;
+        }
+        if (user.order.totalOrder === 0) {
+          console.error("User has total to pay 0");
+          return;
+        }
         const data = {
           email: user.email,
         };
@@ -134,25 +172,17 @@ export default function ShoppingCart() {
     createPaymentPreference();
   }, [token, user]);
 
-  // Eliminar producto del carrito
+  // Funcion para eliminar producto del carrito
   const deleteProduct = async (id: string) => {
-    console.log("ID del producto a eliminar:", id);
     try {
-      const token = Cookies.get("accessToken") || "null";
-      if (!token) {
-        console.error("No token found");
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
         return;
       }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
-      }
-      console.log(typeof id);
 
       await deleteOrderDetail(parsedToken, id);
-      console.log("ID del producto a eliminar:", id);
-
-      // Fetch the updated cart from the backend
       const updatedCart = await getOrderByUserId(parsedToken);
       setCartItems(updatedCart);
     } catch (error) {
@@ -160,44 +190,18 @@ export default function ShoppingCart() {
     }
   };
 
-  // Actualizamos los productos del carrito al agregar un producto
-  useEffect(() => {
-    socket.on("cartUpdate", async (socketUserId: number) => {
-      if (Number(userId) !== socketUserId) {
-        console.log("User ID does not match", userId, socketUserId);
-        return;
-      }
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
-      }
-      const data = await getOrderByUserId(parsedToken);
-      console.log("DATA", data);
-      setCartItems(data);
-    });
-    return () => {
-      socket.off("cartUpdate");
-    };
-  }, [token, userId]);
-
-  // Actualizamos los productos del carrito al eliminar un producto
+  // Socket para actualizar los productos del carrito
   useEffect(() => {
     socket.on("cartUpdate", async (socketUserId: number) => {
       if (Number(userId) !== socketUserId) {
         console.log("User ID does not matchas", userId, socketUserId);
         return;
       }
-      if (!token) {
-        console.error("No token found");
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
         return;
-      }
-      const parsedToken = JSON.parse(token);
-      if (typeof parsedToken !== "string") {
-        throw new Error("Invalid token format");
       }
       try {
         const updatedCart = await getOrderByUserId(parsedToken);
@@ -250,13 +254,11 @@ export default function ShoppingCart() {
     );
     if (productToUpdate) {
       try {
-        if (!token) {
-          console.error("No token found");
+        const { isValid, parsedToken } = validateUserData(token, userId);
+        if (!isValid) {
+          setCartItems(null);
+          setIsLoading(false);
           return;
-        }
-        const parsedToken = JSON.parse(token);
-        if (typeof parsedToken !== "string") {
-          throw new Error("Invalid token format");
         }
         await addProductToOrder(parsedToken, {
           productId: productToUpdate.product.productId,
@@ -283,23 +285,11 @@ export default function ShoppingCart() {
     }, 1500);
   };
 
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        Toast({
-          title: "Carrito guardado",
-        });
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, []);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin" />
+        <p>Cargando...</p>
       </div>
     );
   }
@@ -319,7 +309,6 @@ export default function ShoppingCart() {
           </h2>
           <Badge variant="secondary" className="text-[#ef233c]">
             {productsWithQuantities.length}{" "}
-            {productsWithQuantities.length === 1 ? "artículo" : "artículos"}
           </Badge>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -332,7 +321,9 @@ export default function ShoppingCart() {
                   transition={{ duration: 0.5 }}
                   className="text-center text-gray-500"
                 >
-                  Tu carrito está vacío.
+                  Tu carrito está vacío.{" "}
+                  {(!token || !userId) &&
+                    "Inicia sesión para añadir productos."}
                 </motion.div>
               ) : (
                 productsWithQuantities.map((item) => (
