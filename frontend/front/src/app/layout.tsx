@@ -18,6 +18,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/* eslint-disable @typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
@@ -25,6 +27,8 @@ declare module "react" {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export const metadata: Metadata = {
   title: "La Marina | Mayorista",
