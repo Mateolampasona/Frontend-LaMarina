@@ -117,9 +117,9 @@ body {
 }
 
 df-messenger {
-  --df-messenger-bot-message: #edede9; 
+  --df-messenger-bot-message: #575556; 
   --df-messenger-user-message: #ef233c; 
-  --df-messenger-font-color: #383837; 
+  --df-messenger-font-color: #f4f4ef; 
   --df-messenger-font-family: 'font-mono', monospace; 
   --df-messenger-button-titlebar-color: #ef233c; 
   --df-messenger-button-titlebar-text-color: #edede9; 

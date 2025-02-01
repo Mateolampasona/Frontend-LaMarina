@@ -81,19 +81,19 @@ export default function Navbar() {
 
   const handleLogout = () => {
     Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¿Quieres cerrar sesión?",
+      title: "¿Quieres cerrar sesión?",
+
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, cerrar sesión",
       cancelButtonText: "Cancelar",
       customClass: {
-        popup: "bg-white shadow-lg rounded-lg p-6",
-        title: "text-2xl font-semibold text-gray-800",
+        popup: "bg-[#edede9] shadow-lg rounded-lg p-6", // Color de fondo
+        title: "text-2xl font-semibold text-gray-800", // Color del título
         confirmButton:
-          "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
+          "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded mr-2", // Botón de confirmación con margen derecho
         cancelButton:
-          "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded",
+          "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded ml-2", // Botón de cancelación con margen izquierdo
       },
       buttonsStyling: false,
     }).then((result) => {

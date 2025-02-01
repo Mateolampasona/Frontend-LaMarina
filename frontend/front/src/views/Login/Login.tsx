@@ -178,7 +178,7 @@ export default function Login() {
             }`,
             icon: "error",
             customClass: {
-              popup: "bg-white shadow-lg rounded-lg p-6",
+              popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
               title: "text-2xl font-semibold text-gray-800",
               confirmButton:
                 "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
