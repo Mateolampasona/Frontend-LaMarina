@@ -343,10 +343,10 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-lg font-semibold">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: "Add User", icon: Users },
-              { label: "Create Report", icon: FileText },
-              { label: "View Analytics", icon: TrendingUp },
-              { label: "Update Settings", icon: Settings },
+              { label: "Añadir Usuario", icon: Users },
+              { label: "Crear Producto", icon: FileText },
+              { label: "Ver Productos", icon: TrendingUp },
+              { label: "Añadir Categoria", icon: FileText },
             ].map((action) => (
               <button
                 key={action.label}
