@@ -81,10 +81,11 @@ export default function Login() {
         text: "Por favor, completa todos los campos antes de continuar.",
         icon: "warning",
         customClass: {
-          popup: "bg-white shadow-lg rounded-lg p-6",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
           title: "text-2xl font-semibold text-gray-800",
+          htmlContainer: "text-[#ef233c]", 
           confirmButton:
-            "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
         },
         buttonsStyling: false,
       });
@@ -101,20 +102,21 @@ export default function Login() {
       });
 
       // Pop-up de éxito
-      Swal.fire({
-        title: "¡Éxito!",
-        text: "Has iniciado sesión correctamente.",
-        icon: "success",
-        customClass: {
-          popup: "bg-white shadow-lg rounded-lg p-6",
-          title: "text-2xl font-semibold text-gray-800",
-          confirmButton:
-            "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded",
-        },
-        buttonsStyling: false,
-      }).then(() => {
-        window.location.href = `${FRONTURL}`;
-      });
+     Swal.fire({
+       title: "¡Éxito!",
+       text: "Has iniciado sesión correctamente.",
+       icon: "success",
+       customClass: {
+         popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
+         title: "text-2xl font-semibold text-gray-800",
+         htmlContainer: "text-[#ef233c]", 
+         confirmButton:
+           "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
+       },
+       buttonsStyling: false,
+     }).then(() => {
+       window.location.href = `${FRONTURL}`;
+     });
     } catch (error: unknown) {
       setErrors({ email: "Email o contraseña incorrectos.", password: "" });
       // Pop-up de error
@@ -123,10 +125,11 @@ export default function Login() {
         text: `No se pudo iniciar sesión. ${(error as Error).message}`,
         icon: "error",
         customClass: {
-          popup: "bg-white shadow-lg rounded-lg p-6",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
           title: "text-2xl font-semibold text-gray-800",
+          htmlContainer: "text-[#ef233c]", 
           confirmButton:
-            "bg-[#D9534F] hover:bg-[#C9302C] text-white font-bold py-2 px-4 rounded",
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
         },
         buttonsStyling: false,
       });
@@ -136,12 +139,12 @@ export default function Login() {
     Swal.fire({
       title: "Recuperar contraseña",
       html: `
-        <input type="email" id="swal-input-email" class="swal2-input" placeholder="Correo electrónico">
-      `,
+    <input type="email" id="swal-input-email" class="swal2-input" placeholder="Correo electrónico">
+  `,
       showCancelButton: true,
       confirmButtonText: "Enviar",
       customClass: {
-        popup: "bg-white shadow-lg rounded-lg p-6",
+        popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
         title: "text-2xl font-semibold text-gray-800",
         confirmButton:
           "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded",
@@ -166,18 +169,7 @@ export default function Login() {
         const minEmail = email.toLowerCase();
         try {
           await forgotPassword(minEmail);
-          Swal.fire({
-            title: "Correo enviado",
-            text: "Revisa tu bandeja de entrada para recuperar tu contraseña.",
-            icon: "success",
-            customClass: {
-              popup: "bg-white shadow-lg rounded-lg p-6",
-              title: "text-2xl font-semibold text-gray-800",
-              confirmButton:
-                "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded",
-            },
-            buttonsStyling: false,
-          });
+         
         } catch (error: unknown) {
           Swal.fire({
             title: "Error",

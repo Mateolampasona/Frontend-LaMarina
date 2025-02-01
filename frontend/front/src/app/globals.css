@@ -115,3 +115,39 @@ body {
 .whatsapp-float {
   animation: float 3s ease-in-out infinite;
 }
+
+df-messenger {
+  --df-messenger-bot-message: #edede9; 
+  --df-messenger-user-message: #ef233c; 
+  --df-messenger-font-color: #383837; 
+  --df-messenger-font-family: 'font-mono', monospace; 
+  --df-messenger-button-titlebar-color: #ef233c; 
+  --df-messenger-button-titlebar-text-color: #edede9; 
+}
+
+df-messenger.chat-title {
+  font-family: 'font-mono', monospace;
+  background-color: #edede9;
+}
+
+
+@media (max-width: 768px) {
+  df-messenger {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 90%; 
+    max-width: 400px;
+    height: auto; 
+  }
+}
+
+@media (max-width: 480px) {
+  df-messenger {
+    width: 100%; 
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0; 
+  }
+}
