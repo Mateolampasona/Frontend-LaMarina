@@ -9,7 +9,7 @@ import SideBar from "./SideBar";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useUserContext } from "@/Context/userContext";
-import { getUserById } from "@/Helpers/users.helpers";
+import { getUserById } from "@/helpers/users.helpers";
 import type { IUser } from "@/interfaces/IUser";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
