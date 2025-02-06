@@ -24,9 +24,9 @@ const menuItems = [
   { icon: FileText, label: "Reportes", href: "#" },
   { icon: BarChart3, label: "Analiticas", href: "#" },
   { icon: Settings, label: "Ajustes", href: "#" },
+  { icon: LayoutDashboard, label: "Categorías", href: "/categoriesAdmin" }, // Nuevo ítem
+  { icon: LayoutDashboard, label: "Productos", href: "#" }, // Nuevo ítem
   { icon: LogOut, label: "Logout", href: "#" },
-  { icon: "CategoryIcon", label: "Categorías", href: "/categoriesAdmin" }, // Nuevo ítem
-  { icon: "ProductIcon", label: "Productos", href: "#" }, // Nuevo ítem
 ];
 
 export function Sidebar({
