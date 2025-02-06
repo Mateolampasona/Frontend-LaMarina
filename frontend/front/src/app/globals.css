@@ -9,6 +9,8 @@ body {
 
 @layer base {
   :root {
+     --background: 60 6% 93%;
+    --foreground: 20 14.3% 4.1%;
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
@@ -35,6 +37,18 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
+  @layer utilities {
+  .glass-effect {
+    @apply bg-white/30 backdrop-blur-xl border border-white/20 shadow-lg;
+  }
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
   .dark {
     --background: 224 71.4% 4.1%;
     --foreground: 210 20% 98%;
@@ -114,4 +128,68 @@ body {
 
 .whatsapp-float {
   animation: float 3s ease-in-out infinite;
+}
+
+df-messenger {
+  --df-messenger-bot-message: #575556; 
+  --df-messenger-user-message: #ef233c; 
+  --df-messenger-font-color: #f4f4ef; 
+  --df-messenger-font-family: 'font-mono', monospace; 
+  --df-messenger-button-titlebar-color: #ef233c; 
+  --df-messenger-button-titlebar-text-color: #edede9; 
+}
+
+df-messenger.chat-title {
+  font-family: 'font-mono', monospace;
+  background-color: #edede9;
+}
+
+
+@media (max-width: 768px) {
+  df-messenger {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 90%; 
+    max-width: 400px;
+    height: auto; 
+  }
+}
+
+@media (max-width: 480px) {
+  df-messenger {
+    width: 100%; 
+    bottom: 0;
+    right: 0;
+    left: 0;
+    border-radius: 0; 
+  }
+}
+
+
+.cho-container button {
+  background-color: #edede9 !important; /* Color de fondo */
+  color: #ef233c !important; /* Color del texto */
+  font-size: 16px !important; /* Tamaño de la fuente */
+  font-weight: bold !important; /* Peso de la fuente */
+  border-radius: 8px !important; /* Bordes redondeados */
+  padding: 12px 24px !important; /* Espaciado interno */
+  border: 2px solid #ef233c !important; /* Borde */
+  cursor: pointer !important; /* Cambia el cursor al pasar por el botón */
+  transition: all 0.3s ease !important; /* Transición para efectos */
+}
+
+/* Estilo hover */
+.cho-container button:hover {
+  background-color: #ef233c !important; /* Fondo al pasar el mouse */
+  color: #edede9 !important; /* Texto al pasar el mouse */
+  border-color: #edede9 !important; /* Cambiar color del borde */
+}
+
+/* Opcional: Estilo del contenedor */
+.cho-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }

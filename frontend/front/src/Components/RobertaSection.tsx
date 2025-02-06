@@ -29,7 +29,7 @@ export default function RobertaSection() {
       animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="w-full max-w-3xl mx-auto my-8 overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300">
+      <Card className="w-full max-w mx-auto my-8 overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300">
         <CardContent className="p-0">
           <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
             <div className="w-full md:w-2/5 p-6 flex justify-center items-center">

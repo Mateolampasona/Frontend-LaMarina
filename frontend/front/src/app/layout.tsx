@@ -27,8 +27,7 @@ declare module "react" {
     }
   }
 }
-/* eslint-enable @typescript-eslint/no-namespace */
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
 
 export const metadata: Metadata = {
   title: "La Marina | Mayorista",
@@ -60,7 +59,7 @@ export default function RootLayout({
               chat-title="La Marina Asistente Virtual"
               agent-id="52c2b950-01db-4660-946a-308e78fea438"
               language-code="es"
-              className="fixed bottom-20 right-4 z-50"
+              className="fixed bottom-20 right-4 z-50 "
             ></df-messenger>
           </UserProvider>
         </AuthProvider>
