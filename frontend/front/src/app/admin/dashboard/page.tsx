@@ -9,7 +9,6 @@ import {
   TrendingUp,
   ArrowRight,
   FileText,
-  Settings,
 } from "lucide-react";
 import {
   getLastUser,
