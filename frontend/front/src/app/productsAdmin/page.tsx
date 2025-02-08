@@ -94,7 +94,7 @@ export default function ProductManagement() {
         <div className="grid gap-6 lg:gap-8 md:grid-cols-[1fr,2fr] items-start">
           {/* Formulario */}
           <div className="bg-white/80 rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1">
-            <h2 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200">
+            <h2 className="text-xl font-semibold font-mono mb-6 pb-2 border-b border-gray-200">
               {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
             <ProductForm
@@ -106,7 +106,7 @@ export default function ProductManagement() {
 
           {/* Lista de Productos */}
           <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
-            <h2 className="text-xl font-semibold mb-6 pb-2 border-b border-gray-200">
+            <h2 className="text-xl font-semibold font-mono mb-6 pb-2 border-b border-gray-200">
               Lista de Productos
             </h2>
             <div className="overflow-x-auto">
