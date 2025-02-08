@@ -50,7 +50,9 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                   </div>
                 </td>
                 <td className="px-4 py-3 border-b border-gray-200 text-sm">
-                  <p className="text-gray-900 font-medium">${product.price.toFixed(2)}</p>
+                  <p className="text-gray-900 font-medium">
+                    ${typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}
+                  </p>
                 </td>
                 <td className="px-4 py-3 border-b border-gray-200 text-sm">
                   <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-100">
@@ -58,7 +60,9 @@ export default function ProductList({ products, onEdit, onDelete }: ProductListP
                   </span>
                 </td>
                 <td className="px-4 py-3 border-b border-gray-200 text-sm">
-                  <span className="text-gray-700">{product.category_id.name}</span>
+                  <span className="text-gray-700">
+                    {product.category_id?.name || 'Sin categoría'}
+                  </span>
                 </td>
                 <td className="px-4 py-3 border-b border-gray-200 text-sm">
                   <div className="flex space-x-3">
