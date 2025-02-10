@@ -1,4 +1,5 @@
 export interface ICreateCategory {
+  id?: string;
   name: string;
   descriptrion: string;
 }

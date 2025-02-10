@@ -15,7 +15,7 @@ export default function ProductsPage() {
   const [selectedCategories, setSelectedCategories] = useState<number[] | null>(
     null
   );
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 25000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

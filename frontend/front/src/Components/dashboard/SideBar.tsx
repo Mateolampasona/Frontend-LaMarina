@@ -1,6 +1,14 @@
 "use client";
 
-import { Menu, Users, FileText, BarChart3, LogOut } from "lucide-react";
+import {
+  Menu,
+  Users,
+  FileText,
+  BarChart3,
+  LogOut,
+  Settings,
+  LayoutDashboard,
+} from "lucide-react";
 import Link from "next/link";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
@@ -12,6 +20,9 @@ const menuItems = [
   { icon: Users, label: "Usuarios", href: "#" },
   { icon: FileText, label: "Reportes", href: "#" },
   { icon: BarChart3, label: "Analiticas", href: "#" },
+  { icon: Settings, label: "Ajustes", href: "#" },
+  { icon: LayoutDashboard, label: "Categorías", href: "/categoriesAdmin" }, // Nuevo ítem
+  { icon: LayoutDashboard, label: "Productos", href: "#" }, // Nuevo ítem
   { icon: LogOut, label: "Logout", href: "#" },
 ];
 

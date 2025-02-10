@@ -24,16 +24,67 @@ import {
 } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Search, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 import { getAllProducts } from "@/helpers/products.helpers";
 import { IProduct } from "@/interfaces/IProducts";
 
 import Loading from "../Loading";
+import Swal from "sweetalert2";
+import { addProductToOrder } from "@/helpers/orderDetail.helper";
+import Cookies from "js-cookie";
 
 const ProductCard = ({ product }: { product: IProduct }) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     rootMargin: "0px 0px 200px 0px",
   });
+
+  const token = Cookies.get("accesToken");
+  // Agregar producto al carrito
+  const addProduct = async (productId: number) => {
+    if (!token || token === "null") {
+      Swal.fire({
+        title: "Necesitas iniciar sesión",
+        text: "Por favor, inicia sesión para agregar productos al carrito.",
+        icon: "warning",
+        confirmButtonText: "Iniciar sesión",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Token is not a string");
+    }
+    try {
+      const response = await addProductToOrder(parsedToken, {
+        productId: productId,
+        quantity: 1,
+      });
+      console.log("Producto agregado al carrito", response);
+      Swal.fire({
+        title: "Producto agregado al carrito",
+        text: "El producto se ha agregado correctamente al carrito.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "swal-popup",
+          title: "swal-title",
+          confirmButton: "swal-confirm-button",
+        },
+      });
+    } catch (error) {
+      console.error("Error al agregar el producto al carrito", error);
+    }
+  };
 
   return (
     <motion.div
@@ -43,38 +94,43 @@ const ProductCard = ({ product }: { product: IProduct }) => {
       transition={{ duration: 0.5 }}
     >
       <Card className="overflow-hidden bg-white shadow-lg rounded-lg transition transform hover:scale-105">
-        <CardHeader className="p-0 relative">
-          <Image
-            src={product.imageUrl || "/placeholder.svg"}
-            alt={product.name}
-            width={400}
-            height={200}
-            className="w-full h-48 object-cover"
-          />
-          <Badge variant="destructive" className="absolute top-2 right-2">
-            -{product.discount}%
-          </Badge>
-        </CardHeader>
-        <CardContent className="p-4">
-          <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">
-            {product.name}
-          </CardTitle>
+        <Link href={`/product/${product.productId}`}>
+          <CardHeader className="p-0 relative">
+            <Image
+              src={product.imageUrl || "/placeholder.svg"}
+              alt={product.name}
+              width={400}
+              height={200}
+              className="w-full h-48 object-cover"
+            />
+            <Badge variant="destructive" className="absolute top-2 right-2">
+              -{product.discount}%
+            </Badge>
+          </CardHeader>
+          <CardContent className="p-4">
+            <CardTitle className="text-lg font-semibold mb-2 line-clamp-2">
+              {product.name}
+            </CardTitle>
 
-          <div className="flex justify-between items-center mt-2">
-            <div className="flex flex-col">
-              <span className="text-2xl font-bold text-primary">
-                ${product.price.toFixed(2)}
-              </span>
-              {product.originalPrice && (
-                <span className="text-sm text-gray-500 line-through">
-                  ${product.originalPrice.toFixed(2)}
+            <div className="flex justify-between items-center mt-2">
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-primary">
+                  ${product.price.toFixed(2)}
                 </span>
-              )}
+                {product.originalPrice && (
+                  <span className="text-sm text-gray-500 line-through">
+                    ${product.originalPrice.toFixed(2)}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        </Link>
         <CardFooter className="bg-gray-50 p-4">
-          <Button className="w-full bg-red-500 hover:bg-red-600">
+          <Button
+            className="w-full bg-red-500 hover:bg-red-600"
+            onClick={() => addProduct(product.productId)}
+          >
             <ShoppingCart className="mr-2 h-4 w-4" /> Agregar al carrito
           </Button>
         </CardFooter>

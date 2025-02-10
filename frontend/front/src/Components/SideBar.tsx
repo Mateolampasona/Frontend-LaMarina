@@ -41,7 +41,7 @@ const navItems = [
   },
   {
     name: "Productos",
-    href: "#",
+    href: "/productos",
     icon: ShoppingBag,
     submenu: [
       { name: "Ofertas", href: "/ofertas", icon: Tag },
