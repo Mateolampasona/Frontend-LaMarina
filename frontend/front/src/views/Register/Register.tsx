@@ -82,9 +82,10 @@ export default function Register() {
         title: "Registro exitoso",
         icon: "success",
         customClass: {
-          popup: "bg-white shadow-lg rounded-lg p-6",
-          title: "text-2xl font-semibold text-gray-800",
-          confirmButton: "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6", 
+          title: "text-2xl font-semibold text-gray-800", 
+          confirmButton:
+            "bg-[#164E78] hover:bg-[#169978] text-white font-bold py-2 px-4 rounded mr-4", // Botón de confirmación con margen derecho
         },
         buttonsStyling: false,
       });
@@ -111,9 +112,10 @@ export default function Register() {
         text: errorMessage,
         icon: "error",
         customClass: {
-          popup: "bg-white shadow-lg rounded-lg p-6",
-          title: "text-2xl font-semibold text-gray-800",
-          confirmButton: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6", 
+          title: "text-2xl font-semibold text-gray-800", 
+          confirmButton:
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded mr-4", 
         },
         buttonsStyling: false,
       });

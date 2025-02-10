@@ -2,16 +2,14 @@
 
 import {
   Menu,
-  LayoutDashboard,
   Users,
   FileText,
   BarChart3,
-  Settings,
   LogOut,
+  Settings,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
-import { Avatar } from "@/Components/ui/avatar";
-import Image from "next/image";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -19,7 +17,6 @@ import { getUserById } from "@/helpers/users.helpers";
 import { IUser } from "@/interfaces/IUser";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "#" },
   { icon: Users, label: "Usuarios", href: "#" },
   { icon: FileText, label: "Reportes", href: "#" },
   { icon: BarChart3, label: "Analiticas", href: "#" },
@@ -87,15 +84,6 @@ export function Sidebar({
       </div>
 
       <div className="mx-4 my-3 flex items-center space-x-4 border-b border-gray-200 pb-2">
-        <Avatar className="h-12 w-12">
-          <Image
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            width={340}
-            height={340}
-            alt="Profile"
-            className="rounded-full"
-          />
-        </Avatar>
         <div>
           <p className="font-mono">Admin</p>
           <p className="text-sm text-gray-500">{user?.name}</p>

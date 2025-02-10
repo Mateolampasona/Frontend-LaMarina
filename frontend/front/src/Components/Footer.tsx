@@ -63,11 +63,7 @@ export function Footer() {
                   Sucursal
                 </a>
               </li>
-              <li>
-                <a href="#" className="hover:text-[#ef233c] transition-colors">
-                  Términos y Condiciones
-                </a>
-              </li>
+
               <li>
                 <a href="#" className="hover:text-[#ef233c] transition-colors">
                   Política de Privacidad
@@ -137,14 +133,7 @@ export function Footer() {
                   Historial de Compras
                 </a>
               </li>
-              <li>
-                <a
-                  href="user/dashboard"
-                  className="hover:text-[#ef233c] transition-colors"
-                >
-                  Lista de Deseos
-                </a>
-              </li>
+              
             </ul>
           </div>
           <div className="space-y-4">

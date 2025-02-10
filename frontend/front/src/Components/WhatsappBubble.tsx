@@ -18,7 +18,7 @@ export default function WhatsAppBubble() {
       target="_blank"
       rel="noopener noreferrer"
       className={`
-        fixed bottom-20 right-4 
+        fixed bottom-6 left-4 
         flex items-center justify-center
         w-12 h-12
         bg-[#25D366] hover:bg-[#128C7E]

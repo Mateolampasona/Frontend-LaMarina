@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import "../styles/styles.css";
 
 interface PaymentButtonProps {
   preferenceId: string;
@@ -36,7 +37,7 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({ preferenceId }) => {
           },
           render: {
             container: ".cho-container",
-            label: "Pagar",
+            label: "Pagar", // Etiqueta del botón
           },
         });
       } else {
