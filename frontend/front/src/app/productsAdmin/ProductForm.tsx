@@ -1,15 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type { ICreateProduct, IUpdateproduct, IProduct } from "@/Interfaces/IProducts"
+import { useState, useEffect } from "react";
+import type {
+  ICreateProduct,
+  IUpdateproduct,
+  IProduct,
+} from "@/interfaces/IProducts";
 
 interface ProductFormProps {
-  onSubmit: (data: ICreateProduct | IUpdateproduct) => void
-  initialData?: IProduct | null
-  onCancel: () => void
+  onSubmit: (data: ICreateProduct | IUpdateproduct) => void;
+  initialData?: IProduct | null;
+  onCancel: () => void;
 }
 
-export default function ProductForm({ onSubmit, initialData, onCancel }: ProductFormProps) {
+export default function ProductForm({
+  onSubmit,
+  initialData,
+  onCancel,
+}: ProductFormProps) {
   const [formData, setFormData] = useState<ICreateProduct>({
     name: "",
     description: "",
@@ -18,8 +26,8 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
     category_id: 0,
     isActive: true,
     imageUrl: "",
-  })
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  });
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -31,38 +39,43 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
         category_id: initialData.category_id.categoryId,
         isActive: initialData.isActive,
         imageUrl: initialData.imageUrl,
-      })
+      });
     }
-  }, [initialData])
+  }, [initialData]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
     if (type === "file") {
-      const fileInput = e.target as HTMLInputElement
-      const file = fileInput.files?.[0]
+      const fileInput = e.target as HTMLInputElement;
+      const file = fileInput.files?.[0];
       if (file) {
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onloadend = () => {
-          const base64String = reader.result as string
-          setPreviewImage(base64String)
-          setFormData(prev => ({
+          const base64String = reader.result as string;
+          setPreviewImage(base64String);
+          setFormData((prev) => ({
             ...prev,
-            imageUrl: base64String
-          }))
-        }
-        reader.readAsDataURL(file)
+            imageUrl: base64String,
+          }));
+        };
+        reader.readAsDataURL(file);
       }
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-      }))
+        [name]:
+          type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      }));
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
+    e.preventDefault();
+    onSubmit(formData);
     setFormData({
       name: "",
       description: "",
@@ -71,14 +84,20 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
       category_id: 0,
       isActive: true,
       imageUrl: "",
-    })
-  }
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg px-6 pt-4 pb-6 mb-4 max-w-xl mx-auto border border-gray-200">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white shadow-lg rounded-lg px-6 pt-4 pb-6 mb-4 max-w-xl mx-auto border border-gray-200"
+    >
       <div className="grid gap-4 mb-4">
         <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide" htmlFor="image">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide"
+            htmlFor="image"
+          >
             Imagen del Producto
           </label>
           <div className="flex items-center space-x-4">
@@ -101,7 +120,12 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
             {(previewImage || formData.imageUrl) && (
               <div className="w-20 h-20 relative">
                 <img
-                  src={previewImage || (typeof formData.imageUrl === 'string' ? formData.imageUrl : '')}
+                  src={
+                    previewImage ||
+                    (typeof formData.imageUrl === "string"
+                      ? formData.imageUrl
+                      : "")
+                  }
                   alt="Vista previa"
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -110,7 +134,10 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
           </div>
         </div>
         <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide" htmlFor="name">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
+            htmlFor="name"
+          >
             Nombre del Producto
           </label>
           <input
@@ -124,7 +151,10 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
           />
         </div>
         <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide" htmlFor="description">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
+            htmlFor="description"
+          >
             Descripción
           </label>
           <textarea
@@ -138,7 +168,10 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide" htmlFor="price">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
+              htmlFor="price"
+            >
               Precio
             </label>
             <input
@@ -152,7 +185,10 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
             />
           </div>
           <div className="mb-3">
-            <label className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide" htmlFor="stock">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
+              htmlFor="stock"
+            >
               Existencias
             </label>
             <input
@@ -167,7 +203,10 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
           </div>
         </div>
         <div className="mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide" htmlFor="category_id">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
+            htmlFor="category_id"
+          >
             Categoría
           </label>
           <input
@@ -182,14 +221,16 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
         </div>
         <div className="mb-3">
           <label className="flex items-center space-x-3 cursor-pointer">
-            <input 
-              type="checkbox" 
-              name="isActive" 
-              checked={formData.isActive} 
-              onChange={handleChange} 
+            <input
+              type="checkbox"
+              name="isActive"
+              checked={formData.isActive}
+              onChange={handleChange}
               className="w-4 h-4 text-blue-500 border-gray-300 rounded"
             />
-            <span className="text-gray-700 text-sm font-bold uppercase tracking-wide">Activo</span>
+            <span className="text-gray-700 text-sm font-bold uppercase tracking-wide">
+              Activo
+            </span>
           </label>
         </div>
       </div>
@@ -211,6 +252,5 @@ export default function ProductForm({ onSubmit, initialData, onCancel }: Product
         </button>
       </div>
     </form>
-  )
+  );
 }
-
