@@ -10,6 +10,7 @@ import {
   Truck,
   PhoneCall,
 } from "lucide-react";
+import RobertaSection from "@/Components/RobertaSection";
 
 const features = [
   {
@@ -133,6 +134,9 @@ export default function SobreNosotrosMejorado() {
             Descubre Nuestra Gama de Productos
           </motion.a>
         </motion.div>
+        <div className="mt-16">
+        <RobertaSection/>
+        </div>
       </div>
     </section>
   );
