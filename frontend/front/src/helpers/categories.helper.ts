@@ -10,7 +10,6 @@ export const getAllCategories = async () => {
         "Content-Type": "application/json",
       },
     });
-    console.log(response);
     const res = await response.json();
     return res;
   } catch (error) {
@@ -27,7 +26,6 @@ export const getCategoryById = async (id: string) => {
         "Content-Type": "application/json",
       },
     });
-    console.log(response);
     const res = await response.json();
     return res;
   } catch (error) {
@@ -57,7 +55,7 @@ export const createCategory = async (
   }
 };
 
-export const deleteCategory = async (token: string, id: string) => {
+export const deleteCategory = async (token: string, id: number) => {
   try {
     const response = await fetch(`${APIURL}/categories/${id}`, {
       method: "DELETE",
@@ -66,8 +64,15 @@ export const deleteCategory = async (token: string, id: string) => {
         "Content-Type": "application/json",
       },
     });
-    const res = await response.json();
-    return res;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const res = await response.json();
+      console.log("res", res);
+      return res;
+    } else {
+      const text = await response.text();
+      return { ok: response.ok, message: text };
+    }
   } catch (error) {
     console.log("Ocurrio un error en deleteCategory", error);
     throw error;
@@ -76,7 +81,7 @@ export const deleteCategory = async (token: string, id: string) => {
 
 export const modifyCategory = async (
   token: string,
-  id: string,
+  id: number,
   createCategoryDto: IModifyCategory
 ) => {
   try {
