@@ -51,7 +51,7 @@ export default function CategoryList({
                   {category.name}
                 </h3>
                 <p className="text-gray-800 mb-3 text-sm">
-                  {category.descriptrion}
+                  {category.description}
                 </p>
                 <div className="flex justify-end space-x-2">
                   <motion.button

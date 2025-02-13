@@ -1,10 +1,16 @@
 export interface ICreateCategory {
-  id?: string;
+  id?: number;
   name: string;
-  descriptrion: string;
+  description: string;
 }
 
 export interface IModifyCategory {
-  name?: string;
-  descriptrion?: string;
+  name: string;
+  description: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
 }
