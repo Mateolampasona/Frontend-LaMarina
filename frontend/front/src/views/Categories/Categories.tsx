@@ -138,7 +138,7 @@ export default function CategoriesGrid() {
         const Icon = category.icon;
         return (
           <Link
-            href={`/category/${encodeURIComponent(category.name)}`}
+            href={`/productos?categoria=${encodeURIComponent(category.name)}`}
             key={category.id}
           >
             <Card
