@@ -342,12 +342,15 @@ export default function DashboardPage() {
           <h2 className="mb-4 text-lg font-semibold">Acciones Rápidas</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: "Añadir Usuario", icon: Users },
-              { label: "Crear Producto", icon: FileText },
-              { label: "Ver Productos", icon: TrendingUp },
-              { label: "Añadir Categoria", icon: FileText },
+              { label: "Añadir Usuario", icon: Users, href: "/admin/users" },
+              { label: "Crear Producto", icon: FileText, href: "/admin/products" },
+              { label: "Ver Productos", icon: TrendingUp, href: "/admin/products" },
+              { label: "Añadir Categoria", icon: FileText, href: "/admin/categories" },
             ].map((action) => (
               <button
+                onClick={() => {
+                  window.location.href = action.href;}
+                }
                 key={action.label}
                 className="flex items-center justify-center space-x-2 rounded-lg bg-[#edede9] px-4 py-3 text-sm font-medium text-[#ef233c] transition-colors hover:bg-opacity-80"
               >
