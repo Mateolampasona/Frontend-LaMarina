@@ -1,16 +1,22 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { useUserContext } from '@/Context/userContext'; // Adjust the path to your UserContext
+import jwt from 'jsonwebtoken';
+
 
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
-
-    // Check if the request is for an admin route
+    const tokenCookie = req.cookies.get('accessToken');
+    const token = tokenCookie ? tokenCookie.value : null;
+    const parsedToken = JSON.parse(token || 'null');
     if (pathname.startsWith('/admin')) {
-        const userContext = useUserContext();
-
-        // Check if the user has the admin role
-        if (userContext?.role !== 'admin') {
+        try {
+            const decodedToken = parsedToken ? jwt.decode(parsedToken) : null;
+            const role = (decodedToken && typeof decodedToken !== 'string') ? decodedToken.role : null;
+            if (role !== 'admin') {
+                return NextResponse.redirect(new URL('/unauthorized', req.url));
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
             return NextResponse.redirect(new URL('/unauthorized', req.url));
         }
     }
