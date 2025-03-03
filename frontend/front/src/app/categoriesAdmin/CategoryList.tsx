@@ -1,15 +1,14 @@
 "use client";
 
-import type { ICreateCategory } from "@/interfaces/ICategory";
+import { ICategory } from "@/interfaces/IProducts";
 import { motion, AnimatePresence } from "framer-motion";
 import { Edit2, Trash2 } from "lucide-react";
 
 interface CategoryListProps {
-  categories: ICreateCategory[];
-  onEdit: (category: ICreateCategory) => void;
-  onDelete: (id: string) => void;
+  categories: ICategory[];
+  onEdit: (category: ICategory) => void;
+  onDelete: (id: number) => void;
 }
-
 export default function CategoryList({
   categories,
   onEdit,
@@ -40,7 +39,7 @@ export default function CategoryList({
           ) : (
             categories.map((category) => (
               <motion.div
-                key={category.id || `category-${category.name}`}
+                key={category.categoryId || `category-${category.name}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -51,7 +50,7 @@ export default function CategoryList({
                   {category.name}
                 </h3>
                 <p className="text-gray-800 mb-3 text-sm">
-                  {category.descriptrion}
+                  {category.description}
                 </p>
                 <div className="flex justify-end space-x-2">
                   <motion.button
@@ -63,7 +62,7 @@ export default function CategoryList({
                     <Edit2 size={18} />
                   </motion.button>
                   <motion.button
-                    onClick={() => onDelete(category.name)}
+                    onClick={() => onDelete(category.categoryId)}
                     className="text-gray-600 hover:text-[#ef233c] p-1 rounded-full hover:bg-white transition-all duration-200"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}

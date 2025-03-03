@@ -7,7 +7,7 @@ import { PlusCircle, Edit2, X } from "lucide-react";
 import type React from "react";
 
 interface CategoryFormProps {
-  onSubmit: (category: ICreateCategory | IModifyCategory) => void;
+  onSubmit: (category: ICreateCategory | IModifyCategory) => Promise<void>;
   initialData?: ICreateCategory | null;
   onCancel: () => void;
 }
@@ -18,12 +18,12 @@ export default function CategoryForm({
   onCancel,
 }: CategoryFormProps) {
   const [name, setName] = useState("");
-  const [descriptrion, setDescription] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (initialData) {
       setName(initialData.name);
-      setDescription(initialData.descriptrion);
+      setDescription(initialData.description);
     } else {
       setName("");
       setDescription("");
@@ -32,7 +32,11 @@ export default function CategoryForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, descriptrion });
+    if (initialData) {
+      onSubmit({ name, description } as IModifyCategory);
+    } else {
+      onSubmit({ id: Date.now(), name, description } as ICreateCategory);
+    }
     if (!initialData) {
       setName("");
       setDescription("");
@@ -63,10 +67,7 @@ export default function CategoryForm({
         {initialData ? "Modificar Categoría" : "Crear Nueva Categoría"}
       </h2>
       <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="block text-sm font-semibold text-gray-800 mb-1"
-        >
+        <label htmlFor="name" className="block text-gray-700">
           Nombre
         </label>
         <input
@@ -74,44 +75,36 @@ export default function CategoryForm({
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ef233c] focus:border-transparent transition-all duration-200"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#ef233c] focus:ring focus:ring-[#ef233c] focus:ring-opacity-50"
           required
         />
       </div>
-      <div className="mb-6">
-        <label
-          htmlFor="description"
-          className="block text-sm font-semibold text-gray-800 mb-1"
-        >
+      <div className="mb-4">
+        <label htmlFor="description" className="block text-gray-700">
           Descripción
         </label>
         <textarea
           id="description"
-          value={descriptrion}
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ef233c] focus:border-transparent transition-all duration-200"
-          rows={3}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#ef233c] focus:ring focus:ring-[#ef233c] focus:ring-opacity-50"
           required
-        ></textarea>
+        />
       </div>
-      <div className="flex justify-end space-x-3">
-        <motion.button
+      <div className="flex justify-end space-x-4">
+        <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-all duration-200"
         >
           Cancelar
-        </motion.button>
-        <motion.button
+        </button>
+        <button
           type="submit"
-          className="px-4 py-2 bg-[#ef233c] text-white rounded-md hover:bg-[#d90429] transition-colors duration-200"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="bg-[#ef233c] text-white py-2 px-4 rounded-lg hover:bg-[#d90429] transition-all duration-200"
         >
           {initialData ? "Actualizar" : "Crear"}
-        </motion.button>
+        </button>
       </div>
     </motion.form>
   );

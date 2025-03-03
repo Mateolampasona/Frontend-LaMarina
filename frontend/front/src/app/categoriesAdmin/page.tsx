@@ -1,21 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { ICreateCategory, IModifyCategory } from "@/interfaces/ICategory";
+import type {
+  Category,
+  ICreateCategory,
+  IModifyCategory,
+} from "@/interfaces/ICategory";
 import CategoryForm from "./CategoryForm";
 import CategoryList from "./CategoryList";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusCircle } from "lucide-react";
-
-const APIURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+import Cookies from "js-cookie";
+import {
+  createCategory,
+  deleteCategory,
+  getAllCategories,
+  modifyCategory,
+} from "@/helpers/categories.helper";
+import Swal from "sweetalert2";
+import { ICategory } from "@/interfaces/IProducts";
 
 export default function AdminCategories() {
-  const [categories, setCategories] = useState<ICreateCategory[]>([]);
-  const [editingCategory, setEditingCategory] =
-    useState<ICreateCategory | null>(null);
+  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [editingCategory, setEditingCategory] = useState<Category | null>();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const token = Cookies.get("accessToken");
 
   useEffect(() => {
     fetchCategories();
@@ -23,73 +34,104 @@ export default function AdminCategories() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${APIURL}/categories`);
-      if (!response.ok) throw new Error("Error al obtener categorías");
-      const data = await response.json();
-      setCategories(data);
+      const response = await getAllCategories();
+      setCategories(response);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
-      setError(
-        "No se pudieron obtener las categorías. Por favor, intente de nuevo."
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Error al obtener categorías",
+        text: (error as Error).message,
+      });
     }
   };
 
-  const createCategory = async (category: ICreateCategory) => {
+  const createCategoryHandler = async (category: ICreateCategory) => {
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Invalid token format");
+    }
     try {
-      const response = await fetch(`${APIURL}/categories/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(category),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al crear categoría");
-      }
+      const response = await createCategory(parsedToken, category);
+      console.log(response);
+
       fetchCategories();
       setSuccess("¡Categoría creada exitosamente!");
       setIsFormVisible(false);
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error("Error al crear categoría:", error);
-      setError(`Error al crear categoría: ${(error as Error).message}`);
-      setTimeout(() => setError(null), 3000);
+      Swal.fire({
+        icon: "error",
+        title: "Error al crear categoría",
+        text: (error as Error).message,
+      });
     }
   };
 
-  const updateCategory = async (id: string, category: IModifyCategory) => {
+  const updateCategoryHandler = async (
+    id: number,
+    category: IModifyCategory
+  ) => {
+    console.log("category", category);
+    console.log("id", id);
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Invalid token");
+    }
     try {
-      const response = await fetch(`${APIURL}/categories/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(category),
-      });
-      if (!response.ok) throw new Error("Error al actualizar categoría");
+      const response = await modifyCategory(parsedToken, id, category);
+      console.log(response);
       fetchCategories();
       setEditingCategory(null);
       setSuccess("¡Categoría actualizada exitosamente!");
       setIsFormVisible(false);
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
-      console.error("Error al actualizar categoría:", error);
-      setError(`Error al actualizar categoría: ${(error as Error).message}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error al actualizar categoría",
+        text: (error as Error).message,
+      });
       setTimeout(() => setError(null), 3000);
     }
   };
 
-  const deleteCategory = async (id: string) => {
+  const deleteCategoryHandler = async (id: number) => {
+    console.log(id);
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+    const parsedToken = JSON.parse(token);
+    if (typeof parsedToken !== "string") {
+      throw new Error("Invalid token");
+    }
     try {
-      const response = await fetch(`${APIURL}/categories/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Error al eliminar categoría");
-      fetchCategories();
-      setSuccess("¡Categoría eliminada exitosamente!");
-      setTimeout(() => setSuccess(null), 3000);
+      const response = await deleteCategory(parsedToken, id);
+      console.log("response", response);
+      if (response.ok) {
+        fetchCategories();
+        setEditingCategory(null);
+        setSuccess("¡Categoría eliminada exitosamente!");
+        setIsFormVisible(false);
+        setTimeout(() => setSuccess(null), 3000);
+      }
     } catch (error) {
-      console.error("Error al eliminar categoría:", error);
-      setError(`Error al eliminar categoría: ${(error as Error).message}`);
-      setTimeout(() => setError(null), 3000);
+      Swal.fire({
+        icon: "error",
+        title: "Error al eliminar categoría",
+        text: (error as Error).message,
+        timer: 1500,
+      });
     }
   };
 
@@ -100,7 +142,6 @@ export default function AdminCategories() {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-[#edede9] text-gray-800 p-4 md:p-8"
     >
-      
       <AnimatePresence>
         {error && (
           <motion.div
@@ -155,8 +196,11 @@ export default function AdminCategories() {
                 onSubmit={
                   editingCategory
                     ? (category) =>
-                        updateCategory(editingCategory.name, category)
-                    : createCategory
+                        updateCategoryHandler(
+                          editingCategory.categoryId,
+                          category
+                        )
+                    : createCategoryHandler
                 }
                 initialData={editingCategory}
                 onCancel={() => {
@@ -169,11 +213,11 @@ export default function AdminCategories() {
         </AnimatePresence>
         <CategoryList
           categories={categories}
-          onEdit={(category) => {
+          onEdit={(category: ICategory) => {
             setEditingCategory(category);
             setIsFormVisible(true);
           }}
-          onDelete={deleteCategory}
+          onDelete={deleteCategoryHandler}
         />
       </div>
     </motion.div>
