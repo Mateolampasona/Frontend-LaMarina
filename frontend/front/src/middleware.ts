@@ -13,11 +13,11 @@ export async function middleware(req: NextRequest) {
             const decodedToken = parsedToken ? jwt.decode(parsedToken) : null;
             const role = (decodedToken && typeof decodedToken !== 'string') ? decodedToken.role : null;
             if (role !== 'admin') {
-                return NextResponse.redirect(new URL('/unauthorized', req.url));
+                return NextResponse.redirect(new URL('/', req.url));
             }
         } catch (error) {
             console.error('Error decoding token:', error);
-            return NextResponse.redirect(new URL('/unauthorized', req.url));
+            return NextResponse.redirect(new URL('/', req.url));
         }
     }
 
