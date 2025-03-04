@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Montserrat } from "next/font/google";
 import Image from "next/image";
+import { IProduct } from "@/interfaces/IProducts";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -26,7 +27,7 @@ export default function Navbar() {
   const token = Cookies.get("accessToken");
   const router = useRouter();
   const [isUserDataReady, setIsUserDataReady] = useState(false);
-  const [searchResults, setSearchResults] = useState([]); // Estado para almacenar los resultados de búsqueda
+  const [searchResults, setSearchResults] = useState<IProduct[]>([]); // Estado para almacenar los resultados de búsqueda
   const [searchQuery, setSearchQuery] = useState(""); // Estado para almacenar la consulta de búsqueda
 
   useEffect(() => {
@@ -120,7 +121,7 @@ export default function Navbar() {
     if (query.length > 2) {
       try {
         const products = await getAllProducts(); // Obtén todos los productos
-        const filteredProducts = products.filter((product) =>
+        const filteredProducts = products.filter((product: IProduct) =>
           product.name.toLowerCase().includes(query.toLowerCase())
         );
         setSearchResults(filteredProducts);
@@ -287,7 +288,10 @@ export default function Navbar() {
               {searchResults.length > 0 && (
                 <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg z-10">
                   {searchResults.map((product) => (
-                    <Link key={product.id} href={`/product/${product.id}`}>
+                    <Link
+                      key={product.productId}
+                      href={`/product/${product.productId}`}
+                    >
                       <div className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                         <Image
                           src={product.imageUrl}

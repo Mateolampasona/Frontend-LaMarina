@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { getAllProducts, getProductById } from "@/helpers/products.helpers";
 import ProductGrid from "@/Components/productsUI/Product-grid";
 import Sidebar from "@/Components/productsUI/Sidebar";
@@ -9,7 +9,7 @@ import SearchSort from "@/Components/productsUI/Search-sort";
 import { IProduct, ICategory } from "@/interfaces/IProducts";
 import socket from "@/utils/socket";
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -180,5 +180,13 @@ export default function ProductsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

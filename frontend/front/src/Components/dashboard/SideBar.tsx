@@ -6,7 +6,6 @@ import {
   FileText,
   BarChart3,
   LogOut,
-  Settings,
   LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";

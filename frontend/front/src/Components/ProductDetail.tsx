@@ -62,7 +62,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const images = [product.imageUrl, ...Array(3).fill(product.imageUrl)]; // Simulando múltiples imágenes del producto
   const router = useRouter();
   console.log(productRender);
-  const [productsRelated, setProductsRelated] = useState<IProduct[]>([]);
 
   // Fetch User
   useEffect(() => {
