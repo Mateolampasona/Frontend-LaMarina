@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { ShoppingCart, Search, HelpCircle, User } from "lucide-react";
 import Link from "next/link";
@@ -10,11 +9,13 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useUserContext } from "@/Context/userContext";
 import { getUserById } from "@/helpers/users.helpers";
+import { getAllProducts } from "@/helpers/products.helpers"; // Importa la función para obtener productos
 import type { IUser } from "@/interfaces/IUser";
 import Swal from "sweetalert2";
 import { motion } from "framer-motion";
 import { Montserrat } from "next/font/google";
 import Image from "next/image";
+import { IProduct } from "@/interfaces/IProducts";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -26,6 +27,8 @@ export default function Navbar() {
   const token = Cookies.get("accessToken");
   const router = useRouter();
   const [isUserDataReady, setIsUserDataReady] = useState(false);
+  const [searchResults, setSearchResults] = useState<IProduct[]>([]); // Estado para almacenar los resultados de búsqueda
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para almacenar la consulta de búsqueda
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -111,6 +114,25 @@ export default function Navbar() {
     });
   };
 
+  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.length > 2) {
+      try {
+        const products = await getAllProducts(); // Obtén todos los productos
+        const filteredProducts = products.filter((product: IProduct) =>
+          product.name.toLowerCase().includes(query.toLowerCase())
+        );
+        setSearchResults(filteredProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   return (
     <nav className={`${montserrat.className} bg-[#edede9] sticky top-0 z-50`}>
       <header className="border-b border-gray-300/50">
@@ -134,8 +156,34 @@ export default function Navbar() {
                 type="search"
                 placeholder="Buscar productos..."
                 className="w-full pr-8 bg-white/30 border-gray-200/20 text-gray-800 placeholder-gray-600 rounded-full backdrop-blur-xl shadow-lg focus:ring-2 focus:ring-[#ef233c]/20 focus:border-[#ef233c]/20 transition-all duration-300"
+                value={searchQuery}
+                onChange={handleSearch}
               />
               <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-600/70" />
+              {searchResults.length > 0 && (
+                <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg z-10">
+                  {searchResults.map((product) => (
+                    <Link
+                      key={product.productId}
+                      href={`/product/${product.productId}`}
+                    >
+                      <div className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          width={50}
+                          height={50}
+                          className="h-12 w-12 object-cover rounded"
+                        />
+                        <div>
+                          <div className="font-semibold">{product.name}</div>
+                          <div className="text-gray-600">${product.price}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -233,8 +281,34 @@ export default function Navbar() {
                 type="search"
                 placeholder="Buscar productos..."
                 className="w-full bg-white/30 border-gray-200/20 text-gray-800 placeholder-gray-600 rounded-full backdrop-blur-xl shadow-lg pr-8"
+                value={searchQuery}
+                onChange={handleSearch}
               />
               <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-600/70" />
+              {searchResults.length > 0 && (
+                <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg z-10">
+                  {searchResults.map((product) => (
+                    <Link
+                      key={product.productId}
+                      href={`/product/${product.productId}`}
+                    >
+                      <div className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          width={50}
+                          height={50}
+                          className="h-12 w-12 object-cover rounded"
+                        />
+                        <div>
+                          <div className="font-semibold">{product.name}</div>
+                          <div className="text-gray-600">${product.price}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         )}

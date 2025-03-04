@@ -1,6 +1,13 @@
 "use client";
 
-import { Menu, Users, FileText, BarChart3, LogOut } from "lucide-react";
+import {
+  Menu,
+  Users,
+  FileText,
+  BarChart3,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 import Link from "next/link";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
@@ -12,7 +19,8 @@ const menuItems = [
   { icon: Users, label: "Usuarios", href: "#" },
   { icon: FileText, label: "Reportes", href: "#" },
   { icon: BarChart3, label: "Analiticas", href: "#" },
-  { icon: LogOut, label: "Logout", href: "#" },
+  { icon: LayoutDashboard, label: "Categorías", href: "/categoriesAdmin" }, // Nuevo ítem
+  { icon: LayoutDashboard, label: "Productos", href: "#" }, // Nuevo ítem
 ];
 
 export function Sidebar({
@@ -90,6 +98,13 @@ export function Sidebar({
             {item.label}
           </Link>
         ))}
+        <button
+          onClick={onClose}
+          className="mb-1 flex items-center rounded-lg px-4 py-2 text-gray-700 transition-colors hover:bg-[#edede9] hover:text-[#ef233c] w-full text-left"
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Cerrar
+        </button>
       </nav>
     </aside>
   );
