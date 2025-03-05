@@ -24,7 +24,7 @@ const PaymentFailurePage = () => {
       if (id && collection_status && payment_id && status && preference_id) {
         try {
           const response = await fetch(
-            ${process.env.NEXT_PUBLIC_BACKEND_URL}/payment/failure?id=${id}&collection_status=${collection_status}&payment_id=${payment_id}&status=${status}&preference_id=${preference_id},
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/payment/failure?id=${id}&collection_status=${collection_status}&payment_id=${payment_id}&status=${status}&preference_id=${preference_id}`,
             {
               method: "GET",
             }
@@ -45,9 +45,9 @@ const PaymentFailurePage = () => {
             icon: "error",
             confirmButtonText: "OK",
             customClass: {
-              popup: "bg-gray-800 text-white",
-              title: "text-white",
-              confirmButton: "bg-red-500 hover:bg-red-600",
+              popup: "bg-[#edede9] text-gray-800",
+              title: "text-gray-800",
+              confirmButton: "bg-[#ef233c] hover:bg-[#d90429]",
             },
           }).then(() => {
             router.push("/"); // Redirigir al home
@@ -62,8 +62,8 @@ const PaymentFailurePage = () => {
   }, [id, collection_status, payment_id, status, preference_id, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-4 text-red-500 animate-pulse">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#edede9] text-gray-800">
+      <h1 className="text-4xl font-bold mb-4 text-[#ef233c] animate-pulse">
         Espera un momento
       </h1>
       <p className="text-lg font-medium animate-bounce">
