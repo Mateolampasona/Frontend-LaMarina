@@ -38,4 +38,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 colores:
 
 bg-[#edede9]
+text-gray-800
 text-[#ef233c]

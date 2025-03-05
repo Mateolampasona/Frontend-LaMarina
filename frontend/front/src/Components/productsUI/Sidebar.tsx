@@ -15,7 +15,7 @@ export default function Sidebar({
   onCategoryChange,
   onPriceRangeChange,
 }: SidebarProps) {
-  const [priceRange, setPriceRange] = useState([0, 25000]);
+  const [priceRange, setPriceRange] = useState([0, 50000]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
   const handleCategoryChange = (categoryId: number) => {
@@ -34,9 +34,9 @@ export default function Sidebar({
   };
   const clearFilters = () => {
     setSelectedCategories([]);
-    setPriceRange([0, 25000]);
+    setPriceRange([0, 50000]);
     onCategoryChange(null); // Llama a la función de cambio de categoría con null o un valor que indique que se deben limpiar los filtros
-    onPriceRangeChange([0, 2500000]);
+    onPriceRangeChange([0, 50000]);
   };
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm space-y-6">
@@ -63,8 +63,8 @@ export default function Sidebar({
       <div>
         <h3 className="text-lg font-mono font-semibold mb-4">Precio</h3>
         <Slider
-          defaultValue={[0, 25000]}
-          max={25000}
+          defaultValue={[0, 50000]}
+          max={50000}
           step={2500}
           value={priceRange}
           onValueChange={handlePriceChange}

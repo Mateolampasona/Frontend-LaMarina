@@ -34,10 +34,13 @@ export function ProductCard({ products }: ProductCardProps) {
         icon: "warning",
         confirmButtonText: "Iniciar sesión",
         customClass: {
-          popup: "swal-popup",
-          title: "swal-title",
-          confirmButton: "swal-confirm-button",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
+          title: "text-2xl font-semibold text-gray-800",
+          htmlContainer: "text-[#ef233c]",
+          confirmButton:
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
         },
+        buttonsStyling: false,
       }).then((result) => {
         if (result.isConfirmed) {
           router.push("/login");
@@ -52,10 +55,13 @@ export function ProductCard({ products }: ProductCardProps) {
         icon: "error",
         confirmButtonText: "OK",
         customClass: {
-          popup: "swal-popup",
-          title: "swal-title",
-          confirmButton: "swal-confirm-button",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
+          title: "text-2xl font-semibold text-gray-800",
+          htmlContainer: "text-[#ef233c]",
+          confirmButton:
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
         },
+        buttonsStyling: false,
       });
       return;
     }
@@ -75,10 +81,13 @@ export function ProductCard({ products }: ProductCardProps) {
         icon: "success",
         confirmButtonText: "OK",
         customClass: {
-          popup: "swal-popup",
-          title: "swal-title",
-          confirmButton: "swal-confirm-button",
+          popup: "bg-[#edede9] shadow-lg rounded-lg p-6",
+          title: "text-2xl font-semibold text-gray-800",
+          htmlContainer: "text-[#ef233c]",
+          confirmButton:
+            "bg-[#ef233c] hover:bg-[#d61e36] text-white font-bold py-2 px-4 rounded",
         },
+        buttonsStyling: false,
       });
     } catch (error) {
       console.error("Error al agregar el producto al carrito", error);
@@ -113,7 +122,7 @@ export function ProductCard({ products }: ProductCardProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {productList.map((product) => (
         <Card
           key={product.productId}

@@ -213,6 +213,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
     }
   };
 
+  // Fetch de categorias
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -289,7 +290,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         <li key={category.id}>
                           <button
                             onClick={() =>
-                              router.push(`/category/${category.id}`)
+                              router.push(`/category/${category.name}`)
                             }
                             className="w-full flex items-center justify-between p-3 text-left bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
                           >

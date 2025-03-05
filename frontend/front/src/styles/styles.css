@@ -1,0 +1,39 @@
+/* Estilo del contenedor */
+.cho-container {
+  display: flex !important; /* Cambiado a flex para centrar fácilmente */
+  justify-content: center !important; /* Centra horizontalmente */
+  align-items: center !important; /* Centra verticalmente */
+  width: 100% !important; /* Asegura que el contenedor ocupe todo el ancho disponible */
+  margin: 10px 0 !important; /* Margen vertical */
+}
+
+/* Estilo base para el botón */
+.cho-container button {
+  background-color: #edede9 !important; /* Color de fondo */
+  color: #ef233c !important; /* Color del texto */
+  font-size: 14px !important; /* Tamaño de la fuente reducido */
+  font-weight: 600 !important; /* Peso de la fuente */
+  border-radius: 4px !important; /* Bordes redondeados mínimos */
+  padding: 8px 16px !important; /* Espaciado interno reducido */
+  border: 1px solid #ef233c !important; /* Borde del color del texto */
+  cursor: pointer !important; /* Cambia el cursor al pasar por el botón */
+  transition: all 0.3s ease !important; /* Transición suave */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Sombra sutil */
+  text-transform: uppercase !important; /* Texto en mayúsculas */
+  letter-spacing: 0.5px !important; /* Espaciado entre letras */
+  text-align: center !important; /* Centrar el texto */
+  line-height: 1.2 !important; /* Ajuste de altura de línea */
+}
+
+/* Estilo hover */
+.cho-container button:hover {
+  background-color: #ef233c !important; /* Color de fondo al pasar el mouse */
+  color: #edede9 !important; /* Color del texto al pasar el mouse */
+  border-color: #edede9 !important; /* Color del borde al pasar el mouse */
+}
+
+/* Estilo active (al hacer clic) */
+.cho-container button:active {
+  transform: translateY(1px) !important; /* Efecto de presión */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important; /* Sombra reducida */
+}

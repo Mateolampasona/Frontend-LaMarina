@@ -2,7 +2,7 @@ import CategoriesSection from "@/Components/CategoriesSection";
 import SectionOne from "@/Components/SectionOne";
 import { ProductSection } from "@/Components/CardsSection";
 import PromocionesYOfertas from "@/Components/Ofertas";
-import RobertaSection from "@/Components/RobertaSection";
+
 
 export default function Homee() {
   return (
@@ -10,15 +10,12 @@ export default function Homee() {
       <div className=" bgPrincipal">
         <section className="relative mt-12">
           <SectionOne />
-          <section className="m-0 mb-16">
-            <RobertaSection />
-          </section>
-        </section>
-        <section className="mb-16">
-          <CategoriesSection />
         </section>
         <section className="m-0">
           <ProductSection />
+        </section>
+        <section className="mb-16">
+          <CategoriesSection />
         </section>
         <section className="m-0">
           <PromocionesYOfertas />

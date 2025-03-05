@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { getAllProducts, getProductById } from "@/helpers/products.helpers";
 import ProductGrid from "@/Components/productsUI/Product-grid";
 import Sidebar from "@/Components/productsUI/Sidebar";
@@ -8,15 +9,17 @@ import SearchSort from "@/Components/productsUI/Search-sort";
 import { IProduct, ICategory } from "@/interfaces/IProducts";
 import socket from "@/utils/socket";
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[] | null>(
     null
   );
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 25000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const categoria = searchParams.get("categoria");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -71,20 +74,43 @@ export default function ProductsPage() {
       );
     }
 
+    if (categoria) {
+      filtered = filtered.filter(
+        (product) =>
+          product.category_id.name.toLowerCase() ===
+          (Array.isArray(categoria)
+            ? categoria[0].toLowerCase()
+            : categoria.toLowerCase())
+      );
+    }
+
     filtered = filtered.filter(
       (product) =>
         product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
     setFilteredProducts(filtered);
-  }, [selectedCategories, priceRange, products]);
+  }, [selectedCategories, priceRange, products, categoria]);
 
   const handleSearch = (term: string) => {
-    const filtered = products.filter(
+    let filtered = products;
+
+    if (categoria) {
+      filtered = filtered.filter(
+        (product) =>
+          product.category_id.name.toLowerCase() ===
+          (Array.isArray(categoria)
+            ? categoria[0].toLowerCase()
+            : categoria.toLowerCase())
+      );
+    }
+
+    filtered = filtered.filter(
       (product) =>
         product.name.toLowerCase().includes(term.toLowerCase()) ||
         product.description.toLowerCase().includes(term.toLowerCase())
     );
+
     setFilteredProducts(filtered);
   };
 
@@ -132,20 +158,35 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-[#edede9]">
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
-          <aside className="w-full md:w-64 flex-shrink-0">
-            <Sidebar
-              categories={categories}
-              onCategoryChange={handleCategoryFilter}
-              onPriceRangeChange={handlePriceRangeFilter}
-            />
-          </aside>
+          {!categoria && (
+            <aside className="w-full md:w-64 flex-shrink-0">
+              <Sidebar
+                categories={categories}
+                onCategoryChange={handleCategoryFilter}
+                onPriceRangeChange={handlePriceRangeFilter}
+              />
+            </aside>
+          )}
 
           <main className="flex-1">
+            {categoria && (
+              <h1 className="text-2xl font-bold mb-4">
+                {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+              </h1>
+            )}
             <SearchSort onSearch={handleSearch} onSort={handleSort} />
             <ProductGrid products={filteredProducts} />
           </main>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }
