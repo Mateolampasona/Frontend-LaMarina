@@ -49,8 +49,8 @@ export default function ProductManagement() {
       if (typeof parsedToken !== "string") {
         throw new Error("Invalid token format");
       }
+      console.log("productData", productData);
       const newProduct = await createProduct(parsedToken, productData);
-      console.log(productData);
       setProducts([...products, newProduct]);
     } catch (error) {
       console.error("Error creating product:", error);

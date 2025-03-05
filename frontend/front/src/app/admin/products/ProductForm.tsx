@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import type {
   ICreateProduct,
   IUpdateproduct,
@@ -13,11 +13,7 @@ interface ProductFormProps {
   onCancel: () => void;
 }
 
-export default function ProductForm({
-  onSubmit,
-  initialData,
-  onCancel,
-}: ProductFormProps) {
+const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
   const [formData, setFormData] = useState<ICreateProduct>({
     name: "",
     description: "",
@@ -48,10 +44,21 @@ export default function ProductForm({
     >
   ) => {
     const { name, value, type } = e.target;
+    let newValue: string | number | boolean = value;
+
+    if (type === 'checkbox') {
+      newValue = (e.target as HTMLInputElement).checked;
+    } else if (name === 'price' || name === 'stock' || name === 'category_id') {
+      newValue = Number(value);
+      if (isNaN(newValue) || newValue <= 0) {
+        alert(`${name} must be a positive number`);
+        return;
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: newValue,
     }));
   };
 
@@ -243,4 +250,6 @@ export default function ProductForm({
       </div>
     </form>
   );
-}
+};
+
+export default ProductForm;
