@@ -25,9 +25,9 @@ export default function ProductForm({
     stock: 0,
     category_id: 0,
     isActive: true,
-    imageUrl: "",
   });
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const [imageUrl, setImageUrl] = useState<string>();
 
   useEffect(() => {
     if (initialData) {
@@ -38,7 +38,6 @@ export default function ProductForm({
         stock: initialData.stock,
         category_id: initialData.category_id.categoryId,
         isActive: initialData.isActive,
-        imageUrl: initialData.imageUrl,
       });
     }
   }, [initialData]);
@@ -49,33 +48,29 @@ export default function ProductForm({
     >
   ) => {
     const { name, value, type } = e.target;
-    if (type === "file") {
-      const fileInput = e.target as HTMLInputElement;
-      const file = fileInput.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64String = reader.result as string;
-          setPreviewImage(base64String);
-          setFormData((prev) => ({
-            ...prev,
-            imageUrl: base64String,
-          }));
-        };
-        reader.readAsDataURL(file);
-      }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]:
-          type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-      }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImageUrl(base64String);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({ ...formData });
     setFormData({
       name: "",
       description: "",
@@ -83,8 +78,8 @@ export default function ProductForm({
       stock: 0,
       category_id: 0,
       isActive: true,
-      imageUrl: "",
     });
+    setImageUrl("");
   };
 
   return (
@@ -93,46 +88,6 @@ export default function ProductForm({
       className="bg-white shadow-lg rounded-lg px-6 pt-4 pb-6 mb-4 max-w-xl mx-auto border border-gray-200"
     >
       <div className="grid gap-4 mb-4">
-        <div className="mb-3">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide"
-            htmlFor="image"
-          >
-            Imagen del Producto
-          </label>
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <input
-                type="file"
-                id="image"
-                name="imageUrl"
-                onChange={handleChange}
-                accept="image/*"
-                className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-lg file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100
-                  cursor-pointer"
-              />
-            </div>
-            {(previewImage || formData.imageUrl) && (
-              <div className="w-20 h-20 relative">
-                <img
-                  src={
-                    previewImage ||
-                    (typeof formData.imageUrl === "string"
-                      ? formData.imageUrl
-                      : "")
-                  }
-                  alt="Vista previa"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-        </div>
         <div className="mb-3">
           <label
             className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
@@ -232,6 +187,41 @@ export default function ProductForm({
               Activo
             </span>
           </label>
+        </div>
+        <div className="mb-3">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide"
+            htmlFor="image"
+          >
+            Imagen del Producto
+          </label>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <input
+                type="file"
+                id="image"
+                name="imageUrl"
+                onChange={handleImageChange}
+                accept="image/*"
+                className="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100
+                  cursor-pointer"
+              />
+            </div>
+            {imageUrl && (
+              <div className="w-20 h-20 relative">
+                <img
+                  src={imageUrl}
+                  alt="Vista previa"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex items-center justify-end space-x-3">

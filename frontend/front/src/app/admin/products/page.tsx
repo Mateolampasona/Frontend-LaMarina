@@ -15,12 +15,14 @@ import type {
 import ProductForm from "./ProductForm";
 import ProductList from "./ProductList";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import Cookies from "js-cookie";
 
 export default function ProductManagement() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
+  const token = Cookies.get("accessToken");
 
   useEffect(() => {
     fetchProducts();
@@ -38,12 +40,20 @@ export default function ProductManagement() {
 
   const handleCreateProduct = async (productData: ICreateProduct) => {
     try {
-      const token = "your-auth-token"; // Replace with actual auth token
-      const newProduct = await createProduct(token, productData);
+      if (!token) {
+        console.error("No token found");
+        return { isValid: false, parsedToken: "" };
+      }
+      const parsedToken = JSON.parse(token);
+      console.log("parsedToken", parsedToken);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      const newProduct = await createProduct(parsedToken, productData);
+      console.log(productData);
       setProducts([...products, newProduct]);
     } catch (error) {
       console.error("Error creating product:", error);
-      // Handle error (e.g., show error message to user)
     }
   };
 
@@ -52,12 +62,16 @@ export default function ProductManagement() {
     productData: IUpdateproduct
   ) => {
     try {
-      const token = "your-auth-token";
-      const updatedProduct = await modifyProduct(
-        token,
-        id.toString(),
-        productData
-      );
+      if (!token) {
+        console.error("No token found");
+        return { isValid: false, parsedToken: "" };
+      }
+      const parsedToken = JSON.parse(token);
+      console.log("parsedToken", parsedToken);
+      if (typeof parsedToken !== "string") {
+        throw new Error("Invalid token format");
+      }
+      const updatedProduct = await modifyProduct(parsedToken, id, productData);
       setProducts(
         products.map((p) => (p.productId === id ? updatedProduct : p))
       );
@@ -70,8 +84,17 @@ export default function ProductManagement() {
   const handleDeleteProduct = async () => {
     if (productToDelete) {
       try {
-        const token = "your-auth-token";
-        await deleteProduct(token, productToDelete.toString());
+        if (!token) {
+          console.error("No token found");
+          return { isValid: false, parsedToken: "" };
+        }
+        const parsedToken = JSON.parse(token);
+        console.log("parsedToken", parsedToken);
+        if (typeof parsedToken !== "string") {
+          throw new Error("Invalid token format");
+        }
+        const response = await deleteProduct(parsedToken, productToDelete);
+        console.log(response);
         setProducts(products.filter((p) => p.productId !== productToDelete));
         setIsDeleteModalOpen(false);
         setProductToDelete(null);
