@@ -61,8 +61,8 @@ export const getOrderByUserId = async (token: string) => {
       },
     });
 
-
     const res = await response.json();
+    console.log("res", res);
     return res;
   } catch (error) {
     console.log("Ocurrio un error en getOrderByUserId", error);
@@ -70,8 +70,8 @@ export const getOrderByUserId = async (token: string) => {
   }
 };
 
-export const getTotalCarts = async (token:string) => {
-  try{
+export const getTotalCarts = async (token: string) => {
+  try {
     const response = await fetch(`${APIURL}/orders/total-orders`, {
       method: "GET",
       headers: {
@@ -84,22 +84,64 @@ export const getTotalCarts = async (token:string) => {
   } catch (error) {
     console.log("Ocurrio un error en getTotalOrders", error);
     throw error;
-  }  }
+  }
+};
 
-  export const getLastOrder = async (token:string) => {
-    try{
-      const response = await fetch(`${APIURL}/orders/last-order`, {
-        method: "GET",
+export const getLastOrder = async (token: string) => {
+  try {
+    const response = await fetch(`${APIURL}/orders/last-order`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.log("Ocurrio un error en getLastOrder", error);
+    throw error;
+  }
+};
+
+export const putDiscount = async (
+  token: string,
+  id: string,
+  discountCode: string
+) => {
+  try {
+    const response = await fetch(`${APIURL}/orders/apply-discount/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ discountCode }),
+    });
+    const res = await response.json();
+
+    return { success: response.ok, res: res };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeDiscount = async (token: string, orderId: string) => {
+  try {
+    const response = await fetch(
+      `${APIURL}/orders/remove-discount/${orderId}`,
+      {
+        method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-    })
-    const res = await response.json()
-    return res;
-    } catch(error){
-      console.log("Ocurrio un error en getLastOrder", error);
-      throw error;
-    }
+      }
+    );
+    const res = await response.json();
+    return { success: response.ok, res: res };
+  } catch (error) {
+    console.log("Ocurrio un error en removeDiscount", error);
+    throw error;
   }
-
+};

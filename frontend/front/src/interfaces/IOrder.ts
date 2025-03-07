@@ -1,3 +1,5 @@
+import { IAddress } from "./IAddress";
+import { IDiscount } from "./IDiscount";
 import { IProduct } from "./IProducts";
 
 export interface IOrderDetailAddProduct {
@@ -10,11 +12,16 @@ export interface IDeleteProduct {
 }
 
 export interface IOrder {
-  createdAt: string;
-  orderId: string;
   status: string;
   totalOrder: number;
+  originalTotal?: number;
+  discountAmmount?: number;
+  IsShipment: boolean;
+  orderId: string;
+  createdAt: string;
   orderDetails: IOrderDetail[];
+  discount?: IDiscount;
+  IAddress?: IAddress;
 }
 export interface IOrderDetail {
   orderDetailId: string;
