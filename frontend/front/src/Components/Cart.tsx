@@ -9,13 +9,16 @@ import { Badge } from "@/Components/ui/badge";
 import { Switch } from "@/Components/ui/switch";
 import { Label } from "@/Components/ui/label";
 import { Input } from "@/Components/ui/input";
-import { Toast } from "@/Components/ui/toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { IProduct } from "@/interfaces/IProducts";
 import Image from "next/image";
 import { useUserContext } from "@/Context/userContext";
 import Cookies from "js-cookie";
-import { getOrderByUserId } from "@/helpers/orders.helper";
+import {
+  getOrderByUserId,
+  putDiscount,
+  removeDiscount,
+} from "@/helpers/orders.helper";
 import {
   addProductToOrder,
   deleteOrderDetail,
@@ -25,21 +28,13 @@ import { createPreference } from "@/helpers/payment.helper";
 import { getUserById } from "@/helpers/users.helpers";
 import { IUser } from "@/interfaces/IUser";
 import PaymentButton from "./paymentButton";
+import { IOrder } from "@/interfaces/IOrder";
+import Swal from "sweetalert2";
 
 const SHIPPING_THRESHOLD = 100;
 const SHIPPING_COST = 0;
 
 // Interfaces
-interface IOrderDetail {
-  orderDetailId: string;
-  quantity: number;
-  product: IProduct;
-}
-
-interface ICartItems {
-  totalOrder: number;
-  orderDetails: IOrderDetail[];
-}
 
 interface ProductWithQuantity {
   orderDetailId: string;
@@ -60,7 +55,6 @@ const validateUserData = (token: string, userId: string) => {
     console.error("No userId found");
     return { isValid: false, parsedToken: "" };
   }
-  console.log("Token and userId are valid");
   return { isValid: true, parsedToken, userId };
 };
 
@@ -70,7 +64,7 @@ export default function ShoppingCart() {
   const [isGift, setIsGift] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [cart, setCartItems] = useState<ICartItems | null>(null);
+  const [cart, setCartItems] = useState<IOrder | null>(null);
   const [productsWithQuantities, setProductsWithQuantities] = useState<
     ProductWithQuantity[]
   >([]);
@@ -79,14 +73,14 @@ export default function ShoppingCart() {
   const [paymentMethod, setPaymentMethod] = useState<
     "efectivo" | "mercadopago"
   >();
+  const [discountAmmount, setDiscountAmmount] = useState(0);
   const [loadingQuantities, setLoadingQuantities] = useState<{
     [key: string]: boolean;
   }>({});
   const [isUserDataReady, setIsUserDataReady] = useState(false);
   const [isCartReady, setIsCartReady] = useState(false);
-
-  console.log("USER", user);
-  console.log(isCartReady);
+  const [isDiscountApplied, setIsDiscountApplied] = useState(false);
+  console.log("IsCartReady", isCartReady);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -124,9 +118,16 @@ export default function ShoppingCart() {
           getOrderByUserId(parsedToken),
           getUserById(parsedToken, id),
         ]);
-
         setUser(user);
         setCartItems(data);
+        console.log("DATAAAA", data.discountAmmount);
+
+        // Verifica si hay un descuento aplicado y actualiza el estado
+        if (data.discount) {
+          setPromoCode(data.discount.discountCode);
+          setDiscountAmmount(data.discountAmmount ?? 0);
+          setIsDiscountApplied(true);
+        }
       } catch (error) {
         console.error("Error fetching cart items:", error);
       } finally {
@@ -139,6 +140,14 @@ export default function ShoppingCart() {
 
     fetchCartItems();
   }, [isUserDataReady, userId, token]);
+
+  useEffect(() => {
+    if (cart?.discount?.id) {
+      setPromoCode(cart.discount.discountCode);
+      setDiscountAmmount(cart.discountAmmount ?? 0);
+      setIsDiscountApplied(true);
+    }
+  }, [cart]);
 
   // Crear preferencia de pago si existe el usuario y la orden.Y si la orden es mayor a 0
   useEffect(() => {
@@ -162,7 +171,6 @@ export default function ShoppingCart() {
           email: user.email,
         };
         const response = await createPreference(parsedToken, data);
-        console.log("RESPONSE", response);
         setPreferenceId(response.preferenceId);
       } catch (error) {
         console.error("Error creating preference:", error);
@@ -233,7 +241,7 @@ export default function ShoppingCart() {
     0
   );
   const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const total = subtotal + shipping;
+  const total = subtotal + shipping - discountAmmount;
 
   const updateQuantity = async (id: string, change: number) => {
     setLoadingQuantities((prev) => ({ ...prev, [id]: true }));
@@ -274,15 +282,97 @@ export default function ShoppingCart() {
     }
   };
 
-  const applyPromoCode = () => {
+  const applyPromoCode = async () => {
     setIsLoading(true);
-    // Simulamos una llamada a la API
-    setTimeout(() => {
-      setIsLoading(false);
-      Toast({
-        title: "Código promocional aplicado",
+    try {
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
+        return;
+      }
+
+      if (cart?.orderId) {
+        const response = await putDiscount(
+          parsedToken,
+          cart.orderId,
+          promoCode
+        );
+
+        if (response.success == true) {
+          setDiscountAmmount(response.res);
+          setIsDiscountApplied(true);
+          const updatedCart = await getOrderByUserId(parsedToken);
+          setCartItems(updatedCart);
+
+          // Forzar re-renderización
+          setTimeout(() => {
+            Swal.fire({
+              title: "Código promocional aplicado",
+              text: `Descuento de $${response.res.toFixed(2)}`,
+              icon: "success",
+            });
+          }, 0);
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: "Código promocional inválido",
+            icon: "error",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error applying promo code:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al aplicar el código promocional",
+        icon: "error",
       });
-    }, 1500);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const removePromoCode = async () => {
+    setIsLoading(true);
+    try {
+      const { isValid, parsedToken } = validateUserData(token, userId);
+      if (!isValid) {
+        setCartItems(null);
+        setIsLoading(false);
+        return;
+      }
+
+      if (cart?.orderId) {
+        const response = await removeDiscount(parsedToken, cart.orderId);
+        console.log(response);
+        if (response.success == true) {
+          setPromoCode("");
+          setDiscountAmmount(0);
+          setIsDiscountApplied(false);
+          Swal.fire({
+            title: "Código promocional eliminado",
+            text: "Se eliminó el descuento aplicado",
+            icon: "success",
+          });
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo eliminar el código promocional",
+            icon: "error",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error removing promo code:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al eliminar el código promocional",
+        icon: "error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
@@ -435,6 +525,12 @@ export default function ShoppingCart() {
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
+            {discountAmmount > 0 && (
+              <div className="flex justify-between text-sm mt-2 text-green-600">
+                <span>Descuento</span>
+                <span>-${discountAmmount.toFixed(2)}</span>
+              </div>
+            )}
             <div className="flex justify-between text-sm mt-2">
               <span>Envío</span>
               <span>{shipping === 0 ? "Gratis" : `$${shipping}`}</span>
@@ -474,18 +570,26 @@ export default function ShoppingCart() {
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
                   placeholder="Ingresa tu código"
+                  className={discountAmmount > 0 ? "border-green-500" : ""}
+                  disabled={isDiscountApplied}
                 />
-                <Button
-                  onClick={applyPromoCode}
-                  disabled={isLoading}
-                  className="ml-2"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    "Aplicar"
-                  )}
-                </Button>
+                {isDiscountApplied ? (
+                  <Button onClick={removePromoCode} className="ml-2">
+                    <X className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={applyPromoCode}
+                    disabled={isLoading}
+                    className="ml-2"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Aplicar"
+                    )}
+                  </Button>
+                )}
               </div>
               <div className="mt-4">
                 <Label>Método de pago</Label>
