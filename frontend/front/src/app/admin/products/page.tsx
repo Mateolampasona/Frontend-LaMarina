@@ -40,7 +40,7 @@ export default function ProductManagement() {
 
   const handleCreateProduct = async (productData: ICreateProduct) => {
     try {
-      if (!token) {
+      if (!token) {         
         console.error("No token found");
         return { isValid: false, parsedToken: "" };
       }
