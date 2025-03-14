@@ -1,23 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import type {
   ICreateProduct,
   IUpdateproduct,
   IProduct,
 } from "@/interfaces/IProducts";
-
+import validateCreateProduct from "@/helpers/validateCreateProduct";
+import Swal from 'sweetalert2';
 interface ProductFormProps {
   onSubmit: (data: ICreateProduct | IUpdateproduct) => void;
   initialData?: IProduct | null;
   onCancel: () => void;
 }
 
-export default function ProductForm({
-  onSubmit,
-  initialData,
-  onCancel,
-}: ProductFormProps) {
+const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
   const [formData, setFormData] = useState<ICreateProduct>({
     name: "",
     description: "",
@@ -25,9 +22,11 @@ export default function ProductForm({
     stock: 0,
     category_id: 0,
     isActive: true,
+    image: null,
   });
 
   const [imageUrl, setImageUrl] = useState<string>();
+  const [errors, setErrors] = useState<any>({});
 
   useEffect(() => {
     if (initialData) {
@@ -38,6 +37,7 @@ export default function ProductForm({
         stock: initialData.stock,
         category_id: initialData.category_id.categoryId,
         isActive: initialData.isActive,
+        image: null,
       });
     }
   }, [initialData]);
@@ -48,10 +48,16 @@ export default function ProductForm({
     >
   ) => {
     const { name, value, type } = e.target;
+    let newValue: string | number | boolean = value;
+
+    if (type === 'checkbox') {
+      newValue = (e.target as HTMLInputElement).checked;
+    } else if (name === 'price' || name === 'stock' || name === 'category_id') {
+      newValue = Number(value);
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: newValue,
     }));
   };
 
@@ -63,6 +69,10 @@ export default function ProductForm({
       reader.onloadend = () => {
         const base64String = reader.result as string;
         setImageUrl(base64String);
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -70,16 +80,29 @@ export default function ProductForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData });
-    setFormData({
-      name: "",
-      description: "",
-      price: 0,
-      stock: 0,
-      category_id: 0,
-      isActive: true,
-    });
-    setImageUrl("");
+    const validationErrors = validateCreateProduct(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+      onSubmit({ ...formData });
+      setFormData({
+        name: "",
+        description: "",
+        price: 0,
+        stock: 0,
+        category_id: 0,
+        isActive: true,
+        image: null,
+      });
+      setImageUrl("");
+    } else {  
+      Swal.fire({
+        title: "Error",
+        text: "Por favor, revise los campos marcados en rojo.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
   };
 
   return (
@@ -104,6 +127,7 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
         <div className="mb-3">
           <label
@@ -120,6 +144,7 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="mb-3">
@@ -138,6 +163,7 @@ export default function ProductForm({
               onChange={handleChange}
               required
             />
+            {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
           </div>
           <div className="mb-3">
             <label
@@ -155,6 +181,7 @@ export default function ProductForm({
               onChange={handleChange}
               required
             />
+            {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
           </div>
         </div>
         <div className="mb-3">
@@ -173,6 +200,7 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
         </div>
         <div className="mb-3">
           <label className="flex items-center space-x-3 cursor-pointer">
@@ -235,12 +263,15 @@ export default function ProductForm({
           </button>
         )}
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none"
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none ${Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           type="submit"
+          disabled={Object.keys(errors).length > 0}
         >
           {initialData ? "Actualizar" : "Crear"}
         </button>
       </div>
     </form>
   );
-}
+};
+
+export default ProductForm;

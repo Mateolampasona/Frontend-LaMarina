@@ -5,6 +5,7 @@ export interface ICreateProduct {
   stock: number;
   category_id: number;
   isActive: boolean;
+  image: File | null;
 }
 
 export interface IUpdateproduct {
