@@ -8,6 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import { Skeleton } from "@/Components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/Components/ui/dialog";
 import { ProfileInfo } from "@/Components/ui/profile-info";
 import { EditProfileForm } from "@/Components/ui/edit-profile-form";
 import Cookies from "js-cookie";
@@ -27,6 +33,18 @@ export default function UserDashboard() {
   const [transactions, setTransactions] = useState<ICompra[]>([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<ICompra | null>(null); // Estado para el pedido seleccionado
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Estado para controlar el PopUp
+
+  const openOrderDetails = (order: ICompra) => {
+    setSelectedOrder(order);
+    setIsDialogOpen(true);
+  };
+
+  const closeOrderDetails = () => {
+    setSelectedOrder(null);
+    setIsDialogOpen(false);
+  };
 
   const [activeOrders] = useState([
     { id: 4, status: "procesando", date: "2023-05-22", total: "$150.00" },
@@ -275,16 +293,17 @@ export default function UserDashboard() {
                     No tienes pedidos en el historial.
                   </p>
                 ) : (
-                  compras.map((compra, index) => (
+                  compras.map((compra) => (
                     <div
                       key={compra.compraId}
-                      className="flex flex-col md:flex-row justify-between items-center mb-4 group"
+                      className="flex flex-col md:flex-row justify-between items-center mb-4 group cursor-pointer"
+                      onClick={() => openOrderDetails(compra)} // Abre el PopUp al hacer clic
                     >
                       <div className="flex flex-col">
                         <p
                           className={`text-sm font-medium text-[#2d2d2d] group-hover:text-[#ef233c] transition-colors duration-200`}
                         >
-                          Pedido #{index + 1}
+                          Pedido #{compra.compraId}
                         </p>
                         <p className="text-xs text-gray-600">
                           {new Date(compra.purchaseDate).toLocaleDateString(
@@ -310,6 +329,110 @@ export default function UserDashboard() {
               </ScrollArea>
             </CardContent>
           </Card>
+
+          {/* PopUp para mostrar los detalles del pedido */}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Detalles del Pedido</DialogTitle>
+              </DialogHeader>
+              {selectedOrder && (
+                <div className="space-y-4">
+                  <p>
+                    <strong>ID del Pedido:</strong> {selectedOrder.compraId}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong>{" "}
+                    {new Date(selectedOrder.purchaseDate).toLocaleDateString(
+                      "en-CA"
+                    )}
+                  </p>
+                  <p>
+                    <strong>Total:</strong> ${selectedOrder.total}
+                  </p>
+                  <p>
+                    <strong>Método de Pago:</strong>{" "}
+                    {selectedOrder.paymentMethod}
+                  </p>
+                  <div>
+                    <strong>Productos:</strong>
+                    <ul className="list-disc pl-5">
+                      {selectedOrder.purchaseDetails.map((product, index) => (
+                        <li key={index}>
+                          {product.product.name} - ${product.product.price} x{" "}
+                          {product.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+              <DialogHeader className="border-b pb-4 mb-4">
+                <DialogTitle className="text-2xl font-semibold text-[#2d2d2d]">
+                  Detalles del Pedido
+                </DialogTitle>
+              </DialogHeader>
+              {selectedOrder && (
+                <div className="space-y-6">
+                  {/* Información general del pedido */}
+                  <div className="space-y-2">
+                    <p className="text-lg">
+                      <strong className="text-[#ef233c]">ID del Pedido:</strong>{" "}
+                      {selectedOrder.compraId}
+                    </p>
+                    <p className="text-lg">
+                      <strong className="text-[#ef233c]">Fecha:</strong>{" "}
+                      {new Date(selectedOrder.purchaseDate).toLocaleDateString(
+                        "en-CA"
+                      )}
+                    </p>
+                    <p className="text-lg">
+                      <strong className="text-[#ef233c]">Total:</strong> $
+                      {selectedOrder.total}
+                    </p>
+                    <p className="text-lg">
+                      <strong className="text-[#ef233c]">
+                        Método de Pago:
+                      </strong>{" "}
+                      {selectedOrder.paymentMethod}
+                    </p>
+                  </div>
+
+                  {/* Lista de productos */}
+                  <div>
+                    <h3 className="text-xl font-semibold text-[#2d2d2d] mb-2">
+                      Productos
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {selectedOrder.purchaseDetails.map((product, index) => (
+                        <li key={index} className="text-gray-700">
+                          <span className="font-medium text-[#2d2d2d]">
+                            {product.product.name}
+                          </span>{" "}
+                          - ${product.product.price} x {product.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Botón para cerrar */}
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      className="text-[#ef233c] border-[#ef233c] hover:bg-[#ef233c] hover:text-white transition-colors duration-200"
+                      onClick={closeOrderDetails}
+                    >
+                      Cerrar
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
 
           <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-200">
             <CardHeader>
