@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import type {
   ICreateProduct,
   IUpdateproduct,
   IProduct,
 } from "@/interfaces/IProducts";
 import validateCreateProduct from "@/helpers/validateCreateProduct";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 interface ProductFormProps {
   onSubmit: (data: ICreateProduct | IUpdateproduct) => void;
   initialData?: IProduct | null;
@@ -26,7 +26,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
   });
 
   const [imageUrl, setImageUrl] = useState<string>();
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ICreateProduct, string>>
+  >({});
 
   useEffect(() => {
     if (initialData) {
@@ -50,9 +52,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
     const { name, value, type } = e.target;
     let newValue: string | number | boolean = value;
 
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       newValue = (e.target as HTMLInputElement).checked;
-    } else if (name === 'price' || name === 'stock' || name === 'category_id') {
+    } else if (name === "price" || name === "stock" || name === "category_id") {
       newValue = Number(value);
     }
     setFormData((prev) => ({
@@ -95,7 +97,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
         image: null,
       });
       setImageUrl("");
-    } else {  
+    } else {
       Swal.fire({
         title: "Error",
         text: "Por favor, revise los campos marcados en rojo.",
@@ -127,7 +129,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
             onChange={handleChange}
             required
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+          )}
         </div>
         <div className="mb-3">
           <label
@@ -144,7 +148,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
             onChange={handleChange}
             required
           />
-          {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+          {errors.description && (
+            <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="mb-3">
@@ -163,7 +169,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
               onChange={handleChange}
               required
             />
-            {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
+            {errors.price && (
+              <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+            )}
           </div>
           <div className="mb-3">
             <label
@@ -181,7 +189,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
               onChange={handleChange}
               required
             />
-            {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
+            {errors.stock && (
+              <p className="text-red-500 text-xs mt-1">{errors.stock}</p>
+            )}
           </div>
         </div>
         <div className="mb-3">
@@ -200,7 +210,9 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
             onChange={handleChange}
             required
           />
-          {errors.category_id && <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>}
+          {errors.category_id && (
+            <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>
+          )}
         </div>
         <div className="mb-3">
           <label className="flex items-center space-x-3 cursor-pointer">
@@ -263,7 +275,11 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
           </button>
         )}
         <button
-          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none ${Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none ${
+            Object.keys(errors).length > 0
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+          }`}
           type="submit"
           disabled={Object.keys(errors).length > 0}
         >
