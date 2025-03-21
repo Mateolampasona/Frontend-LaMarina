@@ -6,7 +6,7 @@ import type {
   IUpdateproduct,
   IProduct,
 } from "@/interfaces/IProducts";
-import validateCreateProduct from "@/helpers/validateCreateProduct";
+import ValidateCreateProduct from "@/helpers/ValidateCreateProduct.helper";
 import Swal from "sweetalert2";
 interface ProductFormProps {
   onSubmit: (data: ICreateProduct | IUpdateproduct) => void;
@@ -82,7 +82,7 @@ const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validationErrors = validateCreateProduct(formData);
+    const validationErrors = ValidateCreateProduct(formData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
