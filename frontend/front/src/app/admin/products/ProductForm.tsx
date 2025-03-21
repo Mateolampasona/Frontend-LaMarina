@@ -1,23 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import type {
   ICreateProduct,
   IUpdateproduct,
   IProduct,
 } from "@/interfaces/IProducts";
-
+import ValidateCreateProduct from "@/helpers/ValidateCreateProduct.helper";
+import Swal from "sweetalert2";
 interface ProductFormProps {
   onSubmit: (data: ICreateProduct | IUpdateproduct) => void;
   initialData?: IProduct | null;
   onCancel: () => void;
 }
 
-export default function ProductForm({
-  onSubmit,
-  initialData,
-  onCancel,
-}: ProductFormProps) {
+const ProductForm = ({ onSubmit, initialData, onCancel }: ProductFormProps) => {
   const [formData, setFormData] = useState<ICreateProduct>({
     name: "",
     description: "",
@@ -25,9 +22,13 @@ export default function ProductForm({
     stock: 0,
     category_id: 0,
     isActive: true,
-    imageUrl: "",
+    image: null,
   });
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ICreateProduct, string>>
+  >({});
 
   useEffect(() => {
     if (initialData) {
@@ -38,7 +39,7 @@ export default function ProductForm({
         stock: initialData.stock,
         category_id: initialData.category_id.categoryId,
         isActive: initialData.isActive,
-        imageUrl: initialData.imageUrl,
+        image: null,
       });
     }
   }, [initialData]);
@@ -49,42 +50,61 @@ export default function ProductForm({
     >
   ) => {
     const { name, value, type } = e.target;
-    if (type === "file") {
-      const fileInput = e.target as HTMLInputElement;
-      const file = fileInput.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64String = reader.result as string;
-          setPreviewImage(base64String);
-          setFormData((prev) => ({
-            ...prev,
-            imageUrl: base64String,
-          }));
-        };
-        reader.readAsDataURL(file);
-      }
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]:
-          type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-      }));
+    let newValue: string | number | boolean = value;
+
+    if (type === "checkbox") {
+      newValue = (e.target as HTMLInputElement).checked;
+    } else if (name === "price" || name === "stock" || name === "category_id") {
+      newValue = Number(value);
+    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileInput = e.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImageUrl(base64String);
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({
-      name: "",
-      description: "",
-      price: 0,
-      stock: 0,
-      category_id: 0,
-      isActive: true,
-      imageUrl: "",
-    });
+    const validationErrors = ValidateCreateProduct(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+      onSubmit({ ...formData });
+      setFormData({
+        name: "",
+        description: "",
+        price: 0,
+        stock: 0,
+        category_id: 0,
+        isActive: true,
+        image: null,
+      });
+      setImageUrl("");
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: "Por favor, revise los campos marcados en rojo.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
   };
 
   return (
@@ -93,46 +113,6 @@ export default function ProductForm({
       className="bg-white shadow-lg rounded-lg px-6 pt-4 pb-6 mb-4 max-w-xl mx-auto border border-gray-200"
     >
       <div className="grid gap-4 mb-4">
-        <div className="mb-3">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide"
-            htmlFor="image"
-          >
-            Imagen del Producto
-          </label>
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <input
-                type="file"
-                id="image"
-                name="imageUrl"
-                onChange={handleChange}
-                accept="image/*"
-                className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-lg file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100
-                  cursor-pointer"
-              />
-            </div>
-            {(previewImage || formData.imageUrl) && (
-              <div className="w-20 h-20 relative">
-                <img
-                  src={
-                    previewImage ||
-                    (typeof formData.imageUrl === "string"
-                      ? formData.imageUrl
-                      : "")
-                  }
-                  alt="Vista previa"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-        </div>
         <div className="mb-3">
           <label
             className="block text-gray-700 text-sm font-bold mb-1 uppercase tracking-wide"
@@ -149,6 +129,9 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.name && (
+            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+          )}
         </div>
         <div className="mb-3">
           <label
@@ -165,6 +148,9 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.description && (
+            <p className="text-red-500 text-xs mt-1">{errors.description}</p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="mb-3">
@@ -183,6 +169,9 @@ export default function ProductForm({
               onChange={handleChange}
               required
             />
+            {errors.price && (
+              <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+            )}
           </div>
           <div className="mb-3">
             <label
@@ -200,6 +189,9 @@ export default function ProductForm({
               onChange={handleChange}
               required
             />
+            {errors.stock && (
+              <p className="text-red-500 text-xs mt-1">{errors.stock}</p>
+            )}
           </div>
         </div>
         <div className="mb-3">
@@ -218,6 +210,9 @@ export default function ProductForm({
             onChange={handleChange}
             required
           />
+          {errors.category_id && (
+            <p className="text-red-500 text-xs mt-1">{errors.category_id}</p>
+          )}
         </div>
         <div className="mb-3">
           <label className="flex items-center space-x-3 cursor-pointer">
@@ -233,6 +228,41 @@ export default function ProductForm({
             </span>
           </label>
         </div>
+        <div className="mb-3">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2 uppercase tracking-wide"
+            htmlFor="image"
+          >
+            Imagen del Producto
+          </label>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <input
+                type="file"
+                id="image"
+                name="imageUrl"
+                onChange={handleImageChange}
+                accept="image/*"
+                className="block w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100
+                  cursor-pointer"
+              />
+            </div>
+            {imageUrl && (
+              <div className="w-20 h-20 relative">
+                <img
+                  src={imageUrl}
+                  alt="Vista previa"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="flex items-center justify-end space-x-3">
         {initialData && (
@@ -245,12 +275,19 @@ export default function ProductForm({
           </button>
         )}
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none"
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none ${
+            Object.keys(errors).length > 0
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+          }`}
           type="submit"
+          disabled={Object.keys(errors).length > 0}
         >
           {initialData ? "Actualizar" : "Crear"}
         </button>
       </div>
     </form>
   );
-}
+};
+
+export default ProductForm;

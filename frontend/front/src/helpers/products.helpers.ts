@@ -62,7 +62,7 @@ export const createProduct = async (
 
 export const modifyProduct = async (
   token: string,
-  id: string,
+  id: number,
   updateProduct: IUpdateproduct
 ) => {
   try {
@@ -82,7 +82,7 @@ export const modifyProduct = async (
   }
 };
 
-export const deleteProduct = async (token: string, id: string) => {
+export const deleteProduct = async (token: string, id: number) => {
   try {
     const response = await fetch(`${APIURL}/products/${id}`, {
       method: "DELETE",

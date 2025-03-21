@@ -5,7 +5,7 @@ export interface ICreateProduct {
   stock: number;
   category_id: number;
   isActive: boolean;
-  imageUrl?: string;
+  image: File | null;
 }
 
 export interface IUpdateproduct {
