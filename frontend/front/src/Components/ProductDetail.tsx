@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { IProduct } from "@/interfaces/IProducts";
 import { Badge } from "@/Components/ui/badge";
-
 import { useRouter } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -38,6 +37,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getProductById } from "@/helpers/products.helpers";
 import socket from "@/utils/socket";
 import { getAllCategories } from "@/helpers/categories.helper";
+import { Dialog } from "@headlessui/react";
 
 interface ProductDetailProps {
   product: IProduct;
@@ -56,12 +56,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [productRender, setProduct] = useState<IProduct>(product);
+  console.log(productRender);
   const [user, setUser] = useState<IUser>();
   const { userId } = useUserContext();
   const token = Cookies.get("accessToken") || "null";
   const images = [product.imageUrl, ...Array(3).fill(product.imageUrl)]; // Simulando múltiples imágenes del producto
   const router = useRouter();
-  console.log(productRender);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   // Fetch User
   useEffect(() => {
@@ -356,7 +360,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                         fill
                         priority
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover"
+                        className="object-cover cursor-pointer"
+                        onClick={openModal} // Abre el modal al hacer clic
                       />
                     </motion.div>
                   </AnimatePresence>
@@ -371,6 +376,63 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     </Badge>
                   )}
                 </div>
+                <Dialog
+                  open={isModalOpen}
+                  onClose={closeModal}
+                  className="relative z-50"
+                >
+                  <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    aria-hidden="true"
+                  />
+                  <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="relative bg-white rounded-lg overflow-hidden shadow-lg"
+                    >
+                      <button
+                        onClick={closeModal}
+                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                      >
+                        ✕
+                      </button>
+                      <button
+                        onClick={() =>
+                          setActiveImage((prev) =>
+                            prev === 0 ? images.length - 1 : prev - 1
+                          )
+                        }
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700"
+                      >
+                        ◀
+                      </button>
+                      <Image
+                        src={images[activeImage]}
+                        alt={product.name}
+                        width={800}
+                        height={800}
+                        className="object-contain"
+                      />
+                      <button
+                        onClick={() =>
+                          setActiveImage((prev) =>
+                            prev === images.length - 1 ? 0 : prev + 1
+                          )
+                        }
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-700"
+                      >
+                        ▶
+                      </button>
+                    </motion.div>
+                  </div>
+                </Dialog>
 
                 <div className="relative">
                   <Swiper
